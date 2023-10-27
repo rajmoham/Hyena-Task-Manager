@@ -1,12 +1,12 @@
-# Team *enter team name here* Small Group project
+# Team Hyena Small Group project
 
 ## Team members
 The members of the team are:
-- *enter full name 1 here*
-- *enter full name 2 here*
-- *enter full name 3 here*
-- *enter full name 4 here*
-- *enter full name 5 here*
+- Jake Rawal
+- Boonyawat Ariyawatkul
+- Carlos De la Puente
+- Emre Ozbek
+- Raj Mohammad
 
 ## Project structure
 The project is called `task_manager`.  It currently consists of a single app `tasks`.
