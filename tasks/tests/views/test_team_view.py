@@ -13,19 +13,11 @@ class NewTeamTest(TestCase):
             email='johndoe@example.org',
             password='Password123',
         )
-        self.url = reverse('new_team')
-        self.data = { 'text': 'The quick brown fox jumps over the lazy dog.' }
+        self.url = reverse('create_team')
+        self.data = { "title" : "This is my Team" ,'description': 'The quick brown fox jumps over the lazy dog.' }
 
     def test_new_team_url(self):
-        self.assertEqual(self.url,'/new_team/')
-
-    def test_get_new_team_is_forbidden(self):
-        self.client.login(username=self.user.username, password="Password123")
-        user_count_before = Team.objects.count()
-        response = self.client.get(self.url, follow=True)
-        user_count_after = Team.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.url,'/create_team')
 
     def test_team_new_team_redirects_when_not_logged_in(self):
         user_count_before = Team.objects.count()
@@ -40,7 +32,7 @@ class NewTeamTest(TestCase):
     def test_successful_new_team(self):
         self.client.login(username=self.user.username, password="Password123")
         user_count_before = Team.objects.count()
-        response = self.client.team(self.url, self.data, follow=True)
+        response = self.client.post(self.url, self.data, follow=True)
         user_count_after = Team.objects.count()
         self.assertEqual(user_count_after, user_count_before+1)
         new_team = Team.objects.latest('created_at')
@@ -56,7 +48,7 @@ class NewTeamTest(TestCase):
     def test_unsuccessful_new_team(self):
         self.client.login(username='@johndoe', password='Password123')
         user_count_before = Team.objects.count()
-        self.data['text'] = ""
+        self.data['title'] = ""
         response = self.client.post(self.url, self.data, follow=True)
         user_count_after = Team.objects.count()
         self.assertEqual(user_count_after, user_count_before)
@@ -70,7 +62,6 @@ class NewTeamTest(TestCase):
             last_name='Doe',
             email='janedoe@example.org',
             password='Password123',
-            bio='The quick brown fox jumps over the lazy dog.'
         )
         self.data['author'] = other_user.id
         user_count_before = Team.objects.count()

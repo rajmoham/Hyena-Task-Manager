@@ -29,12 +29,12 @@ class TeamTest(TestCase):
         with self.assertRaises(ValidationError):
             self.team.full_clean()
 
-    def test_text_must_not_be_blank(self):
-        self.team.text = ''
+    def test_title_must_not_be_blank(self):
+        self.team.title = ''
         with self.assertRaises(ValidationError):
             self.team.full_clean()
 
     def test_text_must_not_be_overlong(self):
-        self.team.text = 'x' * 281
+        self.team.title = 'x' * 281
         with self.assertRaises(ValidationError):
             self.team.full_clean()

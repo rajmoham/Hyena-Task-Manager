@@ -26,7 +26,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', {'user': current_user , "form" : form, "user_teams" : user_teams})
 
 
-def new_team(request):
+def create_team(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             current_user = request.user

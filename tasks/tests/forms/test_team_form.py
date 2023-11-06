@@ -14,11 +14,11 @@ class TeamFormTestCase(TestCase):
         )
 
     def test_valid_team_form(self):
-        input = {'text': 'x'*200 }
+        input = {"author": self.user, 'title': 'x'*5, "description": "x*99" }
         form = TeamForm(data=input)
         self.assertTrue(form.is_valid())
 
     def test_invalid_team_form(self):
-        input = {'text': 'x'*600 }
+        input = {'title': 'x'*200, "description": "x"*88 }
         form = TeamForm(data=input)
         self.assertFalse(form.is_valid())
