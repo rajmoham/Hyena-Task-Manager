@@ -8,8 +8,12 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
+
+from django.http import HttpResponseForbidden
+
+from tasks.models import Team
 
 
 @login_required
@@ -17,7 +21,27 @@ def dashboard(request):
     """Display the current user's dashboard."""
 
     current_user = request.user
-    return render(request, 'dashboard.html', {'user': current_user})
+    form = TeamForm()
+    user_teams = Team.objects.filter(author=current_user)
+    return render(request, 'dashboard.html', {'user': current_user , "form" : form, "user_teams" : user_teams})
+
+
+def new_team(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            current_user = request.user
+            form = TeamForm(request.POST)
+            if form.is_valid():
+                titleCleaned = form.cleaned_data.get("title")
+                descriptionCleaned = form.cleaned_data.get('description')
+                team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
+                return redirect('dashboard')
+            else:
+                return render(request, 'dashboard.html', {'form': form})
+        else:
+            return redirect('log_in')
+    else:
+        return HttpResponseForbidden()
 
 
 @login_prohibited
