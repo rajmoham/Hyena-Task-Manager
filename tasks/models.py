@@ -40,3 +40,16 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+    
+"""Teams Created by users"""
+class Team(models.Model):
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length =  50, blank=False)
+    description = models.CharField(max_length=280, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    members = models.ManyToManyField(User, related_name='teams')
+    class Meta:
+        """Model options."""
+
+        ordering = ['-created_at']
