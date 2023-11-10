@@ -3,13 +3,15 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-      <h2> Create a New Team</h2>
-      <form method="post" action="{% url 'create_team' %}">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <button type="submit">Create Team</button>
-      </form>
+      <h1>Welcome to your dashboard {{ user.username }}!</h1>
+      <div class="card col-3">
+        <h5 class="card-header">Featured</h5>
+        <div class="card-body">
+          <h5 class="card-title">Have you created a team?</h5>
+          <p class="card-text">Click here to create your own team!</p>
+          <a href='{% url "create_team" %}' class="btn btn-primary">Create Team</a>
+        </div>
+      </div>
       <h3>Your Teams</h3>
         {% if user_teams %}
           <ul>
@@ -24,3 +26,4 @@
   </div>
 </div>
 {% endblock %}
+

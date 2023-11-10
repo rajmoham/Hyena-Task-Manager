@@ -1,0 +1,15 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2> Create a New Team</h2>
+            <form method="post" action="{% url 'create_team' %}">
+                {% csrf_token %}
+                {% include 'partials/bootstrap_form.html' with form=form %}
+                <button type="submit">Create Team</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
