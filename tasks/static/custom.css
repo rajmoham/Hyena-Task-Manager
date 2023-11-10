@@ -1,0 +1,37 @@
+* {
+    font-family: var(--font-family-display,'Charlie Display',); 
+}
+
+#home {
+    background-image: linear-gradient(to bottom right, #8A2BE2, #BA55D3);
+}
+
+h1.cover-heading {
+    color: white;
+}
+
+p.cover-text {
+    color: white;
+}
+
+.btn {
+    background-color: #1E90FF;
+}
+
+.btn:hover {
+    background-color: #0a4b8c;
+}
+
+.cover-card {
+    background-color: rgba(255, 255, 255, 0.6);
+    max-width: 30rem;
+    padding-top: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 30px;
+    border-radius: 15%;
+  }
+  .cover-card-block {
+    opacity: 1
+  }
+
