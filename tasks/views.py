@@ -15,6 +15,9 @@ from django.http import HttpResponseForbidden
 
 from tasks.models import Team
 
+def custom_404(request, exception):
+    """Display error page"""
+    return render(request, '404.html', status = 404)
 
 @login_required
 def dashboard(request):
