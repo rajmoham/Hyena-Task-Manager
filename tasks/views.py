@@ -23,11 +23,11 @@ def dashboard(request):
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
-    return render(request, 'dashboard.html', {'user': current_user , "form" : form, "user_teams" : user_teams})
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
 
-
+@login_required
 def create_team(request):
-    if request.method == 'POST':
+    #if request.method == 'POST':
         if request.user.is_authenticated:
             current_user = request.user
             form = TeamForm(request.POST)
@@ -37,11 +37,11 @@ def create_team(request):
                 team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
                 return redirect('dashboard')
             else:
-                return render(request, 'dashboard.html', {'form': form})
+                return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
-    else:
-        return HttpResponseForbidden()
+    # else:
+    #     return HttpResponseForbidden()
 
 
 @login_prohibited
