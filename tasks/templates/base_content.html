@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 {% block body %}
-  {% include 'partials/navbar.html' %}
-  {% include 'partials/messages.html' %}
-  {% block content %}
-  {% endblock %}
+<div class="d-flex vw-100">
+  {% if user.is_authenticated %}
+  <div class="p-2 vh-100 d-fixed" style="width: 300px">
+    <div class="w-100 h-100" style="background-color: #ffffffaa; border-radius: 12px;">
+      {% include 'partials/navbar.html' %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="flex-grow-1 p-2">
+    {% include 'partials/messages.html' %}
+    {% block content %}
+    {% endblock %}
+  </div>
+</div>
 {% endblock %}
