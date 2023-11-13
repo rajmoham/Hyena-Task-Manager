@@ -10,9 +10,8 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-
 from tasks.models import Team
 
 
@@ -35,6 +34,7 @@ def create_team(request):
                 titleCleaned = form.cleaned_data.get("title")
                 descriptionCleaned = form.cleaned_data.get('description')
                 team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
+                team.members.add(current_user) # adds only the team creator for now
                 return redirect('dashboard')
             else:
                 return render(request, 'create_team.html', {'form': form})
@@ -49,6 +49,16 @@ def home(request):
     """Display the application's start/home screen."""
 
     return render(request, 'home.html')
+
+@login_required
+def show_team(request, team_id):
+    """Show the team details: team name, description, members"""
+    try:
+        team = Team.objects.get(id=team_id)
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return render(request, 'show_team.html', {'team': team})
 
 
 class LoginProhibitedMixin:
