@@ -14,11 +14,22 @@
       </div>
       <h3>Your Teams</h3>
         {% if user_teams %}
-          <ul>
-            {% for team in user_teams %}
-              <li>{{ team.title }} - {{ team.description }}</li>
-            {% endfor %}
-          </ul>
+          <table class="table">
+                <thead>
+                  <tr>
+                    <th>Team Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                {% for team in user_teams %}
+                    <tbody>
+                        <tr>
+                            <td><a href="{% url 'show_team' team.id %}">{{ team.title }}</a></td>
+                            <td>{{ team.description }}</td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+          </table>
         {% else %}
           <p>You haven't created any teams yet.</p>
         {% endif %}
