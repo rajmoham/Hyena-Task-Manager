@@ -8,17 +8,16 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TaskForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team
+from tasks.models import Team, Task
 
 
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)

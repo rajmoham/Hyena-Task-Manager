@@ -61,7 +61,7 @@ class Task(models.Model):
     title = models.CharField(max_length =  50, blank=False)
     description = models.CharField(max_length=280, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    due_date = models.DateTimeField(auto_now_add=True,blank=True) #User Sets Date here
+    due_date = models.DateTimeField(blank=True) #User Sets Date here
     assigned_members = models.ManyToManyField(User, related_name='tasks')
     class Meta:
         """Model Options"""
