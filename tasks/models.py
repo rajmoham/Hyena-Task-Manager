@@ -24,7 +24,7 @@ class User(AbstractUser):
 
         ordering = ['last_name', 'first_name']
 
-    def full_name(self):
+    def full_name(self): 
         """Return a string containing the user's full name."""
 
         return f'{self.first_name} {self.last_name}'
@@ -53,3 +53,17 @@ class Team(models.Model):
         """Model options."""
 
         ordering = ['-created_at']
+
+"""Task Created by a Team"""
+class Task(models.Model):
+
+    author = models.ForeignKey(Team, on_delete=models.CASCADE)
+    title = models.CharField(max_length =  50, blank=False)
+    description = models.CharField(max_length=280, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(auto_now_add=True,blank=True) #User Sets Date here
+    assigned_members = models.ManyToManyField(User, related_name='tasks')
+    class Meta:
+        """Model Options"""
+
+        ordering = ['-due_date']
