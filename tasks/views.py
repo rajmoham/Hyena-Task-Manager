@@ -23,6 +23,7 @@ def dashboard(request):
     user_teams = Team.objects.filter(author=current_user)
     return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
 
+#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     #if request.method == 'POST':
@@ -60,7 +61,7 @@ def show_team(request, team_id):
     else:
         return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
 
-
+#TODO: Turn this into a form view class
 @login_required  
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""

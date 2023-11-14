@@ -113,7 +113,7 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ["title", 'description',]
+        fields = ["title", 'description']
         widgets = {
             'description': forms.Textarea()
         }

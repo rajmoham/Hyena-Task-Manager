@@ -1,7 +1,8 @@
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
+from django.utils import timezone
 
 class User(AbstractUser):
     """Model used for user authentication, and team member related information."""
@@ -61,7 +62,12 @@ class Task(models.Model):
     title = models.CharField(max_length =  50, blank=False)
     description = models.CharField(max_length=280, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    due_date = models.DateTimeField(blank=True) #User Sets Date here
+    due_date = models.DateTimeField(
+        blank=False,
+        validators=[MinValueValidator(
+            limit_value=timezone.now()
+            )]
+    )
     assigned_members = models.ManyToManyField(User, related_name='tasks')
     class Meta:
         """Model Options"""
