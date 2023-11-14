@@ -4,6 +4,14 @@
     <div class="row content">
         <div class="col-xs-12 col-lg-6 col-xl-4">
             {% include 'partials/team_details.html' %}
+            <div>
+                <h5 class="card-header">Featured</h5>
+                <div class="card-body">
+                  <h5 class="card-title">Have you created a task?</h5>
+                  <p class="card-text">Click here to create a Task!</p>
+                  <a href='{% url "create_task" team.id%}' class="btn btn-primary">Create Task</a>
+                </div>
+              </div>
         </div>
     </div>
 </div>

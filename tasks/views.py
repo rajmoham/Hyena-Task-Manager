@@ -54,10 +54,30 @@ def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
         team = Team.objects.get(id=team_id)
+        tasks = Task.objects.filter(author=team)
     except ObjectDoesNotExist:
         return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': team})
+        return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
+
+
+@login_required  
+def create_task(request, team_id):
+    """Allow the user to create a Task for their Team"""
+    if request.user.is_authenticated:
+        current_team = Team.objects.get(id = team_id)
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            titleCleaned = form.cleaned_data.get("title")
+            descriptionCleaned = form.cleaned_data.get('description')
+            dueDateCleaned = form.cleaned_data.get("due_date")
+            task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
+
+            return redirect('show_team', team_id)
+        else:
+            return render(request, 'create_task.html', {'team': current_team,'form': form})
+    else:
+        return redirect('log_in')
 
 
 class LoginProhibitedMixin:
