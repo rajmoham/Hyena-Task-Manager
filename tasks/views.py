@@ -4,15 +4,18 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team
+from tasks.models import Team, Invitation
+from tasks.helpers import send_invitation, send_invitation_accepted
+import random
+
 
 def custom_404(request, exception):
     """Display error page"""
@@ -62,6 +65,26 @@ def show_team(request, team_id):
         return redirect('dashboard')
     else:
         return render(request, 'show_team.html', {'team': team})
+
+
+@login_required
+def invite(request, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+    form = TeamInviteForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email']
+        existing_invitations = Invitation.objects.filter(team=team, email=email)
+        if not existing_invitations.exists():
+            code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz123456789') for _ in range(4))
+            invitation = Invitation.objects.create(team=team, email=email, code=code)
+            messages.success(request, 'User is invited')  # Use success instead of info for a successful action
+            send_invitation(email, code, team)
+            return redirect('team:team', team_id=team.id)
+        else:
+            messages.info(request, 'The user has already been invited')
+
+    return render(request, 'invite.html', {'team': team, 'form': form})
 
 
 class LoginProhibitedMixin:

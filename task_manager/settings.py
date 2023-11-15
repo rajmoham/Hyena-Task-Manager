@@ -26,8 +26,16 @@ SECRET_KEY = 'django-insecure-&$dln5wpgorppuw&(gintxm573v2ks+zq4o$(4*lapguixf^+2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'e42612933@gmail.com'
+
+ACCEPT_URL = 'http://127.0.0.1:8000/sign/up'
 
 # Application definition
 

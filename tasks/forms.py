@@ -3,6 +3,8 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
 from .models import User, Team
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -61,7 +63,7 @@ class PasswordForm(NewPasswordMixin):
 
     def __init__(self, user=None, **kwargs):
         """Construct new form instance with a user instance."""
-        
+
         super().__init__(**kwargs)
         self.user = user
 
@@ -108,7 +110,7 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
-    
+
 """Form to ask user to create a Team. The Team author must be by the Team creator."""
 class TeamForm(forms.ModelForm):
     class Meta:
@@ -117,3 +119,16 @@ class TeamForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea()
         }
+
+class TeamInviteForm (forms.Form):
+    """Form to invite team members"""
+
+    email = forms.EmailField(
+        label="Enter the user's email to send an invitation",
+        validators=[validate_email],
+
+    )
+    def clean_email(self):
+        """Validate that the email address can receive an invitation."""
+        email = self.cleaned_data.get('email')
+        return email

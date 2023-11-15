@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="email-container">
+  <div class="email-header">
+    <h2>Welcome to Task Manager!</h2>
+  </div>
+  <div class="email-body">
+    <p>Hello,</p>
+    <p>You have been invited to join the team {{ team.title }}. To get started, simply click the button below and use the provided activation code.</p>
+    <p>Your team activation code is: <span class="code">{{ code }}</span></p>
+    <a href="{{ accept_url }}" class="btn">Accept Invitation</a>
+    <p>If you have any questions or issues, don't hesitate to contact our support team.</p>
+  </div>
+</div>
+
+
+{% endblock %}

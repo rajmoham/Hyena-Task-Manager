@@ -4,6 +4,10 @@
     <div class="row content">
         <div class="col-xs-12 col-lg-6 col-xl-4">
             {% include 'partials/team_details.html' %}
+            <!-- Invite Members Button -->
+            {%if request.user == team.author%}
+                <a href="{% url 'invite' team_id=team.id %}" class="btn btn-primary">Invite Members</a>
+            {%endif%}
         </div>
     </div>
 </div>

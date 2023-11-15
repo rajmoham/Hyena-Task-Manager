@@ -38,9 +38,9 @@ class User(AbstractUser):
 
     def mini_gravatar(self):
         """Return a URL to a miniature version of the user's gravatar."""
-        
+
         return self.gravatar(size=60)
-    
+
 """Teams Created by users"""
 class Team(models.Model):
 
@@ -53,3 +53,21 @@ class Team(models.Model):
         """Model options."""
 
         ordering = ['-created_at']
+
+class Invitation(models.Model):
+    INVITED = 'invited'
+    ACCEPTED = 'accepted'
+
+    Choice_status = (
+        (INVITED, 'Invited'),
+        (ACCEPTED, 'Accepted'),
+    )
+
+    team = models.ForeignKey(Team, related_name = 'invitations', on_delete=models.CASCADE)
+    email = models.EmailField()
+    code = models.CharField(max_length = 20)
+    status = models.CharField(max_length = 20, choices = Choice_status, default = INVITED)
+    date_sent = models.DateTimeField(auto_now_add=True)
+
+    def __str__ (self):
+        return self.email
