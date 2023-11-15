@@ -1,0 +1,20 @@
+<div class="row content">
+    <div class="col-12">
+        <h2 class="text-primary">Team Name: {{ team.title }}</h2>
+    </div>
+</div>
+<div class="row content">
+    <div class="col-12">
+        <p class="lead">Description: {{ team.description }}</p>
+    </div>
+</div>
+<div class="row content">
+    <div class="col-12">
+        <p class="team-members">Members:
+            {% for member in team.members.all %}
+                {{ member.username }},
+            {% endfor %}
+        </p>
+    </div>
+</div>
+

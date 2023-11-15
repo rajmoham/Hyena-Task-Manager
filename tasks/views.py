@@ -10,9 +10,8 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-
 from tasks.models import Team
 
 def custom_404(request, exception):
@@ -26,11 +25,11 @@ def dashboard(request):
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
-    return render(request, 'dashboard.html', {'user': current_user , "form" : form, "user_teams" : user_teams})
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
 
-
+@login_required
 def create_team(request):
-    if request.method == 'POST':
+    #if request.method == 'POST':
         if request.user.is_authenticated:
             current_user = request.user
             form = TeamForm(request.POST)
@@ -38,13 +37,14 @@ def create_team(request):
                 titleCleaned = form.cleaned_data.get("title")
                 descriptionCleaned = form.cleaned_data.get('description')
                 team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
+                team.members.add(current_user) # adds only the team creator for now
                 return redirect('dashboard')
             else:
-                return render(request, 'dashboard.html', {'form': form})
+                return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
-    else:
-        return HttpResponseForbidden()
+    # else:
+    #     return HttpResponseForbidden()
 
 
 @login_prohibited
@@ -52,6 +52,16 @@ def home(request):
     """Display the application's start/home screen."""
 
     return render(request, 'home.html')
+
+@login_required
+def show_team(request, team_id):
+    """Show the team details: team name, description, members"""
+    try:
+        team = Team.objects.get(id=team_id)
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return render(request, 'show_team.html', {'team': team})
 
 
 class LoginProhibitedMixin:
