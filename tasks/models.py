@@ -57,15 +57,16 @@ class Team(models.Model):
 class Invitation(models.Model):
     INVITED = 'invited'
     ACCEPTED = 'accepted'
+    DECLINED = 'declined'
 
     Choice_status = (
         (INVITED, 'Invited'),
         (ACCEPTED, 'Accepted'),
+        (DECLINED, 'Declined'),
     )
 
     team = models.ForeignKey(Team, related_name = 'invitations', on_delete=models.CASCADE)
     email = models.EmailField()
-    code = models.CharField(max_length = 20)
     status = models.CharField(max_length = 20, choices = Choice_status, default = INVITED)
     date_sent = models.DateTimeField(auto_now_add=True)
 

@@ -32,5 +32,5 @@ class InvitationAdmin(admin.ModelAdmin):
 
     # List of attributes you want to see in the table view of invitations
     list_display = [
-        'team', 'email', 'code', 'status', 'date_sent'
+        'team', 'email', 'status', 'date_sent'
     ]

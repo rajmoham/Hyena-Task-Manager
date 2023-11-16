@@ -2,9 +2,11 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User, Team
+from .models import User, Team, Invitation
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.contrib.auth import get_user_model
+
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -120,15 +122,16 @@ class TeamForm(forms.ModelForm):
             'description': forms.Textarea()
         }
 
-class TeamInviteForm (forms.Form):
-    """Form to invite team members"""
-
+class TeamInviteForm(forms.Form):
     email = forms.EmailField(
-        label="Enter the user's email to send an invitation",
-        validators=[validate_email],
-
+        label="Email Address",
+        help_text="Enter the email address of the person you want to invite."
     )
+
     def clean_email(self):
-        """Validate that the email address can receive an invitation."""
-        email = self.cleaned_data.get('email')
+        """Validate that the email is registered and not already invited."""
+        User = get_user_model()  # Correct placement
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("No user is registered with this email address.")
         return email

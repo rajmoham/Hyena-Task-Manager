@@ -13,8 +13,6 @@ from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
 from tasks.models import Team, Invitation
-from tasks.helpers import send_invitation, send_invitation_accepted
-import random
 
 
 def custom_404(request, exception):
@@ -70,21 +68,55 @@ def show_team(request, team_id):
 @login_required
 def invite(request, team_id):
     team = get_object_or_404(Team, pk=team_id)
+
+    if request.user != team.author:
+        messages.error(request, "You do not have permission to invite members to this team.")
+        return redirect('show_team', team_id=team_id)
+
     form = TeamInviteForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
-        email = form.cleaned_data['email']
-        existing_invitations = Invitation.objects.filter(team=team, email=email)
-        if not existing_invitations.exists():
-            code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz123456789') for _ in range(4))
-            invitation = Invitation.objects.create(team=team, email=email, code=code)
-            messages.success(request, 'User is invited')  # Use success instead of info for a successful action
-            send_invitation(email, code, team)
-            return redirect('team:team', team_id=team.id)
-        else:
-            messages.info(request, 'The user has already been invited')
+        user_email = form.cleaned_data['email']
+        invitation = Invitation.objects.create(
+            team=team,
+            email=user_email,
+            status=Invitation.INVITED
+        )
+        messages.success(request, 'Invitation sent successfully.')
 
-    return render(request, 'invite.html', {'team': team, 'form': form})
+        return redirect('show_team', team_id=team_id)
+
+    return render(request, 'invite.html', {'form': form, 'team': team})
+
+
+@login_required
+def list_invitations(request):
+    invitations = Invitation.objects.filter(email=request.user.email)
+    return render(request, 'list_invitations.html', {'invitations': invitations})
+
+@login_required
+def accept_invitation(request, invitation_id):
+    invitation = get_object_or_404(Invitation, id=invitation_id, email=request.user.email)
+    invitation.team.members.add(request.user)
+    invitation.status = Invitation.ACCEPTED
+    invitation.save()
+    messages.success(request, "You have joined the team!")
+    return redirect('dashboard')
+
+@login_required
+def decline_invitation(request, invitation_id):
+    invitation = get_object_or_404(Invitation, pk=invitation_id, email=request.user.email)
+
+    if invitation.status != Invitation.DECLINED:
+        invitation.status = Invitation.DECLINED
+        invitation.save()
+        messages.success(request, "You have declined the invitation.")
+    else:
+        messages.info(request, "You have already declined this invitation.")
+
+    return redirect('list_invitations')
+
+
 
 
 class LoginProhibitedMixin:
