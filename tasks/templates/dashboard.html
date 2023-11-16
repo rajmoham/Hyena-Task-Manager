@@ -33,6 +33,21 @@
         {% else %}
           <p>You haven't created any teams yet.</p>
         {% endif %}
+        <h3>Your Notifications</h3>
+        {% if user_notifications %}
+                {% for notification in user_notifications %} 
+                <div style="display: flex; justify-content: space-between;">
+                  <p><strong>{{ notification.title }}</strong></p>
+                  <p>{{ notification.description }}</p>
+                  {% if notification.actionable %}
+                    <button>Yes</button>
+                    <button>No</button>
+                  {% endif %}
+                </div>        
+                {% endfor %}
+        {% else %}
+          <p>You haven't created any teams yet.</p>
+        {% endif %}
     </div>
   </div>
 </div>

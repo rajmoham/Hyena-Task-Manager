@@ -12,7 +12,7 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team
+from tasks.models import Team, Notification
 
 def custom_404(request, exception):
     """Display error page"""
@@ -25,7 +25,8 @@ def dashboard(request):
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
+    user_notifications = Notification.objects.filter(user=current_user)
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
 
 @login_required
 def create_team(request):
@@ -38,6 +39,12 @@ def create_team(request):
                 descriptionCleaned = form.cleaned_data.get('description')
                 team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
                 team.members.add(current_user) # adds only the team creator for now
+                notification = Notification.objects.create(
+                    user=current_user,
+                    title="New Team Created: " + titleCleaned,
+                    description="You have created a new team",
+                    actionable=False
+                )
                 return redirect('dashboard')
             else:
                 return render(request, 'create_team.html', {'form': form})
@@ -45,7 +52,7 @@ def create_team(request):
             return redirect('log_in')
     # else:
     #     return HttpResponseForbidden()
-
+    
 
 @login_prohibited
 def home(request):

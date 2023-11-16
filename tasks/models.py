@@ -53,3 +53,16 @@ class Team(models.Model):
         """Model options."""
 
         ordering = ['-created_at']
+
+"""Notification created for certain actions"""
+class Notification(models.Model):
+    title = models.CharField(max_length=50, blank=False)
+    description = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    actionable = models.BooleanField()
+
+    class Meta:
+        """Model options."""
+
+        ordering = ['-created_at']

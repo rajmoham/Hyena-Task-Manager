@@ -50,12 +50,12 @@ class DashboardViewTestCase(TestCase):
     def test_dashboard_url(self):
         self.assertEqual(self.url, '/dashboard/')
 
-    def test_dashboard_displays_username(self):
+    def test_dashboard_displays_users_first_name(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'dashboard.html')
-        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.first_name)
 
     def test_dashboard_displays_teams(self):
         self.client.login(username=self.user.username, password="Password123")
