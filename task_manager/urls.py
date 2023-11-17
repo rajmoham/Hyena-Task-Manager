@@ -31,6 +31,10 @@ urlpatterns = [
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('create_team/', views.create_team, name='create_team'),
     path('team/<int:team_id>', views.show_team, name='show_team'),
+    path('team/<int:team_id>/invite/', views.invite, name='invite'),
+    path('invitations/', views.list_invitations, name='list_invitations'),
+    path('invitations/accept/<int:invitation_id>/', views.accept_invitation, name='accept_invitation'),
+    path('invitations/decline/<int:invitation_id>/', views.decline_invitation, name='decline_invitation'),
     path('create_task/<int:team_id>', views.create_task, name="create_task" )
 ]
 
