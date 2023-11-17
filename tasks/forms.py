@@ -117,3 +117,13 @@ class TeamForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea()
         }
+
+
+class TeamEdit(forms.ModelForm):
+    """Form to update user profiles."""
+
+    class Meta:
+        """Form options."""
+
+        model = Team
+        fields = ["title", 'description',]
