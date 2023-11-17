@@ -8,11 +8,15 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
 from tasks.models import Team, Invitation, Notification, Task
+
+from django.http import HttpResponse
+from django.template import loader
+from django.shortcuts import render
 
 def custom_404(request, exception):
     """Display error page"""
@@ -269,3 +273,26 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+class TeamUpdateView(UpdateView):
+    """Display team editing screen, and handle team details modifications."""
+
+    model = TeamForm
+    template_name = "edit_team.html"
+    form_class = TeamForm
+
+    def get_object(self):
+        """Return the object (team) to be updated."""
+        user = self.request.user
+        return user
+
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Team updated!")
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+    
+
+
+    
+
+

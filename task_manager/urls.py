@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path
 from tasks import views
 from django.conf.urls import handler404
-from tasks import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +35,7 @@ urlpatterns = [
     path('invitations/accept/<int:invitation_id>/', views.accept_invitation, name='accept_invitation'),
     path('invitations/decline/<int:invitation_id>/', views.decline_invitation, name='decline_invitation'),
     path('create_task/<int:team_id>', views.create_task, name="create_task" )
+    path('edit_team/', views.TeamUpdateView.as_view(), name='edit_team'),
 ]
 
 handler404 = 'tasks.views.custom_404'

@@ -121,6 +121,16 @@ class TeamForm(forms.ModelForm):
             'description': forms.Textarea()
         }
 
+
+class TeamEdit(forms.ModelForm):
+    """Form to update user profiles."""
+
+    class Meta:
+        """Form options."""
+
+        model = Team
+        fields = ["title", 'description',]
+        
 class TeamInviteForm(forms.Form):
     email = forms.EmailField(
         label="Email Address",
