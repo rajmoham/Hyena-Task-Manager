@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from tasks import views
+from django.conf.urls import handler404
+from tasks import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +31,7 @@ urlpatterns = [
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('create_team/', views.create_team, name='create_team'),
     path('team/<int:team_id>', views.show_team, name='show_team'),
+    path('create_task/<int:team_id>', views.create_task, name="create_task" )
 ]
+
+handler404 = 'tasks.views.custom_404'
