@@ -55,6 +55,20 @@ class Team(models.Model):
 
         ordering = ['-created_at']
 
+
+"""Notification created for certain actions"""
+class Notification(models.Model):
+    title = models.CharField(max_length=50, blank=False)
+    description = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    actionable = models.BooleanField()
+
+    class Meta:
+        """Model options."""
+
+        ordering = ['-created_at']
+
 """Task Created by a Team"""
 class Task(models.Model):
 
@@ -78,3 +92,4 @@ class Task(models.Model):
 """ One User can have many Teams and One Team can have many Users: Many to Many
     One Team can have Many Tasks but One Task can only have one Team: One to Many
     One User can have Many Tasks and One Tasks can have many Users: Many to Many"""
+
