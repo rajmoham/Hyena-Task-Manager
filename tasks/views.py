@@ -4,15 +4,15 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamEdit
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team
+from tasks.models import Team, Invitation, Notification, Task
 
 from django.http import HttpResponse
 from django.template import loader
@@ -25,12 +25,13 @@ def custom_404(request, exception):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
+    user_notifications = Notification.objects.filter(user=current_user)
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
 
+#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     #if request.method == 'POST':
@@ -42,6 +43,12 @@ def create_team(request):
                 descriptionCleaned = form.cleaned_data.get('description')
                 team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
                 team.members.add(current_user) # adds only the team creator for now
+                notification = Notification.objects.create(
+                    user=current_user,
+                    title="New Team Created: " + titleCleaned,
+                    description="You have created a new team",
+                    actionable=False
+                )
                 return redirect('dashboard')
             else:
                 return render(request, 'create_team.html', {'form': form})
@@ -49,7 +56,7 @@ def create_team(request):
             return redirect('log_in')
     # else:
     #     return HttpResponseForbidden()
-
+    
 
 @login_prohibited
 def home(request):
@@ -62,10 +69,84 @@ def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
         team = Team.objects.get(id=team_id)
+        tasks = Task.objects.filter(author=team)
     except ObjectDoesNotExist:
         return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': team})
+        return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
+
+#TODO: Turn this into a form view class
+@login_required  
+def create_task(request, team_id):
+    """Allow the user to create a Task for their Team"""
+    if request.user.is_authenticated:
+        current_team = Team.objects.get(id = team_id)
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            titleCleaned = form.cleaned_data.get("title")
+            descriptionCleaned = form.cleaned_data.get('description')
+            dueDateCleaned = form.cleaned_data.get("due_date")
+            task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
+
+            return redirect('show_team', team_id)
+        else:
+            return render(request, 'create_task.html', {'team': current_team,'form': form})
+    else:
+        return redirect('log_in')
+
+
+@login_required
+def invite(request, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+
+    if request.user != team.author:
+        messages.error(request, "You do not have permission to invite members to this team.")
+        return redirect('show_team', team_id=team_id)
+
+    form = TeamInviteForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        user_email = form.cleaned_data['email']
+        invitation = Invitation.objects.create(
+            team=team,
+            email=user_email,
+            status=Invitation.INVITED
+        )
+        messages.success(request, 'Invitation sent successfully.')
+
+        return redirect('show_team', team_id=team_id)
+
+    return render(request, 'invite.html', {'form': form, 'team': team})
+
+
+@login_required
+def list_invitations(request):
+    invitations = Invitation.objects.filter(email=request.user.email)
+    return render(request, 'list_invitations.html', {'invitations': invitations})
+
+@login_required
+def accept_invitation(request, invitation_id):
+    invitation = get_object_or_404(Invitation, id=invitation_id, email=request.user.email)
+    invitation.team.members.add(request.user)
+    invitation.status = Invitation.ACCEPTED
+    invitation.save()
+    messages.success(request, "You have joined the team!")
+    return redirect('dashboard')
+
+@login_required
+def decline_invitation(request, invitation_id):
+    invitation = get_object_or_404(Invitation, pk=invitation_id, email=request.user.email)
+
+    if invitation.status != Invitation.DECLINED:
+        invitation.status = Invitation.DECLINED
+        invitation.save()
+        messages.success(request, "You have declined the invitation.")
+    else:
+        messages.info(request, "You have already declined this invitation.")
+
+    return redirect('list_invitations')
+
+
 
 
 class LoginProhibitedMixin:

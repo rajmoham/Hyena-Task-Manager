@@ -2,7 +2,10 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User, Team
+from .models import User, Team, Invitation, Task
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth import get_user_model
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -61,7 +64,7 @@ class PasswordForm(NewPasswordMixin):
 
     def __init__(self, user=None, **kwargs):
         """Construct new form instance with a user instance."""
-        
+
         super().__init__(**kwargs)
         self.user = user
 
@@ -108,12 +111,12 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
-    
+
 """Form to ask user to create a Team. The Team author must be by the Team creator."""
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ["title", 'description',]
+        fields = ["title", 'description']
         widgets = {
             'description': forms.Textarea()
         }
@@ -127,3 +130,26 @@ class TeamEdit(forms.ModelForm):
 
         model = Team
         fields = ["title", 'description',]
+        
+class TeamInviteForm(forms.Form):
+    email = forms.EmailField(
+        label="Email Address",
+        help_text="Enter the email address of the person you want to invite."
+    )
+
+    def clean_email(self):
+        """Validate that the email is registered and not already invited."""
+        User = get_user_model()  # Correct placement
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("No user is registered with this email address.")
+        return email
+      
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ["title", 'description', "due_date"]
+        widgets = {
+            'description': forms.Textarea(),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
