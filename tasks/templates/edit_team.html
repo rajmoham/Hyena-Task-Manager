@@ -12,7 +12,7 @@
     </div>
     <div class="col-8 border shadow-lg p-4 mx-auto rounded-2">
       <h1 class="mb-4">Edit Team</h1>
-      <form action="{% url 'edit_team' %}" method="post">
+      <form action="{% url 'edit_team' team.id %}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
         <div class="d-grid col-6 mx-auto">
