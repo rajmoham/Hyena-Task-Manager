@@ -1,0 +1,12 @@
+[
+  {
+    "model": "tasks.team",
+    "pk": 1,
+    "fields": {
+      "author": 1, 
+      "title": "Team Test",
+      "description": "This is my team",
+      "created_at": "2023-01-01T12:00:00Z"
+    }
+  }
+]

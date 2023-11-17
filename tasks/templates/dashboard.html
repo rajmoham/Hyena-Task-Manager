@@ -1,55 +1,19 @@
 {% extends 'base_content.html' %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h1>Welcome to your dashboard {{ user.username }}!</h1>
-      <div class="card col-3">
-        <h5 class="card-header">Featured</h5>
-        <div class="card-body">
-          <h5 class="card-title">Have you created a team?</h5>
-          <p class="card-text">Click here to create your own team!</p>
-          <a href='{% url "create_team" %}' class="btn btn-primary">Create Team</a>
+<div class="w-100" style="background-color: #ffffffaa; border-radius: 12px;">
+    <div class="row">
+      <div class="col-12">
+        <h1>Welcome to your Dashboard {{ user.first_name }}!</h1>
+        <div class="card col-3">
+          <h5 class="card-header">Featured</h5>
+          <div class="card-body">
+            <h5 class="card-title">Have you created a team?</h5>
+            <p class="card-text">Click here to create your own team!</p>
+            <a href='{% url "create_team" %}' class="btn btn-primary">Create Team</a>
+          </div>
         </div>
       </div>
-      <h3>Your Teams</h3>
-        {% if user_teams %}
-          <table class="table">
-                <thead>
-                  <tr>
-                    <th>Team Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                {% for team in user_teams %}
-                    <tbody>
-                        <tr>
-                            <td><a href="{% url 'show_team' team.id %}">{{ team.title }}</a></td>
-                            <td>{{ team.description }}</td>
-                        </tr>
-                    </tbody>
-                {% endfor %}
-          </table>
-        {% else %}
-          <p>You haven't created any teams yet.</p>
-        {% endif %}
-        <h3>Your Notifications</h3>
-        {% if user_notifications %}
-                {% for notification in user_notifications %} 
-                <div style="display: flex; justify-content: space-between;">
-                  <p><strong>{{ notification.title }}</strong></p>
-                  <p>{{ notification.description }}</p>
-                  {% if notification.actionable %}
-                    <button>Yes</button>
-                    <button>No</button>
-                  {% endif %}
-                </div>        
-                {% endfor %}
-        {% else %}
-          <p>You haven't created any teams yet.</p>
-        {% endif %}
+      {% include 'partials/teams_as_table.html' with user_teams=user_teams %}
     </div>
-  </div>
 </div>
 {% endblock %}
-

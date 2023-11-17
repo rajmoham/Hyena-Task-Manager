@@ -2,6 +2,10 @@
     font-family: var(--font-family-display,'Charlie Display',); 
 }
 
+body {
+    background-color: #cfcbea;
+}
+
 #home {
     background-image: linear-gradient(to bottom right, #8A2BE2, #BA55D3);
 }

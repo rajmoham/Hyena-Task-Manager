@@ -31,6 +31,7 @@ urlpatterns = [
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('create_team/', views.create_team, name='create_team'),
     path('team/<int:team_id>', views.show_team, name='show_team'),
+    path('create_task/<int:team_id>', views.create_task, name="create_task" )
 ]
 
 handler404 = 'tasks.views.custom_404'
