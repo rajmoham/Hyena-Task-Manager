@@ -35,6 +35,7 @@ urlpatterns = [
     path('invitations/', views.list_invitations, name='list_invitations'),
     path('invitations/accept/<int:invitation_id>/', views.accept_invitation, name='accept_invitation'),
     path('invitations/decline/<int:invitation_id>/', views.decline_invitation, name='decline_invitation'),
+    path('create_task/<int:team_id>', views.create_task, name="create_task" )
 ]
 
 handler404 = 'tasks.views.custom_404'
