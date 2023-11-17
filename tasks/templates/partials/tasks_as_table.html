@@ -1,0 +1,29 @@
+<div>
+    <div>
+        <h3>Your Tasks</h3>
+        {% if tasks %}
+          <table class="table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                {% for task in tasks %}
+                    <tbody>
+                        <tr>
+                            <td>{{ task.title }}</a></td>
+                            <td>{{ task.description }}</td>
+                            <td> {{ task.due_date }} </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+          </table>
+        {% else %}
+          <p>You haven't created any tasks yet.</p>
+        {% endif %}
+
+
+    </div>
+</div>

@@ -8,11 +8,11 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TaskForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team
+from tasks.models import Team, Task
 
 def custom_404(request, exception):
     """Display error page"""
@@ -21,12 +21,12 @@ def custom_404(request, exception):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
     return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams})
 
+#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     #if request.method == 'POST':
@@ -58,10 +58,30 @@ def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
         team = Team.objects.get(id=team_id)
+        tasks = Task.objects.filter(author=team)
     except ObjectDoesNotExist:
         return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': team})
+        return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
+
+#TODO: Turn this into a form view class
+@login_required  
+def create_task(request, team_id):
+    """Allow the user to create a Task for their Team"""
+    if request.user.is_authenticated:
+        current_team = Team.objects.get(id = team_id)
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            titleCleaned = form.cleaned_data.get("title")
+            descriptionCleaned = form.cleaned_data.get('description')
+            dueDateCleaned = form.cleaned_data.get("due_date")
+            task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
+
+            return redirect('show_team', team_id)
+        else:
+            return render(request, 'create_task.html', {'team': current_team,'form': form})
+    else:
+        return redirect('log_in')
 
 
 class LoginProhibitedMixin:
