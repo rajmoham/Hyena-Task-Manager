@@ -28,8 +28,7 @@ def dashboard(request):
     current_user = request.user
     form = TeamForm()
     user_teams = Team.objects.filter(author=current_user)
-    user_notifications = Notification.objects.filter(user=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams,})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -291,6 +290,21 @@ class TeamUpdateView(UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     
+@login_required
+def notifications(request):
+    """Display Notifications associated with the user"""
+    if request.user.is_authenticated:
+        Notification.objects.create(
+            user=request.user,
+            title="Visited Notification Page",
+            description="",
+            actionable=False,
+        )
+        user_notifications = Notification.objects.filter(user=request.user)
+        return render(request, 'notifications.html', {'user_notifications' : user_notifications})
+    else:
+        return redirect('log_in')
+
 
 
     
