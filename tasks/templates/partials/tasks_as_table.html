@@ -8,6 +8,8 @@
                     <th>Task Name</th>
                     <th>Description</th>
                     <th>Due Date</th>
+                    <th>Mark Completed</th>
+                    <th>Edit Team</th>
                   </tr>
                 </thead>
                 {% for task in tasks %}
@@ -16,6 +18,8 @@
                             <td>{{ task.title }}</a></td>
                             <td>{{ task.description }}</td>
                             <td> {{ task.due_date }} </td>
+                            <td> To be Implmented</td>
+                            <td><a href='{% url "edit_task" task.id%}'> Edit Task </a></td>
                         </tr>
                     </tbody>
                 {% endfor %}

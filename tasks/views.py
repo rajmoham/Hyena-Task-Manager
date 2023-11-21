@@ -87,13 +87,24 @@ def create_task(request, team_id):
             descriptionCleaned = form.cleaned_data.get('description')
             dueDateCleaned = form.cleaned_data.get("due_date")
             task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-
             return redirect('show_team', team_id)
         else:
             return render(request, 'create_task.html', {'team': current_team,'form': form})
     else:
         return redirect('log_in')
-
+    
+@login_required
+def edit_task(request, task_id):
+    """Allow the user to edit the Task"""
+    current_task = Task.objects.get(id = task_id)
+    form = TaskForm(instance=current_task, data=request.POST)
+    if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Task updated!")
+            form.save()
+            return redirect('show_team', task_id)
+    else:
+        form = TaskForm(instance=current_task)
+        return render(request, 'edit_task.html', {'task': current_task,'form': form})
 
 @login_required
 def invite(request, team_id):
