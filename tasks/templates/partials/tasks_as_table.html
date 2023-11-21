@@ -9,8 +9,9 @@
                     <th>Description</th>
                     <th>Due Date</th>
                     <th>Mark Completed</th>
-                    <th>Edit Team</th>
-                    <th>Delete Team</th>
+                    <th>Assigned Members</th>
+                    <th>Edit Task</th>
+                    <th>Delete Task</th>
                   </tr>
                 </thead>
                 {% for task in tasks %}
@@ -20,6 +21,21 @@
                             <td>{{ task.description }}</td>
                             <td> {{ task.due_date }} </td>
                             <td> To be Implmented</td>
+                            <td>
+                              {% for member in task.assigned_members.all %}
+                                  {{ member.username }}
+                              {% endfor %}
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Assign Members
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    {% for user in team.members.all %}
+                                        <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">{{ user.username }}</a>
+                                    {% endfor %}
+                                </div>
+                              </div>
+                            </td>
                             <td><a href='{% url "edit_task" task.id%}'> Edit Task </a></td>
                             <td>
                               <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
@@ -34,6 +50,7 @@
         {% else %}
           <p>You haven't created any tasks yet.</p>
         {% endif %}
+        
 
 
     </div>

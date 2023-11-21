@@ -37,7 +37,8 @@ urlpatterns = [
     path('create_task/<int:team_id>', views.create_task, name="create_task" ),
     path('edit_team/', views.TeamUpdateView.as_view(), name='edit_team'),
     path('edit_task/<int:task_id>', views.edit_task, name='edit_task'),
-    path('delete_task/<int:task_id>', views.delete_task, name = 'delete_task')
+    path('delete_task/<int:task_id>', views.delete_task, name = 'delete_task'),
+    path('assign_member_to_task/<int:task_id>/<int:user_id>', views.assign_member_to_task, name= "assign_member_to_task"),
 ]
 
 handler404 = 'tasks.views.custom_404'

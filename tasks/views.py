@@ -12,7 +12,7 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team, Invitation, Notification, Task
+from tasks.models import Team, Invitation, Notification, Task, User
 
 from django.http import HttpResponse
 from django.template import loader
@@ -121,6 +121,17 @@ def delete_task(request, task_id):
     else:
         messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
     return redirect('show_team', current_team.id)
+
+def assign_member_to_task(request, task_id, user_id):
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    selected_user = User.objects.get(id = user_id)
+    if selected_user in current_task.assigned_members.all():
+        current_task.assigned_members.remove(selected_user)
+    else:
+        current_task.assigned_members.add(selected_user)
+    return redirect('show_team', current_team.id)
+
 
         
 
