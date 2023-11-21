@@ -10,6 +10,7 @@
                     <th>Due Date</th>
                     <th>Mark Completed</th>
                     <th>Edit Team</th>
+                    <th>Delete Team</th>
                   </tr>
                 </thead>
                 {% for task in tasks %}
@@ -20,6 +21,12 @@
                             <td> {{ task.due_date }} </td>
                             <td> To be Implmented</td>
                             <td><a href='{% url "edit_task" task.id%}'> Edit Task </a></td>
+                            <td>
+                              <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger btn-sm">Delete Task</button>
+                              </form>
+                            </td>
                         </tr>
                     </tbody>
                 {% endfor %}

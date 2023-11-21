@@ -11,7 +11,6 @@ class NewTaskTest(TestCase):
         'tasks/tests/fixtures/default_team.json',
         'tasks/tests/fixtures/other_users.json',
         'tasks/tests/fixtures/default_task.json'
-
         ]
 
     def setUp(self):

@@ -95,16 +95,34 @@ def create_task(request, team_id):
     
 @login_required
 def edit_task(request, task_id):
-    """Allow the user to edit the Task"""
-    current_task = Task.objects.get(id = task_id)
-    form = TaskForm(instance=current_task, data=request.POST)
-    if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Task updated!")
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if request.method == 'POST':
+        form = TaskForm(instance=current_task, data=request.POST)
+        if form.is_valid():
+            messages.success(request, "Task updated!")
             form.save()
-            return redirect('show_team', task_id)
+            return redirect('show_team', current_team.id)
     else:
         form = TaskForm(instance=current_task)
-        return render(request, 'edit_task.html', {'task': current_task,'form': form})
+    return render(request, 'edit_task.html', {'task': current_task, 'form': form})
+    
+@login_required
+def delete_task(request, task_id):
+    current_user = request.user
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if current_task.author == current_team:
+        if current_team.author == current_user:
+            current_task.delete()
+            messages.add_message(request, messages.SUCCESS, "Task deleted!")
+        else:
+            messages.add_message(request, messages.ERROR, "You cannot delete a Task in a Team you did not create")
+    else:
+        messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
+    return redirect('show_team', current_team.id)
+
+        
 
 @login_required
 def invite(request, team_id):
