@@ -122,14 +122,16 @@ def delete_task(request, task_id):
         messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
     return redirect('show_team', current_team.id)
 
+@login_required
 def assign_member_to_task(request, task_id, user_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
     selected_user = User.objects.get(id = user_id)
-    if selected_user in current_task.assigned_members.all():
-        current_task.assigned_members.remove(selected_user)
-    else:
-        current_task.assigned_members.add(selected_user)
+    if selected_user in current_team.members.all():
+        if selected_user in current_task.assigned_members.all():
+            current_task.assigned_members.remove(selected_user)
+        else:
+            current_task.assigned_members.add(selected_user)
     return redirect('show_team', current_team.id)
 
 
