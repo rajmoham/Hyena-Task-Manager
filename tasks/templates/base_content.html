@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
 {% block body %}
+{% if user.is_authenticated %}
 <div class="d-flex vw-100">
-  {% if user.is_authenticated %}
-  <div class="p-2 vh-100 d-fixed" style="width: 300px">
+  <div class="p-2 vh-100 position-fixed" style="width: 300px">
     <div class="w-100 h-100" style="background-color: #ffffffaa; border-radius: 12px;">
-      {% include 'partials/navbar.html' %}
+      {% include 'partials/side_bar.html' %}
     </div>
   </div>
-  {% endif %}
-  <div class="flex-grow-1 p-2">
-    {% include 'partials/messages.html' %}
-    {% block content %}
-    {% endblock %}
+  <div class="flex-grow-1 p-2" style="min-height: 100vh; margin-left: 300px;">
+    <div class="w-100 p-3 h-100" style="background-color: #ffffffaa; border-radius: 12px;">
+{% else %}
+  <div class="vw-100">
+    <div class="p-2 d-fixed" style="height: 100px; width: 100%;">
+      {% include 'partials/navbar.html' %}
+    </div>
+{% endif %}
+{% include 'partials/messages.html' %}
+{% block content %}
+{% endblock %}
+</div>
   </div>
 </div>
 {% endblock %}

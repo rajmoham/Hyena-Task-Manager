@@ -34,7 +34,13 @@ def dashboard(request):
 #TODO: Turn this into a form view class
 @login_required
 def create_team(request):
-    #if request.method == 'POST':
+    if not request.method == 'POST':
+        if request.user.is_authenticated:
+            form = TeamForm()
+            return render(request, 'create_team.html', {'form': form})
+        else:
+            return redirect('log_in')
+    elif request.method == 'POST':
         if request.user.is_authenticated:
             current_user = request.user
             form = TeamForm(request.POST)
@@ -54,8 +60,6 @@ def create_team(request):
                 return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
-    # else:
-    #     return HttpResponseForbidden()
     
 
 @login_prohibited
