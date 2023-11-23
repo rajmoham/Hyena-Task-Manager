@@ -11,10 +11,9 @@ from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from tasks.models import Team, Invitation, Notification, Task
-
-from django.http import HttpResponse
+from django.db.models import Q
 from django.template import loader
 from django.shortcuts import render
 
@@ -27,7 +26,7 @@ def dashboard(request):
     """Display the current user's dashboard."""
     current_user = request.user
     form = TeamForm()
-    user_teams = Team.objects.filter(author=current_user)
+    user_teams = Team.objects.filter(Q(author=current_user) | Q(members=current_user)).distinct()
     user_notifications = Notification.objects.filter(user=current_user)
     return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
 
