@@ -5,7 +5,6 @@ from django.core.validators import RegexValidator
 from .models import User, Team, Invitation, Task
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.contrib.auth import get_user_model
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -130,7 +129,7 @@ class TeamEdit(forms.ModelForm):
 
         model = Team
         fields = ["title", 'description',]
-        
+
 class TeamInviteForm(forms.Form):
     email = forms.EmailField(
         label="Email Address",
@@ -138,13 +137,12 @@ class TeamInviteForm(forms.Form):
     )
 
     def clean_email(self):
-        """Validate that the email is registered and not already invited."""
-        User = get_user_model()  # Correct placement
+        """Validate that the email is registered"""
         email = self.cleaned_data['email']
         if not User.objects.filter(email=email).exists():
             raise ValidationError("No user is registered with this email address.")
         return email
-      
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
