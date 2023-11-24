@@ -149,5 +149,8 @@ class TaskForm(forms.ModelForm):
         fields = ["title", 'description', "due_date"]
         widgets = {
             'description': forms.Textarea(),
-            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'due_date': forms.TextInput(attrs={'type': 'datetime-local'}),
+        }
+        input_formats= {
+            'due_date':'%Y-%m-%d T%H:%M',
         }
