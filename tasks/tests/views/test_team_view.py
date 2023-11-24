@@ -3,6 +3,9 @@ from django.test import TestCase
 from django.urls import reverse
 from tasks.models import Team, User
 from tasks.tests.helpers import reverse_with_next
+from tasks.forms import TeamForm
+from django.contrib import messages
+from django import forms
 
 
 class NewTeamViewTestCase(TestCase):
@@ -16,7 +19,8 @@ class NewTeamViewTestCase(TestCase):
         super(TestCase, self).setUp()
         self.user = User.objects.get(username='@johndoe')
         self.url = reverse('create_team')
-        self.data = { "title" : "This is my Team" ,'description': 'The quick brown fox jumps over the lazy dog.' }
+        self.data = { 'title' : 'This is my Team' ,
+                     'description': 'The quick brown fox jumps over the lazy dog.' }
 
     def test_new_team_url(self):
         self.assertEqual(self.url,'/create_team/')
@@ -66,3 +70,16 @@ class NewTeamViewTestCase(TestCase):
         self.assertEqual(team_count_after, team_count_before+1)
         new_team = Team.objects.latest('created_at')
         self.assertEqual(self.user, new_team.author)
+
+    def test_new_team_url(self):
+        self.assertEqual(self.url,f'/edit_team/{self.team.id + 1}')
+
+    
+
+    def test_succesful_team_update(self):
+        form = TeamForm(data=self.data, instance=self.user)
+        self.assertFalse(self.data['title'] == 'This is my Team' or self.data['description'] == 'The quick brown fox jumps over the lazy dog.')
+
+        
+
+
