@@ -37,4 +37,56 @@
       {% endif %}
   </div>
 </div>
+<h1> Separate </h1>
+    <div>
+        <h3>Your Tasks</h3>
+        {% if tasks %}
+          <table class="table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Mark Completed</th>
+                    <th>Assigned Members</th>
+                    <th>Edit Task</th>
+                    <th>Delete Task</th>
+                  </tr>
+                </thead>
+                {% for task in tasks %}
+                    <tbody>
+                        <tr>
+                            <td>{{ task.title }}</a></td>
+                            <td>{{ task.description }}</td>
+                            <td> {{ task.due_date }} </td>
+                            <td> To be Implmented</td>
+                            <td>
+                              {% for member in task.assigned_members.all %}
+                                  {{ member.username }}
+                              {% endfor %}
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Assign Members
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    {% for user in team.members.all %}
+                                        <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">{{ user.username }}</a>
+                                    {% endfor %}
+                                </div>
+                              </div>
+                            </td>
+                            <td><a href='{% url "edit_task" task.id%}'> Edit Task </a></td>
+                            <td>
+                              <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger btn-sm">Delete Task</button>
+                              </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+          </table>
+        {% else %}
+          <p>You haven't created any tasks yet.</p>
+        {% endif %}
 
