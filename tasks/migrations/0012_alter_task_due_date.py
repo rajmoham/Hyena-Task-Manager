@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tasks', '0010_merge_20231117_1410'),
+        ('tasks', '0011_merge_20231117_1410'),
         ('tasks', '0010_alter_task_due_date'),
     ]
 
