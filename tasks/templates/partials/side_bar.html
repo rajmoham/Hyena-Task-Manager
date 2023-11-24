@@ -15,6 +15,7 @@
   .nav-item:hover {
     color: white;
     background-color: #847bc0;
+    filter: drop-shadow(0 0 4px #adadad);
   }
 </style>
 
@@ -74,6 +75,13 @@
         <span class="flex-grow-1 mx-2" style="font-size: 16px;">Log out</span>
       </div>
     </a>
+    <div class="d-flex shadow-lg py-2 px-3" style="background-color: #cec9e9; border-radius: 16px; border: 1px solid #c2bce2;">
+      <img src="{{ user.mini_gravatar }}" alt="User Gravatar" style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
+      <div class="ms-3">
+        <span>{{ user.full_name }}</span> <br>
+        <span style="font-size: 0.75rem;">{{ user.username }}</span>
+      </div>
+    </div>
   </div>
   <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

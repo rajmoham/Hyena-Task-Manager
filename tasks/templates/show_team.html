@@ -2,20 +2,12 @@
 {% block content %}
 <div class="container">
     <div class="row content">
-        <div class="mb-4">
+        <div class="mb-5">
             {% include 'partials/team_details.html' %}
         </div>
         <div class="mb-4">
             {% include 'partials/tasks_as_table.html' with tasks=tasks %}
         </div>
-            <div class="my-4">
-                <h5 class="card-header">Featured</h5>
-                <div class="card-body">
-                  <h5 class="card-title">Have you created a task?</h5>
-                  <p class="card-text">Click here to create a Task!</p>
-                  <a href='{% url "create_task" team.id%}' class="btn btn-primary" style="color: white;">Create Task</a>
-                </div>
-              </div>
     </div>
 </div>
 {% endblock %}

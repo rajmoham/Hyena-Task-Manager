@@ -34,6 +34,15 @@
         transition: all ease 300ms;
     }
 
+    .invite-btn {
+        height: 30px;
+        width: 30px;
+        font-size: 0.75rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .btn-purple:hover {
         background-color: #3b3189;
         color: white;
@@ -44,11 +53,13 @@
     <p class="text-secondary lead">Description: {{ team.description }}</p>
 </div>
 
-<div class="card" style="width: 25rem; border-radius: 16px; overflow: hidden;">
+<div class="card" style="width: 25rem; border-radius: 9px; overflow: hidden;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span class="header">Members ({{team.members.all.count}})</span>
         {%if request.user == team.author%}
-        <a href="{% url 'invite' team_id=team.id %}" class="btn btn-purple">+</a>
+        <a href="{% url 'invite' team_id=team.id %}" class="btn btn-purple invite-btn">
+            <i class="bi bi-plus-lg"></i>
+        </a>
         {%endif%}
     </div>
     <div style="height: 200px; overflow: scroll;" class="card-body">

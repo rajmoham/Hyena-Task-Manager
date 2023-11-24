@@ -25,9 +25,9 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1 class="mt-2 mb-4 bold title-color"><strong>Dashboard</strong></h1>
+      <h1 class="mt-2 mb-4 title-color">Dashboard</h1>
 
-      <div class="info-card bg-no-overdue my-3" style="max-width: 32rem;">
+      <div class="info-card bg-no-overdue my-3 shadow-lg" style="max-width: 32rem;">
         <div class="card-body">
           <div class="mb-3">
             <h4 class="card-title">Welcome {{ user.first_name }},</h4>
@@ -38,7 +38,7 @@
         </div>
       </div>
       <div class="mt-5">
-        <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Teams</h3>
+        <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Teams ({{ user_teams.count }})</h3>
         {% include 'partials/teams.html' with user_teams=user_teams %}
       </div>
     </div>
