@@ -1,4 +1,41 @@
+<style>
+  .btn-purple {
+    background-color: #5448b0;
+    color: white;
+    transition: all ease 300ms;
+  }
+</style>
 <div>
+  <h3>Your Tasks</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Task Name</th>
+        <th>Description</th>
+        <th>Due Date</th>
+      </tr>
+    </thead>
+    {% if tasks %}
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.title }}</a></td>
+        <td>{{ task.description }}</td>
+        <td> {{ task.due_date }} </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  </table>
+  <p class="text-center">There are no tasks</p>
+  {% endif %}
+
+  <div class="d-flex flex-column align-items-center">
+    <a href='{% url "create_task" team.id%}' class="btn btn-purple" style="color: white;">Create Task</a>
+  </div>
+</div>
+<h1> Separate </h1>
   <div>
       <h3>Your Tasks</h3>
       {% if tasks %}
@@ -89,4 +126,3 @@
         {% else %}
           <p>You haven't created any tasks yet.</p>
         {% endif %}
-

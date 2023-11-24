@@ -33,7 +33,7 @@ def dashboard(request):
 #TODO: Turn this into a form view class
 @login_required
 def create_team(request):
-    #if request.method == 'POST':
+    if request.method == 'POST':
         if request.user.is_authenticated:
             current_user = request.user
             form = TeamForm(request.POST)
@@ -53,9 +53,12 @@ def create_team(request):
                 return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
-    # else:
-    #     return HttpResponseForbidden()
-
+    else:
+        if request.user.is_authenticated:
+            form = TeamForm()
+            return render(request, 'create_team.html', {'form': form})
+        else:
+            return redirect('log_in')
 
 @login_prohibited
 def home(request):
@@ -78,18 +81,28 @@ def show_team(request, team_id):
 @login_required
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
-    if request.user.is_authenticated:
-        current_team = Team.objects.get(id = team_id)
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            titleCleaned = form.cleaned_data.get("title")
-            descriptionCleaned = form.cleaned_data.get('description')
-            dueDateCleaned = form.cleaned_data.get("due_date")
-            task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-            return redirect('show_team', team_id)
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            current_team = Team.objects.get(id = team_id)
+            form = TaskForm(request.POST)
+            if form.is_valid():
+                titleCleaned = form.cleaned_data.get("title")
+                descriptionCleaned = form.cleaned_data.get('description')
+                dueDateCleaned = form.cleaned_data.get("due_date")
+                task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
+
+                return redirect('show_team', team_id)
+            else:
+                return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
-            return render(request, 'create_task.html', {'team': current_team,'form': form})
+            return redirect('log_in')
     else:
+        if request.user.is_authenticated:
+            form = TaskForm()
+            current_team = Team.objects.get(id = team_id)
+            return render(request, 'create_task.html', {'team': current_team,'form': form})
+        else:
+            return redirect('log_in')
         return redirect('log_in')
     
 @login_required
@@ -132,9 +145,6 @@ def assign_member_to_task(request, task_id, user_id):
         else:
             current_task.assigned_members.add(selected_user)
     return redirect('show_team', current_team.id)
-
-
-        
 
 @login_required
 def invite(request, team_id):
