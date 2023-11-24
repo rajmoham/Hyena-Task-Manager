@@ -25,7 +25,7 @@ class User(AbstractUser):
 
         ordering = ['last_name', 'first_name']
 
-    def full_name(self): 
+    def full_name(self):
         """Return a string containing the user's full name."""
 
         return f'{self.first_name} {self.last_name}'
@@ -111,4 +111,3 @@ class Task(models.Model):
 """ One User can have many Teams and One Team can have many Users: Many to Many
     One Team can have Many Tasks but One Task can only have one Team: One to Many
     One User can have Many Tasks and One Tasks can have many Users: Many to Many"""
-
