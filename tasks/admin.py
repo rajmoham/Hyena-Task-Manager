@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Team, Invitation
+from .models import User, Team, Invitation, Task
 
 # Register your models here.
 @admin.register(User) # our model we created
@@ -34,3 +34,26 @@ class InvitationAdmin(admin.ModelAdmin):
     list_display = [
         'team', 'email', 'status', 'date_sent'
     ]
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    """Configuration of the admin interface for tasks."""
+
+    # List of attributes you want to see in the table view of invitations
+    list_display = [
+        'author', 'title', 'description', 'created_at', 'due_date','id'
+    ]
+
+# from django.apps import apps
+# from django.contrib import admin
+# from django.contrib.auth.models import Group  # Import the Group model
+
+# # Get a list of all installed models
+# app_models = apps.get_models()
+
+# # Exclude the Group model from the list
+# models_to_register = [model for model in app_models if model is not Group]
+
+# # Register all models except Group with the admin site
+# for model in models_to_register:
+#     admin.site.register(model)

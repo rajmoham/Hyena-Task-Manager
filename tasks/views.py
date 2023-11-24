@@ -11,10 +11,9 @@ from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseForbidden
-from tasks.models import Team, Invitation, Notification, Task
-
-from django.http import HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse
+from django.db.models import Q
+from tasks.models import Team, Invitation, Notification, Task, User
 from django.template import loader
 from django.shortcuts import render
 
@@ -27,7 +26,7 @@ def dashboard(request):
     """Display the current user's dashboard."""
     current_user = request.user
     form = TeamForm()
-    user_teams = Team.objects.filter(author=current_user)
+    user_teams = Team.objects.filter(Q(author=current_user) | Q(members=current_user)).distinct()
     user_notifications = Notification.objects.filter(user=current_user)
     return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
 
@@ -60,7 +59,6 @@ def create_team(request):
             return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
-    
 
 @login_prohibited
 def home(request):
@@ -80,7 +78,7 @@ def show_team(request, team_id):
         return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
 
 #TODO: Turn this into a form view class
-@login_required  
+@login_required
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
     if request.method == "POST":
@@ -105,7 +103,48 @@ def create_task(request, team_id):
             return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
             return redirect('log_in')
+        return redirect('log_in')
+    
+@login_required
+def edit_task(request, task_id):
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if request.method == 'POST':
+        form = TaskForm(instance=current_task, data=request.POST)
+        if form.is_valid():
+            messages.success(request, "Task updated!")
+            form.save()
+            return redirect('show_team', current_team.id)
+    else:
+        form = TaskForm(instance=current_task)
+    return render(request, 'edit_task.html', {'task': current_task, 'form': form})
+    
+@login_required
+def delete_task(request, task_id):
+    current_user = request.user
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if current_task.author == current_team:
+        if current_team.author == current_user:
+            current_task.delete()
+            messages.add_message(request, messages.SUCCESS, "Task deleted!")
+        else:
+            messages.add_message(request, messages.ERROR, "You cannot delete a Task in a Team you did not create")
+    else:
+        messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
+    return redirect('show_team', current_team.id)
 
+@login_required
+def assign_member_to_task(request, task_id, user_id):
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    selected_user = User.objects.get(id = user_id)
+    if selected_user in current_team.members.all():
+        if selected_user in current_task.assigned_members.all():
+            current_task.assigned_members.remove(selected_user)
+        else:
+            current_task.assigned_members.add(selected_user)
+    return redirect('show_team', current_team.id)
 
 @login_required
 def invite(request, team_id):
@@ -157,8 +196,6 @@ def decline_invitation(request, invitation_id):
         messages.info(request, "You have already declined this invitation.")
 
     return redirect('list_invitations')
-
-
 
 
 class LoginProhibitedMixin:
@@ -302,9 +339,18 @@ class TeamUpdateView(UpdateView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-    
 
-
-    
-
-
+@login_required
+def notifications(request):
+    """Display Notifications associated with the user"""
+    if request.user.is_authenticated:
+        Notification.objects.create(
+            user=request.user,
+            title="Visited Notification Page",
+            description="",
+            actionable=False,
+        )
+        user_notifications = Notification.objects.filter(user=request.user)
+        return render(request, 'notifications.html', {'user_notifications' : user_notifications})
+    else:
+        return redirect('log_in')

@@ -5,7 +5,8 @@ from tasks.forms import TeamForm, TaskForm
 class TaskFormTestCase(TestCase):
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
-        'tasks/tests/fixtures/default_team.json'
+        'tasks/tests/fixtures/default_team.json',
+        'tasks/tests/fixtures/other_users.json',
         ]
     def setUp(self):
 

@@ -4,9 +4,30 @@
     "pk": 1,
     "fields": {
       "author": 1, 
-      "title": "Team Test",
+      "title": "Team Test1",
       "description": "This is my team",
       "created_at": "2023-01-01T12:00:00Z"
     }
+  },
+  {
+    "model": "tasks.team",
+    "pk": 2,
+    "fields": {
+      "author": 1, 
+      "title": "Team Test2",
+      "description": "This is my team",
+      "created_at": "2023-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "tasks.team",
+    "pk": 2,
+    "fields": {
+      "author": 2, 
+      "title": "Second Team",
+      "description": "This is my team now",
+      "created_at": "2023-01-01T12:00:00Z"
+    }
   }
+
 ]
