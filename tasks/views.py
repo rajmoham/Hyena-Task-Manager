@@ -12,7 +12,7 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm
 from tasks.helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
-from tasks.models import Team, Invitation, Notification, Task
+from tasks.models import Team, Invitation, Notification, Task, User
 
 from django.http import HttpResponse
 from django.template import loader
@@ -86,13 +86,55 @@ def create_task(request, team_id):
             descriptionCleaned = form.cleaned_data.get('description')
             dueDateCleaned = form.cleaned_data.get("due_date")
             task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-
             return redirect('show_team', team_id)
         else:
             return render(request, 'create_task.html', {'team': current_team,'form': form})
     else:
         return redirect('log_in')
+    
+@login_required
+def edit_task(request, task_id):
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if request.method == 'POST':
+        form = TaskForm(instance=current_task, data=request.POST)
+        if form.is_valid():
+            messages.success(request, "Task updated!")
+            form.save()
+            return redirect('show_team', current_team.id)
+    else:
+        form = TaskForm(instance=current_task)
+    return render(request, 'edit_task.html', {'task': current_task, 'form': form})
+    
+@login_required
+def delete_task(request, task_id):
+    current_user = request.user
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    if current_task.author == current_team:
+        if current_team.author == current_user:
+            current_task.delete()
+            messages.add_message(request, messages.SUCCESS, "Task deleted!")
+        else:
+            messages.add_message(request, messages.ERROR, "You cannot delete a Task in a Team you did not create")
+    else:
+        messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
+    return redirect('show_team', current_team.id)
 
+@login_required
+def assign_member_to_task(request, task_id, user_id):
+    current_task = Task.objects.get(id=task_id)
+    current_team = current_task.author
+    selected_user = User.objects.get(id = user_id)
+    if selected_user in current_team.members.all():
+        if selected_user in current_task.assigned_members.all():
+            current_task.assigned_members.remove(selected_user)
+        else:
+            current_task.assigned_members.add(selected_user)
+    return redirect('show_team', current_team.id)
+
+
+        
 
 @login_required
 def invite(request, team_id):
