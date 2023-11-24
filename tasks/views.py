@@ -55,7 +55,7 @@ def create_team(request):
             return redirect('log_in')
     # else:
     #     return HttpResponseForbidden()
-    
+
 
 @login_prohibited
 def home(request):
@@ -75,7 +75,7 @@ def show_team(request, team_id):
         return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
 
 #TODO: Turn this into a form view class
-@login_required  
+@login_required
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
     if request.user.is_authenticated:
@@ -186,8 +186,6 @@ def decline_invitation(request, invitation_id):
         messages.info(request, "You have already declined this invitation.")
 
     return redirect('list_invitations')
-
-
 
 
 class LoginProhibitedMixin:
@@ -331,7 +329,7 @@ class TeamUpdateView(UpdateView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-    
+
 @login_required
 def notifications(request):
     """Display Notifications associated with the user"""
@@ -346,9 +344,3 @@ def notifications(request):
         return render(request, 'notifications.html', {'user_notifications' : user_notifications})
     else:
         return redirect('log_in')
-
-
-
-    
-
-
