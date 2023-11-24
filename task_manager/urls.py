@@ -36,6 +36,7 @@ urlpatterns = [
     path('invitations/decline/<int:invitation_id>/', views.decline_invitation, name='decline_invitation'),
     path('create_task/<int:team_id>', views.create_task, name="create_task" ),
     path('edit_team/', views.TeamUpdateView.as_view(), name='edit_team'),
+    path('notifications', views.notifications, name="notifications")
 ]
 
 handler404 = 'tasks.views.custom_404'
