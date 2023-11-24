@@ -39,6 +39,7 @@ urlpatterns = [
     path('edit_task/<int:task_id>', views.edit_task, name='edit_task'),
     path('delete_task/<int:task_id>', views.delete_task, name = 'delete_task'),
     path('assign_member_to_task/<int:task_id>/<int:user_id>', views.assign_member_to_task, name= "assign_member_to_task"),
+    path('notifications', views.notifications, name="notifications")
 ]
 
 handler404 = 'tasks.views.custom_404'
