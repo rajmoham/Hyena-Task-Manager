@@ -5,9 +5,10 @@
     <div class="row content">
         <div class="col-xs-12 col-lg-6 col-xl-4">
             {% include 'partials/team_details.html' %}
+            
             <!-- Invite Members Button -->
             {%if request.user == team.author%}
-              <a href="{% url 'invite' team_id=team.id %}" class="btn btn-primary" style="color: white;">Invite Members</a>
+              <a href="{% url 'invite' team_id=team.id %}" class="btn btn-primary mb-3 mt-3" style="color: white;">Invite Members</a>
             {%endif%}
             <div>
                 <h5 class="card-header">Featured</h5>
