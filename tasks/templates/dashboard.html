@@ -10,7 +10,6 @@
           <h5 class="card-title">Have you created a team?</h5>
           <p class="card-text">Click here to create your own team!</p>
           <a href='{% url "create_team" %}' class="btn btn-primary">Create Team</a><br><br>
-          <a href='{% url "edit_team" %}' class="btn btn-primary">Edit Team</a>
         </div>
       </div>
       {% include 'partials/teams_as_table.html' with user_teams=user_teams %}
