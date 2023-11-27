@@ -1,29 +1,85 @@
 {% extends 'base.html' %}
+{% block title %} | Home {% endblock%}
 {% block body %}
-  
-  <div class="container min-vw-100 vh-100" id="home">
-    <div class="row h-100">    
-      <div class="col-12 my-auto">
-        <div class="row">
-          <div class="col-md-6">
-            <img src="..\static\team-huddle.png" alt="Team huddle" width="600" height="320"> 
-          </div>
-          <div class="card cover-card col-md-9">
-            <h1 class="cover-heading">Task Manager</h1>
-            <p class="cover-text">A task manager application by Team <i>HYENA</i>. Connect all your teammates and work together!</p>
-            <p>
-              <a href='{% url 'sign_up' %}' class="btn btn-lg btn-secondary">
-                Sign up
-              </a>
-            </p>
-            <p>
-              <a href='{% url 'log_in' %}' class="btn btn-lg btn-secondary">
-                Log in
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
+<style>
+  .cover-container {
+    max-width: 1100px;
+    width: 60%;
+  }
+
+  .landing-bg {
+    opacity: 1;
+    background-image: radial-gradient(#a484e9 0.9px, transparent 0.9px), radial-gradient(#a484e9 0.9px, #eeeffa 0.9px);
+    background-size: 36px 36px;
+    background-position: 0 0, 18px 18px;
+  }
+
+  .landing-container {
+    background-color: white;
+    padding: 16px 32px;
+    height: 500px;
+    border-radius: 32px;
+    filter: drop-shadow(0 0 10px #c2c2c2);
+  }
+
+  .btn-purple {
+    background-color: #5f5bb6 !important;
+    color: white;
+    transition: all ease 300ms;
+  }
+
+  .btn-purple:hover {
+    color: white;
+  }
+
+  .btn-fancy {
+    filter: drop-shadow(0 0 20px #cccbfa);
+    transition: all ease 0.3s;
+  }
+
+  .btn-second {
+    background-color: white !important;
+    border-color: #5f5bb6;
+    color: #5f5bb6;
+    transition: all ease 300ms;
+  }
+
+  .btn-second:hover {
+    color: #5f5bb6;
+  }
+
+  .logo-home {
+    width: 100px;
+    margin: 0 auto;
+  }
+
+  .title-color {
+    color: #1a0d7a;
+  }
+</style>
+<div class="position-fixed w-100 pt-2">
+  <div class="container shadow-lg" style="background-color: #c2bfe9; border-radius: 16px;">
+    {% include 'partials/navbar.html' %}
+  </div>
+</div>
+<div class="d-flex vh-100 vw-100 p-3 justify-content-center align-items-center landing-bg">
+  <div class="d-flex justify-content-between align-items-center landing-container">
+    <div style="width: 50%; max-width: 600px;">
+      <!-- <div class="logo-home">
+        <img src="../static/hyena_logo.png" alt="" style="width: 100%;">
+      </div> -->
+      <h1 class="title-color">The platform built to transform task management.</h1>
+      <p class="lead my-3">Hyena makes it easier than ever to managing your tasks and teams, all with the click of a few
+        buttons.
+      </p>
+      <p class="lead ms-3">
+        <a href="{% url 'sign_up' %}" class="btn btn-purple btn-fancy btn-lg me-4">Get Started</a>
+        <!-- <a href="{% url 'log_in' %}" class="btn btn-second btn-fancy btn-lg ms-4">Log in</a> -->
+      </p>
+    </div>
+    <div style="width: 50%; min-width: 400px; max-width: 600px;">
+      <img src="../static/home_banner.svg" style="width: 100%;" alt="">
     </div>
   </div>
+</div>
 {% endblock %}

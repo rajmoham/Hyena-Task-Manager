@@ -1,0 +1,93 @@
+<style>
+  .nav-item-top {
+    transition: 0.5s all ease;
+    color: #241969;
+    font-size: 18px;
+    background-color: #847bc0;
+  }
+
+  .nav-item {
+    color: #241969;
+    transition: 0.5s all ease;
+    border-radius: 8px;
+  }
+
+  .nav-item:hover {
+    color: white;
+    background-color: #847bc0;
+    filter: drop-shadow(0 0 4px #adadad);
+  }
+</style>
+
+
+<nav class="d-flex flex-column justify-content-between align-items-center px-3 py-5 h-100">
+  <div class="w-100 mb-3">
+
+    <div class="d-flex flex-column align-items-center">
+      <div class="object-fit-cover" style="width: 100px; height: 100px;">
+        <img src="../static/hyena_logo.png" alt="Hyena" style="width: 100%; height: 100%;">
+      </div>
+      <span style="font-size: 18px; color: #2c1f7d;">
+        <i><strong>H Y E N A</strong></i>
+      </span>
+    </div>
+
+    <div class="mt-4 w-100 d-flex flex-column align-items-center">
+      <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'dashboard' %}">
+        <div class="p-2 d-flex align-items-center nav-item">
+          <i class="bi bi-house-fill mx-3"></i>
+          <span class="flex-grow-1 mx-2" style="font-size: 16px;">Dashboard</span>
+        </div>
+      </a>
+      <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'notifications' %}">
+        <div class="p-2 d-flex align-items-center nav-item">
+          <i class="bi bi-bell-fill mx-3"></i>
+          <span class="flex-grow-1 mx-2" style="font-size: 16px;">Notifications</span>
+        </div>
+      </a>
+      <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'create_team' %}">
+        <div class="p-2 d-flex align-items-center nav-item">
+          <i class="bi bi-people-fill mx-3"></i>
+          <span class="flex-grow-1 mx-2" style="font-size: 16px;">New Team</span>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="w-100 mb-1 d-flex flex-column" style="max-width: 230px;">
+    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'profile' %}">
+      <div class="p-2 d-flex align-items-center nav-item">
+        <i class="bi bi-person-fill mx-3"></i>
+        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Update Profile</span>
+      </div>
+    </a>
+    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'password' %}">
+      <div class="p-2 d-flex align-items-center nav-item">
+        <i class="bi bi-lock-fill mx-3"></i>
+        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Change Password</span>
+      </div>
+    </a>
+    <hr class="dropdown-divider mb-3">
+    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'log_out' %}">
+      <div class="p-2 d-flex align-items-center nav-item">
+        <i class="bi bi-box-arrow-right mx-3"></i>
+        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Log out</span>
+      </div>
+    </a>
+    <div class="d-flex shadow-lg py-2 px-3" style="background-color: #cec9e9; border-radius: 16px; border: 1px solid #c2bce2;">
+      <img src="{{ user.mini_gravatar }}" alt="User Gravatar" style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
+      <div class="ms-3">
+        <span>{{ user.full_name }}</span> <br>
+        <span style="font-size: 0.75rem;">{{ user.username }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button> -->
+  <!--   {% if user.is_authenticated %}
+  {% include 'partials/menu.html' %}
+  {% endif %} -->
+</nav>
