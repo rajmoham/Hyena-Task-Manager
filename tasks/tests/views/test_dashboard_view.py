@@ -35,11 +35,11 @@ class DashboardViewTestCase(TestCase):
         self.team_own2.members.add(self.user, self.teammate_1)
         
         # mock team created by team mate
-        self.team_other_invited = Team.objects.get(pk=6)
+        self.team_other_invited = Team.objects.get(pk=7)
         self.team_other_invited.members.add(self.user, self.teammate_1)
 
         #mock team created by other user but did not invite current user
-        self.team_other_not_invited = Team.objects.get(pk=5)
+        self.team_other_not_invited = Team.objects.get(pk=6)
         self.team_other_invited.members.add(self.other_registered_user)
         
 
