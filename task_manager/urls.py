@@ -18,6 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from tasks import views
 from django.conf.urls import handler404
+from django.urls import re_path as url
+from tasks.views import home
+
+tasks = 'teams'
+task_manager = 'teams'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,11 +40,13 @@ urlpatterns = [
     path('invitations/accept/<int:invitation_id>/', views.accept_invitation, name='accept_invitation'),
     path('invitations/decline/<int:invitation_id>/', views.decline_invitation, name='decline_invitation'),
     path('create_task/<int:team_id>', views.create_task, name="create_task" ),
-    path('edit_team/', views.TeamUpdateView.as_view(), name='edit_team'),
+    path('team/edit_team/<int:team_id>', views.TeamUpdateView.as_view(), name='edit_team'),
     path('edit_task/<int:task_id>', views.edit_task, name='edit_task'),
     path('delete_task/<int:task_id>', views.delete_task, name = 'delete_task'),
     path('assign_member_to_task/<int:task_id>/<int:user_id>', views.assign_member_to_task, name= "assign_member_to_task"),
     path('notifications', views.notifications, name="notifications")
+    url(r'^delete/(?P<pk>[0-9]+)/$', views.team_delete, name='team_delete')
+    
 ]
 
 handler404 = 'tasks.views.custom_404'
