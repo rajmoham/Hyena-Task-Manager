@@ -1,20 +1,84 @@
-<div class="row content">
-    <div class="col-12">
-        <h2 class="text-primary">Team Name: {{ team.title }}</h2>
-    </div>
+<style>
+    .text-purple {
+        color: #1a0d7a;
+    }
+
+    .text-purple-dull {
+        color: #3e3582;
+    }
+
+    .gravatar {
+        border-radius: 50%;
+        height: 50px;
+        width: 50px;
+        border: 2px solid #5448b0;
+    }
+
+    .card-header {
+        background-color: #756cba;
+        color: white;
+    }
+
+    .card-body {
+        background-color: #e4e2f3;
+        padding: 0 0;
+    }
+
+    .member-item {
+        background-color: #b9b5e6;
+    }
+
+    .btn-purple {
+        background-color: #5448b0;
+        color: white;
+        transition: all ease 300ms;
+    }
+
+    .invite-btn {
+        height: 30px;
+        width: 30px;
+        font-size: 0.75rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-purple:hover {
+        background-color: #3b3189;
+        color: white;
+    }
+</style>
+<h2 class="text-purple mt-4">Team Name: <span class="display-6">{{ team.title }}</span></h2>
+<div class="">
+    <p class="text-secondary lead">Description: {{ team.description }}</p>
 </div>
-<div class="row content">
-    <div class="col-12">
-        <p class="lead">Description: {{ team.description }}</p>
+
+<div class="card" style="width: 25rem; border-radius: 9px; overflow: hidden;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="header">Members ({{team.members.all.count}})</span>
+        {%if request.user == team.author%}
+        <a href="{% url 'invite' team_id=team.id %}" class="btn btn-purple invite-btn">
+            <i class="bi bi-plus-lg"></i>
+        </a>
+        {%endif%}
     </div>
-</div>
-<div class="row content">
-    <div class="col-12">
-        <p class="team-members">Members:
+    <div style="height: 200px; overflow: scroll;" class="card-body">
+        <ul class="list-group list-group-flush w-100">
             {% for member in team.members.all %}
-                {{ member.username }},
+            <li class="list-group-item member-item">
+                <div class="d-flex align-items-center">
+                    <img class="gravatar me-4" src="{{ team.members.all.first.mini_gravatar }}" alt="User Gravatar">
+                    <div>
+                        <span>{{ member.full_name }}</span>
+                        {%if member == team.author %}
+                        (You)
+                        {%endif%}
+                        <br>
+                        <span style="font-size: 12px;" class="text-secondary">{{ member.username }}</span>
+                    </div>
+                </div>
+            </li>
             {% endfor %}
-        </p>
+        </ul>
     </div>
 </div>
-{% include 'partials/tasks_as_table.html' with tasks=tasks %}

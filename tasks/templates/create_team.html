@@ -1,14 +1,34 @@
+<style>
+    .title-color {
+        color: #1a0d7a;
+    }
+
+    .btn-purple {
+        background-color: #5f5bb6 !important;
+        color: white !important;
+        transition: all ease 300ms;
+    }
+
+    .btn-purple:hover {
+        background-color: #4e49a8 !important;
+    }
+</style>
 {% extends 'base_content.html' %}
+{% block title %} | Create Team {% endblock%}
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h2> Create a New Team</h2>
-            <form method="post" action="{% url 'create_team' %}">
-                {% csrf_token %}
-                {% include 'partials/bootstrap_form.html' with form=form %}
-                <input type="submit" value="Create Team" class="btn btn-primary">
-            </form>
+            <h2 class="title-color my-4"> Create a New Team</h2>
+            <div class="my-5 mx-5">
+                <form method="post" action="{% url 'create_team' %}">
+                    {% csrf_token %}
+                    {% include 'partials/bootstrap_form.html' with form=form %}
+                    <div class="d-grid col-6 mx-auto">
+                        <input type="submit" value="Create Team" class="btn btn-purple">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

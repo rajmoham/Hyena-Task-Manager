@@ -1,4 +1,80 @@
+<style>
+  .btn-purple {
+    background-color: #5448b0;
+    color: white;
+    transition: all ease 300ms;
+  }
+</style>
 <div>
+  <h3>Your Tasks</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Task Name</th>
+        <th>Description</th>
+        <th>Due Date</th>
+      </tr>
+    </thead>
+    {% if tasks %}
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.title }}</a></td>
+        <td>{{ task.description }}</td>
+        <td> {{ task.due_date }} </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  </table>
+  <p class="text-center">There are no tasks</p>
+  {% endif %}
+
+  <div class="d-flex flex-column align-items-center">
+    <a href='{% url "create_task" team.id%}' class="btn btn-purple" style="color: white;">Create Task</a>
+  </div>
+</div>
+<h1> Separate </h1>
+  <div>
+      <h3>Your Tasks</h3>
+      {% if tasks %}
+          {% for task in tasks %}
+              <div class="accordion" id="tasks">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="task-heading{{  task.pk }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#task-collapse{{ task.pk }}" aria-expanded="false" aria-controls="task-collapse{{ task.pk }}">
+                      {{ task.title }}
+                    </button>
+                  </h2>
+                  <div id="task-collapse{{ task.pk }}" class="accordion-collapse collapse" aria-labelledby="task-heading{{ task.pk }}">
+                    <div class="accordion-body">
+                      <div class="task-description">
+                        <span class="description-label" style="font-weight:bold">Task Description:</span>
+                        <p>{{ task.description }}</p>
+                      </div>
+                      <br/>
+                      <div class="task-members">
+                        <span class="members-label" style="font-weight:bold">Members Assigned:</span>
+                        {% for member in task.assigned_members.all %}
+                          <p>{{ member.username }}</p>
+                        {% endfor %}
+                      </div>
+                      <br/>
+                      <div class="task-due-date">
+                        <span class="due-date-label" style="font-weight:bold">Due Date:</span>
+                        <p>{{ task.due_date|date:"F j, Y" }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          {% endfor %}
+      {% else %}
+        <p>You haven't created any tasks yet.</p>
+      {% endif %}
+  </div>
+</div>
+<h1> Separate </h1>
     <div>
         <h3>Your Tasks</h3>
         {% if tasks %}
@@ -8,6 +84,10 @@
                     <th>Task Name</th>
                     <th>Description</th>
                     <th>Due Date</th>
+                    <th>Mark Completed</th>
+                    <th>Assigned Members</th>
+                    <th>Edit Task</th>
+                    <th>Delete Task</th>
                   </tr>
                 </thead>
                 {% for task in tasks %}
@@ -16,6 +96,29 @@
                             <td>{{ task.title }}</a></td>
                             <td>{{ task.description }}</td>
                             <td> {{ task.due_date }} </td>
+                            <td> To be Implmented</td>
+                            <td>
+                              {% for member in task.assigned_members.all %}
+                                  {{ member.username }}
+                              {% endfor %}
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Assign Members
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    {% for user in team.members.all %}
+                                        <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">{{ user.username }}</a>
+                                    {% endfor %}
+                                </div>
+                              </div>
+                            </td>
+                            <td><a href='{% url "edit_task" task.id%}'> Edit Task </a></td>
+                            <td>
+                              <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger btn-sm">Delete Task</button>
+                              </form>
+                            </td>
                         </tr>
                     </tbody>
                 {% endfor %}
@@ -23,7 +126,3 @@
         {% else %}
           <p>You haven't created any tasks yet.</p>
         {% endif %}
-
-
-    </div>
-</div>

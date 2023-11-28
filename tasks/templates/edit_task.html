@@ -1,0 +1,15 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2> Edit your Task</h2>
+            <form method="post" action="{% url 'edit_task' task.id%}">
+                {% csrf_token %}
+                {% include 'partials/bootstrap_form.html' with form=form %}
+                <input type="submit" value="Edit Task" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
