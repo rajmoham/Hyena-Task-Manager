@@ -24,11 +24,15 @@ def custom_404(request, exception):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-    current_user = request.user
+    current_user = request.user 
     form = TeamForm()
     user_teams = Team.objects.filter(Q(author=current_user) | Q(members=current_user)).distinct()
     user_notifications = Notification.objects.filter(user=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
+
+    #All Tasks Assigned to the user
+    user_tasks = Task.objects.filter(assigned_members=current_user)
+
+    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications, 'tasks': user_tasks})
 
 #TODO: Turn this into a form view class
 @login_required

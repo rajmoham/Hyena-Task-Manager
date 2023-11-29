@@ -34,7 +34,9 @@
             <h4 class="card-title">Welcome {{ user.first_name }},</h4>
           </div>
           <p class="card-text">
-            Nice job, you are not overdue on any tasks.
+            {% for task in tasks %}
+              {{ task.title }}
+            {% endfor %}
           </p>
         </div>
       </div>
