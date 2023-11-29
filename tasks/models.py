@@ -102,6 +102,26 @@ class Task(models.Model):
             )]
     )
     assigned_members = models.ManyToManyField(User, related_name='tasks')
+    is_complete = models.BooleanField(blank='false', default=False)
+
+    def toggle_task_status(self):
+        if self.is_complete:
+            self._mark_task_incomplete()
+        else:
+            self._mark_task_complete()
+
+    def _mark_task_complete(self):
+        self.is_complete = True
+
+    def _mark_task_incomplete(self):
+        self.is_complete = False
+
+    # def is_complete(self):
+    #     return self.is_complete
+
+    
+
+
     class Meta:
         """Model Options"""
 

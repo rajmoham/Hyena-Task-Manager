@@ -135,6 +135,18 @@ def delete_task(request, task_id):
     return redirect('show_team', current_team.id)
 
 @login_required
+def toggle_task_status(request, task_id):
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        task_to_toggle.toggle_task_status()
+        task_to_toggle.save()
+    except ObjectDoesNotExist:
+        return redirect('show_team', current_team.id)
+    else:
+        return redirect('show_team', current_team.id)
+
+@login_required
 def assign_member_to_task(request, task_id, user_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
