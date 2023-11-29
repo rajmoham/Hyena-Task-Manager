@@ -107,10 +107,6 @@ class Task(models.Model):
 
         ordering = ['due_date']
 
-    def is_overdue(self):
-        if self.due_date < timezone.now():
-            return True
-
 
 """ One User can have many Teams and One Team can have many Users: Many to Many
     One Team can have Many Tasks but One Task can only have one Team: One to Many

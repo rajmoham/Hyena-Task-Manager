@@ -16,6 +16,7 @@ from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
 from django.template import loader
 from django.shortcuts import render
+from django.utils import timezone
 
 def custom_404(request, exception):
     """Display error page"""
@@ -32,7 +33,14 @@ def dashboard(request):
     #All Tasks Assigned to the user
     user_tasks = Task.objects.filter(assigned_members=current_user)
 
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications, 'tasks': user_tasks})
+    late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    
+
+    return render(request, 'dashboard.html', {'user': current_user,
+                                                "user_teams" : user_teams,
+                                                "user_notifications": user_notifications,
+                                                'user_tasks': user_tasks,
+                                                'late_tasks':late_tasks})
 
 #TODO: Turn this into a form view class
 @login_required
