@@ -8,6 +8,7 @@ class AcceptInviteViewTestCase(TestCase):
 
     def setUp(self):
         self.user = self.user = User.objects.get(username='@johndoe')
+        self.other_user = User.objects.create_user('otheruser', 'other@example.com', 'Password123')
         self.team = Team.objects.create(author=self.user, title='Test Team', description='Test description')
         self.invitation = Invitation.objects.create(team=self.team, email=self.user.email)
 
@@ -24,3 +25,8 @@ class AcceptInviteViewTestCase(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "You have joined the team!")
         self.assertRedirects(response, reverse('dashboard'))
+
+    def test_unauthorized_accept_invitation(self):
+        self.client.login(username='otheruser', password='Password123')
+        response = self.client.post(reverse('accept_invitation', args=[self.invitation.id]))
+        self.assertEqual(response.status_code, 404)
