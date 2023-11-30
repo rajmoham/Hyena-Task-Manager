@@ -40,15 +40,7 @@
       </div>
       <div class="mt-5">
         <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Tasks ({{ user_tasks.count }})</h3>
-        {% if user_tasks %}
-          {% for task in user_tasks %}
-            <div class="card-body mb-2" style="overflow: hidden; text-overflow: ellipsis;">
-              <h5 class="card-title"><strong>{{ task.title }}</strong></h5>
-            </div>
-          {% endfor %}
-        {% else %}
-          You have no tasks assigned to you!
-        {% endif %}
+        {% include 'partials/tasks_on_dashboard.html' with user_tasks=user_tasks %}
       </div>
       <div class="mt-5">
         <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Teams ({{ user_teams.count }})</h3>
