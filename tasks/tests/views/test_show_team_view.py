@@ -109,7 +109,7 @@ class ShowTeamViewTestCase(TestCase):
         for task in otherTeamTasks:
             self.assertNotContains(response, task.title) # given task titles are different
             # self.assertNotContains(response, task.description) if not unique could cause a fail
-            # self.assertNotContains(response, task.due_date) if not unique could cause a fail
+            # self.assertNotContains(response, task.due_date) if not unique could cause a fail 
 
     # def test_show_team_displays_invite_members_button(self):
     #     self.client.login(username=self.user.username, password="Password123")

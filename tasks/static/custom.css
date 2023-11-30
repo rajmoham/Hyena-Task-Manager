@@ -30,6 +30,7 @@ p.cover-text {
     background-color: #33B864;
     color: white;
     transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-complete:hover {
@@ -42,6 +43,7 @@ p.cover-text {
     background-color: #960018;
     color: white;
     transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-red:hover {
@@ -54,6 +56,7 @@ p.cover-text {
     background-color: #708090;
     color: white;
     transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-incomplete:hover {
@@ -66,6 +69,7 @@ p.cover-text {
     background-color: #5448b0;
     color: white;
     transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-purple:hover {
@@ -78,6 +82,7 @@ p.cover-text {
     background-color: #32127A;
     color: white;
     transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-assign:hover {
