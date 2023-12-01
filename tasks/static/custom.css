@@ -26,6 +26,75 @@ p.cover-text {
     background-color: #0a4b8c;
 }
 
+.btn-complete {
+    background-color: #33B864;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-complete:hover {
+    background-color: #234F1E;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.btn-red {
+    background-color: #960018;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-red:hover {
+    background-color: #420D09;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.btn-incomplete {
+    background-color: #708090;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-incomplete:hover {
+    background-color: #36454F;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.btn-purple {
+    background-color: #5448b0;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-purple:hover {
+    background-color: #2E145D;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.btn-assign {
+    background-color: #32127A;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-assign:hover {
+    background-color: #1F095A;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.title-color {
+    color: #1a0d7a;
+}
+
 .cover-card {
     background-color: rgba(255, 255, 255, 0.6);
     max-width: 30rem;
@@ -39,9 +108,5 @@ p.cover-text {
     opacity: 1
   }
 
-.btn-purple {
-    background-color: #5448b0;
-    color: white;
-    transition: all ease 300ms;
-}
+    
 

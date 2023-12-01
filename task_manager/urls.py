@@ -45,8 +45,8 @@ urlpatterns = [
     path('delete_task/<int:task_id>', views.delete_task, name = 'delete_task'),
     path('assign_member_to_task/<int:task_id>/<int:user_id>', views.assign_member_to_task, name= "assign_member_to_task"),
     path('notifications', views.notifications, name="notifications"),
+    path('task_toggle/<int:task_id>', views.toggle_task_status, name='task_toggle'),
     url(r'^delete/(?P<pk>[0-9]+)/$', views.team_delete, name='team_delete')
-    
 ]
 
 handler404 = 'tasks.views.custom_404'

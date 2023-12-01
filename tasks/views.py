@@ -147,6 +147,25 @@ def delete_task(request, task_id):
     return redirect('show_team', current_team.id)
 
 @login_required
+def toggle_task_status(request, task_id):
+    current_user = request.user
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
+            task_to_toggle.toggle_task_status()
+            task_to_toggle.save()
+            messages.add_message(request, messages.SUCCESS, "Task status changed!")
+        else: 
+            messages.add_message(request, messages.ERROR, "You cannot change task status because you are not in this team")
+            return redirect('dashboard')
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', current_team.id)
+    
+
+@login_required
 def assign_member_to_task(request, task_id, user_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author

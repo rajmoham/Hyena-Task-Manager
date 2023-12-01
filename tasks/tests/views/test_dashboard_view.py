@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from tasks.models import Team, User, Task
 from tasks.tests.helpers import reverse_with_next
+from django.db.models import Q
 from datetime import datetime
 
 
@@ -24,7 +25,7 @@ class DashboardViewTestCase(TestCase):
         # teammate but not current logged in user
         self.teammate_1 = User.objects.get(username="@janedoe")
 
-        # other registered user in the system but no in the same team
+        # other registered user in the system but not in the same team
         self.other_registered_user = User.objects.get(username="@petrapickles")
         
         self.url = reverse('dashboard')
@@ -35,15 +36,17 @@ class DashboardViewTestCase(TestCase):
 
         self.team_own2 = Team.objects.get(pk=2)
         self.team_own2.members.add(self.user, self.teammate_1)
+
+        self.team_own3 = Team.objects.get(pk=3)
+        self.team_own3.members.add(self.user, self.teammate_1)
         
         # mock team created by team mate
-        self.team_other_invited = Team.objects.get(pk=6)
+        self.team_other_invited = Team.objects.get(pk=7)
         self.team_other_invited.members.add(self.user, self.teammate_1)
 
         #mock team created by other user but did not invite current user
-        self.team_other_not_invited = Team.objects.get(pk=5)
-        self.team_other_invited.members.add(self.other_registered_user)
-
+        self.team_other_not_invited = Team.objects.get(pk=6)
+        self.team_other_not_invited.members.add(self.other_registered_user)
         self.task = Task.objects.get(pk=1)
         
 
@@ -57,26 +60,21 @@ class DashboardViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'dashboard.html')
         self.assertContains(response, self.user.username)
 
-    def test_dashboard_displays_teams(self):
-        self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'dashboard.html')
-        self.assertContains(response, self.team_own1.title)
-    
-    def test_dashboard_displays_teams(self):
-        self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'dashboard.html')
-        self.assertContains(response, self.team_own2.title)
-
     def test_dashboard_displays_all_user_teams(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'dashboard.html')
         user_teams = Team.objects.filter(members=self.user) 
+        for team in user_teams:
+            self.assertContains(response, team.title)
+
+    def test_dashboard_displays_teams_user_is_not_creator_but_just_member(self):
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'dashboard.html')
+        user_teams = Team.objects.filter(Q(members=self.user) & ~Q(author=self.user)) 
         for team in user_teams:
             self.assertContains(response, team.title)
 
@@ -84,15 +82,6 @@ class DashboardViewTestCase(TestCase):
         redirect_url = reverse_with_next("log_in", self.url)
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-    
-    def test_dashboard_displays_all_user_teams(self):
-        self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'dashboard.html')
-        user_teams = Team.objects.filter(members=self.user) 
-        for team in user_teams:
-            self.assertContains(response, team.title)
 
     def test_dashboard_does_not_display_teams_user_is_not_in(self):
         self.client.login(username=self.user.username, password="Password123")
@@ -103,15 +92,16 @@ class DashboardViewTestCase(TestCase):
         for team in other_teams_without_current_user:
             self.assertNotContains(response, team.title)
 
-    def test_dashboard_displays_each_team_only_once(self):
+    def test_dashboard_displays_each_team_member_is_in_only_once2(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'dashboard.html')
-        user_teams = Team.objects.filter(members=self.user)
-        user_team_count = len(user_teams)
+        my_teams = Team.objects.filter(members=self.user)
         self.assertTrue('user_teams' in response.context)
-        self.assertEqual(len(set(response.context['user_teams'])), user_team_count)
+        response_user_teams = response.context['user_teams']
+        self.assertEqual(set(response_user_teams), set(my_teams))
+        self.assertEqual(len(response_user_teams), len(my_teams))
 
     # TO DO: test for notifications once feature is done
 
