@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
-{% if user.is_authenticated %}
 <div class="d-flex">
+  {% if user.is_authenticated %}
   <div class="p-2 vh-100 position-fixed" style="width: 300px">
     <div class="w-100 h-100" style="background-color: #ffffffaa; border-radius: 12px;">
       {% include 'partials/side_bar.html' %}
@@ -11,16 +11,18 @@
     <div class="w-100 p-3 h-100" style="background-color: #ffffffaa; border-radius: 12px;">
       {% else %}
       <div class="vw-100 vh-100">
-        <div class="position-fixed" style="height: 100px; width: 100%;">
-          <div class="container" style="border-bottom: 1px solid #2c1f7d;">
+        <div class="position-fixed" style="height: 100px; width: 100%; backdrop-filter: blur(10px);">
+          <div class="container" style="border-bottom: 1px solid #2c1f7d; height: 100px;">
             {% include 'partials/navbar.html' %}
           </div>
         </div>
-        {% endif %}
-        {% include 'partials/messages.html' %}
-        {% block content %}
-        {% endblock %}
+        <div class="h-100 w-100" style="padding-top: 20px;">
+          {% endif %}
+          {% block content %}
+          {% endblock %}
+        </div>
       </div>
     </div>
   </div>
-  {% endblock %}
+</div>
+{% endblock %}
