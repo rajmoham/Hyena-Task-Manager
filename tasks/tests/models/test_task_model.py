@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from tasks.models import User, Team ,Task
 from django.utils import timezone
+from datetime import datetime
 
 class TaskTest(TestCase):
 
@@ -56,7 +57,7 @@ class TaskTest(TestCase):
         self.assertIsNotNone(self.task.created_at)
 
     def test_task_creation_with_invalid_due_date(self): 
-        self.task.due_date = "2004-02-01T12:00:00Z"
+        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
         with self.assertRaises(ValidationError):
             self.task.full_clean()
 
@@ -160,3 +161,10 @@ class TaskTest(TestCase):
             task.toggle_archive()
             self.assertEquals(True, task.is_archived)
 
+    """ def test_due_date_is_overdue(self):
+        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
+        self.assertTrue(self.task.is_overdue())
+    
+    def test_due_date_is_not_overdue(self):
+        self.task.due_date = datetime.fromisoformat("3030-02-01T12:00:00Z")
+        self.assertFalse(self.task.is_overdue()) """

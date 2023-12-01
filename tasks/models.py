@@ -5,7 +5,7 @@ from libgravatar import Gravatar
 from django.utils import timezone
 
 class User(AbstractUser):
-    """Model used for user authentication, and team member related information."""
+    """Model used for user authentication, and team members related information."""
 
     username = models.CharField(
         max_length=30,

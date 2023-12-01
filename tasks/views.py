@@ -6,8 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from django.views.generic.edit import FormView, UpdateView
-from django.urls import reverse
+from django.views.generic.edit import FormView, UpdateView, DeleteView
+from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
 from tasks.helpers import login_prohibited, calculate_task_complete_score
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +17,7 @@ from tasks.models import Team, Invitation, Notification, Task, User
 from django.template import loader
 from django.shortcuts import render
 from django.http import Http404
-
+from django.utils import timezone
 
 def custom_404(request, exception):
     """Display error page"""
@@ -26,11 +26,22 @@ def custom_404(request, exception):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-    current_user = request.user
+    current_user = request.user 
     form = TeamForm()
     user_teams = Team.objects.filter(Q(author=current_user) | Q(members=current_user)).distinct()
     user_notifications = Notification.objects.filter(user=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
+
+    #All Tasks Assigned to the user
+    user_tasks = Task.objects.filter(assigned_members=current_user)
+
+    late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    
+
+    return render(request, 'dashboard.html', {'user': current_user,
+                                                "user_teams" : user_teams,
+                                                "user_notifications": user_notifications,
+                                                'user_tasks': user_tasks,
+                                                'late_tasks':late_tasks})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -382,23 +393,35 @@ class SignUpView(LoginProhibitedMixin, FormView):
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
+
 class TeamUpdateView(UpdateView):
     """Display team editing screen, and handle team details modifications."""
 
-    model = TeamForm
+    model = Team
     template_name = "edit_team.html"
     form_class = TeamForm
 
     def get_object(self):
         """Return the object (team) to be updated."""
-        user = self.request.user
-        return user
-
+        team_id = self.kwargs['team_id']
+        team = Team.objects.get(id=team_id)
+        return team
+    
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
+def team_delete(request, pk):
+    team = get_object_or_404(Team, pk=pk)  # Get your current team
+
+    if request.method == 'POST':         # If method is POST,
+        team.delete()                     # delete the team.
+        return redirect('/')             # Finally, redirect to the homepage.
+
+    return render(request, 'show_team.html', {'team': team})
+    # If method is not POST, render the default template.
+    
 @login_required
 def notifications(request):
     """Display Notifications associated with the user"""

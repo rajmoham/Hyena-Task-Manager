@@ -8,6 +8,14 @@
         </div>
         <div class="mb-5">
             {% include 'partials/leaderboard.html' with members=members %}
+        <div class="mb-4" style="display: flex;">
+            {%if request.user == team.author%}
+                <a href="{% url 'edit_team' team.id %}" class="btn btn-purple">Edit Team</a>
+                <form action="{% url 'team_delete' team.id %}"  method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete Team" class="btn btn-purple" style="margin-left:10px;">
+                </form>
+            {%endif%}
         </div>
         <div class="mb-4">
             {% include 'partials/tasks_as_table.html' with tasks=tasks %}
