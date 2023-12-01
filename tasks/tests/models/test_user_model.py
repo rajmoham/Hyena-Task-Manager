@@ -143,6 +143,9 @@ class UserModelTestCase(TestCase):
         expected_gravatar_url = self._gravatar_url(size=60)
         self.assertEqual(actual_gravatar_url, expected_gravatar_url)
 
+    def test_user_total_tasks_completed_initially_is_zero(self):
+        self.assertEquals(self.user.total_tasks_completed, 0)
+
     def _gravatar_url(self, size):
         gravatar_url = f"{UserModelTestCase.GRAVATAR_URL}?size={size}&default=mp"
         return gravatar_url
@@ -157,3 +160,5 @@ class UserModelTestCase(TestCase):
     def _assert_user_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.user.full_clean()
+
+    

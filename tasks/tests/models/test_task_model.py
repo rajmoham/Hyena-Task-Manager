@@ -122,3 +122,41 @@ class TaskTest(TestCase):
             task.toggle_task_status()
             self.assertEquals(True, task.is_complete)
 
+    def test_default_task_archive_status_is_false(self):
+        self.client.login(username=self.user.username, password="Password123")
+
+        # get tasks in current team
+        tasks = Task.objects.filter(author=self.team)
+        for task in tasks:
+            self.assertEquals(False, task.is_archived)
+
+    def test_archive_task(self):
+        self.client.login(username=self.user.username, password="Password123")
+
+        # initially incomplete
+        tasks = Task.objects.filter(author=self.team)
+        for task in tasks:
+            task.toggle_archive()
+            self.assertEquals(True, task.is_archived)
+    
+    def test_mark_task_as_incomplete(self):
+        self.client.login(username=self.user.username, password="Password123")
+
+        # initially incomplete
+        tasks = Task.objects.filter(author=self.team)
+        for task in tasks:
+            task.toggle_archive()
+            self.assertEquals(True, task.is_archived)
+            task.toggle_archive()
+            self.assertEquals(False, task.is_archived)
+
+    def test_team_mate_can_toggle_archive_status(self):
+        # login as team mate
+        self.client.login(username=self.teammate_1.username, password='Password')
+
+        # initially incomplete
+        tasks = Task.objects.filter(author=self.team)
+        for task in tasks:
+            task.toggle_archive()
+            self.assertEquals(True, task.is_archived)
+
