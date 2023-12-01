@@ -83,6 +83,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     actionable = models.BooleanField()
+    invitation = models.ForeignKey(Invitation, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         """Model options."""

@@ -124,7 +124,7 @@ def create_task(request, team_id):
         else:
             return redirect('log_in')
         return redirect('log_in')
-    
+
 @login_required
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
@@ -138,7 +138,7 @@ def edit_task(request, task_id):
     else:
         form = TaskForm(instance=current_task)
     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
-    
+
 @login_required
 def delete_task(request, task_id):
     current_user = request.user
@@ -224,7 +224,7 @@ def invite(request, team_id):
         messages.error(request, "You do not have permission to invite members to this team.")
         return redirect('show_team', team_id=team_id)
 
-    form = TeamInviteForm(request.POST or None)
+    form = TeamInviteForm(request.POST or None, team=team)
 
     if request.method == 'POST' and form.is_valid():
         user_email = form.cleaned_data['email']
@@ -245,12 +245,19 @@ def list_invitations(request):
     invitations = Invitation.objects.filter(email=request.user.email)
     return render(request, 'list_invitations.html', {'invitations': invitations})
 
+
 @login_required
 def accept_invitation(request, invitation_id):
     invitation = get_object_or_404(Invitation, id=invitation_id, email=request.user.email)
     invitation.team.members.add(request.user)
     invitation.status = Invitation.ACCEPTED
     invitation.save()
+    try:
+        notification = Notification.objects.get(user=request.user, invitation=invitation)
+        notification.delete()
+    except Notification.DoesNotExist:
+        pass
+
     messages.success(request, "You have joined the team!")
     return redirect('dashboard')
 
@@ -261,6 +268,12 @@ def decline_invitation(request, invitation_id):
     if invitation.status != Invitation.DECLINED:
         invitation.status = Invitation.DECLINED
         invitation.save()
+        try:
+            notification = Notification.objects.get(user=request.user, invitation=invitation)
+            notification.delete()
+        except Notification.DoesNotExist:
+            pass
+
         messages.success(request, "You have declined the invitation.")
     else:
         messages.info(request, "You have already declined this invitation.")
@@ -424,15 +437,19 @@ def team_delete(request, pk):
     
 @login_required
 def notifications(request):
-    """Display Notifications associated with the user"""
+    """Display Notifications associated with the user, including invitations."""
     if request.user.is_authenticated:
-        Notification.objects.create(
-            user=request.user,
-            title="Visited Notification Page",
-            description="",
-            actionable=False,
-        )
+        invitations = Invitation.objects.filter(email=request.user.email, status=Invitation.INVITED)
+        for invitation in invitations:
+            if not Notification.objects.filter(user=request.user, invitation=invitation).exists():
+                Notification.objects.create(
+                    user=request.user,
+                    title=f"Invitation to join {invitation.team.title}",
+                    description="",
+                    actionable=True,
+                    invitation=invitation
+                )
         user_notifications = Notification.objects.filter(user=request.user)
-        return render(request, 'notifications.html', {'user_notifications' : user_notifications})
+        return render(request, 'notifications.html', {'user_notifications': user_notifications})
     else:
         return redirect('log_in')

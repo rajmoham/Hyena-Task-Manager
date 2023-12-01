@@ -4,15 +4,18 @@
     <div class="row">
         <h3>Your Notifications</h3>
         {% if user_notifications %}
-                {% for notification in user_notifications %} 
+                {% for notification in user_notifications %}
                 <div style="display: flex; justify-content: space-between;">
                   <p><strong>{{ notification.title }}</strong></p>
                   <p>{{ notification.description }}</p>
                   {% if notification.actionable %}
-                    <button>Yes</button>
-                    <button>No</button>
-                  {% endif %}
-                </div>        
+                    {% if notification.invitation %}
+                        <a href="{% url 'accept_invitation' notification.invitation.id %}" class="btn btn-success btn-sm">Accept</a>
+                        <a href="{% url 'decline_invitation' notification.invitation.id %}" class="btn btn-danger btn-sm">Decline</a>
+                    {% else %}
+                    {% endif %}
+                {% endif %}
+                </div>
                 {% endfor %}
         {% else %}
           <p>You don't have any new notifications.</p>
