@@ -8,14 +8,15 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.urls import reverse, reverse_lazy
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm, TeamEdit
+from tasks.helpers import login_prohibited, calculate_task_complete_score
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
 from django.template import loader
 from django.shortcuts import render
+from django.http import Http404
 from django.utils import timezone
 
 def custom_404(request, exception):
@@ -82,12 +83,19 @@ def home(request):
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
-        team = Team.objects.get(id=team_id)
-        tasks = Task.objects.filter(author=team)
+        # team = Team.objects.get(id=team_id)
+        # tasks = Task.objects.filter(author=team)
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        # members = set()
+        # for task in tasks:
+        #     members.update(task.assigned_members.all())
+
     except ObjectDoesNotExist:
         return redirect('dashboard')
+    except Http404:
+        return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
+        return render(request, 'show_team.html', {'team': current_team, 'tasks': tasks, 'members': members})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -162,8 +170,39 @@ def toggle_task_status(request, task_id):
     except ObjectDoesNotExist:
         return redirect('dashboard')
     else:
+        return redirect('leaderboard', current_team.id)
+
+@login_required
+def toggle_task_archive(request, task_id):
+    current_user = request.user
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
+            task_to_toggle.toggle_archive()
+            task_to_toggle.save()
+            if task_to_toggle.is_archived :
+                messages.add_message(request, messages.SUCCESS, "Task archived!")
+            else:
+                messages.add_message(request, messages.SUCCESS, "Task unarchived!")
+        else: 
+            messages.add_message(request, messages.ERROR, "You cannot toggle archive because you are not in this team")
+            return redirect('dashboard')
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
         return redirect('show_team', current_team.id)
-    
+
+@login_required
+def leaderboard_view(request, team_id):
+    try:
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        return render(request, 'show_team.html', {'members': members, 'team': current_team, 'tasks': tasks})
+
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', team.id)
 
 @login_required
 def assign_member_to_task(request, task_id, user_id):
