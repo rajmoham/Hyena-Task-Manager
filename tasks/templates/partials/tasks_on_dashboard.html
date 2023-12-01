@@ -1,0 +1,24 @@
+{% if user_tasks %}
+    <table class="table">
+        <thead>
+            <tr>
+            <th><h5 class="card-title"><strong>Task Name</strong></h5></th>
+            <th><h5 class="card-title"><strong>Description</strong></h5></th>
+            <th><h5 class="card-title"><strong>Due Date</strong></h5></th>
+            <th><h5 class="card-title"><strong>Team</strong></h5></th>
+            </tr>
+        </thead>
+        {% for task in user_tasks %}
+            <tbody>
+                <tr>
+                    <td> <h5 class="card-title"><strong>{{ task.title }}</strong></h5></td>
+                    <td><h5 class="card-title"><strong>{{ task.description }}</strong></h5></td>
+                    <td> <h5 class="card-title"><strong>{{ task.due_date }}</strong></h5> </td>
+                    <td> <h5 class="card-title"><strong>{{ task.author.title }}</strong></h5></td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>You have no tasks assigned to you!</p>
+{% endif %}

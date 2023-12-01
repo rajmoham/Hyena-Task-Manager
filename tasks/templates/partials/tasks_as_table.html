@@ -66,6 +66,7 @@
 }
 
 </style>
+
 <div>
   <h3>Your Tasks</h3>
   <div class="row table-title mb-2">
@@ -181,6 +182,22 @@
                   Delete Task
                 </button>
               </form>
+              <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                  <span class="float-end">
+                    {% if task.is_complete %}
+                        <button class="btn btn-complete">Complete</button>
+                    {% else %}
+                        <button class="btn btn-incomplete">Incomplete</button>
+                    {% endif %}
+                </span>
+              </form>
+              <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
+                <span class="float-end">
+                  {% if not task.is_archived %}
+                      <button class="btn btn-archive">Archive</button>
+                  {% endif %}
+              </span>
+            </form>
 
             </div>
 
@@ -193,65 +210,3 @@
     {% endfor %}
     {% endif %}
   </div>
-</div>
-
-
-<div>
-  <h3>Your Tasks</h3>
-  {% if tasks %}
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Task Name</th>
-        <th>Description</th>
-        <th>Due Date</th>
-        <th>Mark Completed</th>
-        <th>Assigned Members</th>
-        <th>Edit Task</th>
-        <th>Delete Task</th>
-      </tr>
-    </thead>
-    {% for task in tasks %}
-    <tbody>
-      <tr>
-        <td>{{ task.title }}</a></td>
-        <td>{{ task.description }}</td>
-        <td> {{ task.due_date }} </td>
-        <td> To be Implmented</td>
-        <td>
-          {% for member in task.assigned_members.all %}
-          {{ member.username }}
-          {% endfor %}
-          <div class="btn-group">
-            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
-              Assign Members
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              {% for user in team.members.all %}
-              <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">{{ user.username }}</a>
-              {% endfor %}
-            </div>
-          </div>
-        </td>
-        <td><a href='{% url "edit_task" task.id%}'>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-          </svg>
-          Edit Task
-        </a></td>
-        <td>
-          <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm">Delete Task</button>
-          </form>
-        </td>
-      </tr>
-    </tbody>
-    {% endfor %}
-  </table>
-  {% else %}
-  <p>You haven't created any tasks yet.</p>
-  {% endif %}
-</div>

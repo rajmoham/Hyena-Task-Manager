@@ -118,29 +118,28 @@ class TeamForm(forms.ModelForm):
         fields = ["title", 'description']
         widgets = {
             'description': forms.Textarea()
-        }
-
-
-class TeamEdit(forms.ModelForm):
-    """Form to update user profiles."""
-
-    class Meta:
-        """Form options."""
-
-        model = Team
-        fields = ["title", 'description',]
-
+        }        
+        
 class TeamInviteForm(forms.Form):
     email = forms.EmailField(
         label="Email Address",
         help_text="Enter the email address of the person you want to invite."
     )
+    def __init__(self, *args, **kwargs):
+        self.team = kwargs.pop('team', None)
+        super(TeamInviteForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         """Validate that the email is registered"""
         email = self.cleaned_data['email']
         if not User.objects.filter(email=email).exists():
             raise ValidationError("No user is registered with this email address.")
+        user = User.objects.get(email=email)
+        if self.team.members.filter(id=user.id).exists():
+            raise forms.ValidationError("User already in the team.")
+        if Invitation.objects.filter(team=self.team, email=email).exists():
+            raise forms.ValidationError("This user has already been invited to the team.")
+
         return email
 
 class TaskForm(forms.ModelForm):

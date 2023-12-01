@@ -9,8 +9,10 @@ class NewTaskTest(TestCase):
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/default_team.json',
+        'tasks/tests/fixtures/other_teams.json',
         'tasks/tests/fixtures/other_users.json',
-        'tasks/tests/fixtures/default_task.json'
+        'tasks/tests/fixtures/default_task.json',
+        'tasks/tests/fixtures/other_tasks.json'
         ]
 
     def setUp(self):
@@ -51,7 +53,8 @@ class NewTaskTest(TestCase):
     def test_unsucessful_deletion_invalid_team(self):
         self.client.login(username=self.user.username, password="Password123")
         task_count_before = Task.objects.count()
-        task = Team.objects.get(pk=2)
+        # use pk=5 to associate task of another team
+        task = Task.objects.get(pk=5)
         team = task.author
         url = reverse('delete_task', kwargs={'task_id': task.id})
         response = self.client.post(url, follow=True)
