@@ -6,6 +6,9 @@
         <div class="mb-5">
             {% include 'partials/team_details.html' %}
         </div>
+        <div class="mb-5">
+            {% include 'partials/leaderboard.html' with members=members %}
+        </div>
         <div class="mb-4">
             {% include 'partials/tasks_as_table.html' with tasks=tasks %}
         </div>

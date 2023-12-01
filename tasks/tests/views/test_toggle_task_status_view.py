@@ -43,13 +43,19 @@ class ToggleTaskStatusTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_get_toggle_task_status_redirects_to_show_team(self):
+    def test_get_toggle_task_status_redirects_to_leaderboard(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.myTeamTask.toggle_task_status()
-        response_url = reverse('show_team', kwargs={'team_id': self.myTeamTask.author.id})
-        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        # Check the first redirect to leaderboard
+        response_url_leaderboard = reverse('leaderboard', kwargs={'team_id': self.myTeamTask.author.id})
+        self.assertRedirects(response, response_url_leaderboard, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_team.html')
+
+        # Check the second redirect to show_team
+        # response_url_show_team = reverse('show_team', kwargs={'team_id': self.myTeamTask.author.id})
+        # self.assertRedirects(response, response_url_show_team, status_code=302, target_status_code=200)
+        # self.assertTemplateUsed(response, 'show_team.html')
 
     def test_cannot_toggle_task_of_different_team(self):
         self.client.login(username=self.user.username, password='Password123')

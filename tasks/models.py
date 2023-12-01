@@ -18,6 +18,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    total_tasks_completed = models.IntegerField(default=0, blank=False)
 
 
     class Meta:
@@ -102,8 +103,9 @@ class Task(models.Model):
             )]
     )
     assigned_members = models.ManyToManyField(User, related_name='tasks')
-    is_complete = models.BooleanField(blank='false', default=False)
-    is_archived = models.BooleanField(blank='false', default=False)
+    is_complete = models.BooleanField(blank=False, default=False)
+    is_archived = models.BooleanField(blank=False, default=False)
+    points = models.IntegerField(default=1, blank=False)
 
     def toggle_task_status(self):
         if self.is_complete:

@@ -41,7 +41,8 @@ urlpatterns = [
     path('assign_member_to_task/<int:task_id>/<int:user_id>', views.assign_member_to_task, name= "assign_member_to_task"),
     path('notifications', views.notifications, name="notifications"),
     path('task_toggle/<int:task_id>', views.toggle_task_status, name='task_toggle'),
-    path('toggle_archive/<int:task_id>', views.toggle_task_archive, name='toggle_archive')
+    path('toggle_archive/<int:task_id>', views.toggle_task_archive, name='toggle_archive'),
+    path('leaderboard/<int:team_id>', views.leaderboard_view, name='leaderboard')
 ]
 
 handler404 = 'tasks.views.custom_404'
