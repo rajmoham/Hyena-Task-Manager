@@ -99,7 +99,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
         messages_list = list(response.context['messages'])
-        self.assertEqual(len(messages_list), 0)
+        self.assertEqual(len(messages_list), 1)
         self.assert_menu(response)
 
     def test_succesful_log_in_with_redirect(self):
@@ -110,7 +110,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'profile.html')
         messages_list = list(response.context['messages'])
-        self.assertEqual(len(messages_list), 0)
+        self.assertEqual(len(messages_list), 1)
 
     def test_post_log_in_redirects_when_logged_in(self):
         self.client.login(username=self.user.username, password="Password123")
