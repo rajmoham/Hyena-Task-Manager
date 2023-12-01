@@ -39,3 +39,9 @@ p.cover-text {
     opacity: 1
   }
 
+.btn-purple {
+    background-color: #5448b0;
+    color: white;
+    transition: all ease 300ms;
+}
+
