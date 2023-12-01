@@ -19,6 +19,12 @@ class TeamFormTestCase(TestCase):
         self.team = Team.objects.get(pk=1)
         self.url = reverse('edit_team', kwargs={'team_id': self.team.id})
         self.data = {'title': 'Team Name','description': 'Description'}
+
+    def test_team_update_view(self):
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Team.objects.get(pk=1).title, 'Team Name')
+        self.assertEqual(Team.objects.get(pk=1).description, 'Description')
     
     def test_valid_form(self):
         data = {'title': 'Test Team', 'description': 'Test Description'}
