@@ -151,6 +151,27 @@ def toggle_task_status(request, task_id):
         return redirect('dashboard')
     else:
         return redirect('show_team', current_team.id)
+
+@login_required
+def toggle_task_archive(request, task_id):
+    current_user = request.user
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
+            task_to_toggle.toggle_archive()
+            task_to_toggle.save()
+            if task_to_toggle.is_archived :
+                messages.add_message(request, messages.SUCCESS, "Task archived!")
+            else:
+                messages.add_message(request, messages.SUCCESS, "Task unarchived!")
+        else: 
+            messages.add_message(request, messages.ERROR, "You cannot toggle archive because you are not in this team")
+            return redirect('dashboard')
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', current_team.id)
     
 
 @login_required

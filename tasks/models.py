@@ -103,6 +103,7 @@ class Task(models.Model):
     )
     assigned_members = models.ManyToManyField(User, related_name='tasks')
     is_complete = models.BooleanField(blank='false', default=False)
+    is_archived = models.BooleanField(blank='false', default=False)
 
     def toggle_task_status(self):
         if self.is_complete:
@@ -116,8 +117,19 @@ class Task(models.Model):
     def _mark_task_incomplete(self):
         self.is_complete = False
 
-    # def is_complete(self):
-    #     return self.is_complete
+    def toggle_archive(self):
+        if self.is_archived:
+            self._unarchive_task()
+        else:
+            self._archive_task()
+
+    def _archive_task(self):
+        self.is_archived = True
+
+    def _unarchive_task(self):
+        self.is_archived = False
+
+    
 
     
 

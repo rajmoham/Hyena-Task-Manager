@@ -91,6 +91,32 @@ p.cover-text {
     transition: all ease 300ms;
 }
 
+.btn-archive {
+    background-color: #02b8e0;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-archive:hover {
+    background-color: #035de0;
+    color: white;
+    transition: all ease 300ms;
+}
+
+.btn-unarchive {
+    background-color: #e385e0;
+    color: white;
+    transition: all ease 300ms;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-unarchive:hover {
+    background-color: #9d1ee0;
+    color: white;
+    transition: all ease 300ms;
+}
+
 .title-color {
     color: #1a0d7a;
 }

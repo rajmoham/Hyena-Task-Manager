@@ -84,12 +84,23 @@
                   </tr>
                 </thead>
                 {% for task in tasks %}
+                  {% if not task.is_archived %}
                     <tbody>
                         <tr>
                             <td>{{ task.title }}</a></td>
                             <td>{{ task.description }}</td>
                             <td> {{ task.due_date }} </td>
-                            <td> To be Implmented</td>
+                            <td>
+                              <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                                  <span class="float-end">
+                                    {% if task.is_complete %}
+                                        <button class="btn btn-complete">Complete</button>
+                                    {% else %}
+                                        <button class="btn btn-incomplete">Incomplete</button>
+                                    {% endif %}
+                                </span>
+                              </form>
+                            </td>
                             <td>
                               {% for member in task.assigned_members.all %}
                                   {{ member.username }}
@@ -113,18 +124,17 @@
                               </form>
                             </td>
                             <td>
-                              <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                              <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
                                 <span class="float-end">
-                                  {% if task.is_complete %}
-                                      <button class="btn btn-complete">Complete</button>
-                                  {% else %}
-                                      <button class="btn btn-incomplete">Incomplete</button>
+                                  {% if not task.is_archived %}
+                                      <button class="btn btn-archive">Archive</button>
                                   {% endif %}
                               </span>
                             </form>
                             </td>
                         </tr>
                     </tbody>
+                  {% endif %}
                 {% endfor %}
           </table>
         {% else %}

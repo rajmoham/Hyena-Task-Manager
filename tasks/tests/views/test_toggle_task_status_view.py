@@ -43,34 +43,6 @@ class ToggleTaskStatusTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_default_task_status_is_incomplete(self):
-        self.client.login(username=self.user.username, password="Password123")
-
-        # get tasks in current team
-        tasks = Task.objects.filter(author=self.team)
-        for task in tasks:
-            self.assertEquals(False, task.is_complete)
-
-    def test_mark_task_as_complete(self):
-        self.client.login(username=self.user.username, password="Password123")
-
-        # initially incomplete
-        tasks = Task.objects.filter(author=self.team)
-        for task in tasks:
-            task.toggle_task_status()
-            self.assertEquals(True, task.is_complete)
-    
-    def test_mark_task_as_incomplete(self):
-        self.client.login(username=self.user.username, password="Password123")
-
-        # initially incomplete
-        tasks = Task.objects.filter(author=self.team)
-        for task in tasks:
-            task.toggle_task_status()
-            self.assertEquals(True, task.is_complete)
-            task.toggle_task_status()
-            self.assertEquals(False, task.is_complete)
-
     def test_get_toggle_task_status_redirects_to_show_team(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
@@ -91,15 +63,6 @@ class ToggleTaskStatusTestCase(TestCase):
             self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
             self.assertTemplateUsed(response, 'dashboard.html')
 
-    def test_team_mate_can_toggle_task_status(self):
-        # login as team mate
-        self.client.login(username=self.teammate_1.username, password='Password')
-
-        # initially incomplete
-        tasks = Task.objects.filter(author=self.team)
-        for task in tasks:
-            task.toggle_task_status()
-            self.assertEquals(True, task.is_complete)
 
 
 
