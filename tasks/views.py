@@ -351,7 +351,6 @@ def team_delete(request, pk):
 
     return render(request, 'show_team.html', {'team': team})
     # If method is not POST, render the default template.
-    # *Note*: Replace 'template_name.html' with your corresponding template name.
     
 @login_required
 def notifications(request):
