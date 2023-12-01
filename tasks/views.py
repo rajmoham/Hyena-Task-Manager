@@ -61,8 +61,10 @@ def create_team(request):
                     description="You have created a new team",
                     actionable=False
                 )
+                messages.add_message(request, messages.SUCCESS, f"Created Team: {titleCleaned}!")
                 return redirect('dashboard')
             else:
+                messages.add_message(request, messages.ERROR, "Unable to create team")
                 return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
@@ -76,7 +78,6 @@ def create_team(request):
 @login_prohibited
 def home(request):
     """Display the application's start/home screen."""
-
     return render(request, 'home.html')
 
 @login_required
@@ -110,9 +111,10 @@ def create_task(request, team_id):
                 descriptionCleaned = form.cleaned_data.get('description')
                 dueDateCleaned = form.cleaned_data.get("due_date")
                 task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-
+                messages.add_message(request, messages.SUCCESS, "Successfully created task")
                 return redirect('show_team', team_id)
             else:
+                messages.add_message(request, messages.ERROR, "Unable to create task!")
                 return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
             return redirect('log_in')
@@ -123,18 +125,20 @@ def create_task(request, team_id):
             return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
             return redirect('log_in')
-        return redirect('log_in')
-
+          
 @login_required
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
+
     if request.method == 'POST':
         form = TaskForm(instance=current_task, data=request.POST)
         if form.is_valid():
-            messages.success(request, "Task updated!")
             form.save()
+            messages.add_message(request, messages.SUCCESS, "Task Updated!")
             return redirect('show_team', current_team.id)
+        else:
+            messages.add_message(request, messages.ERROR, "Unable to edit task!")
     else:
         form = TaskForm(instance=current_task)
     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
@@ -212,8 +216,10 @@ def assign_member_to_task(request, task_id, user_id):
     if selected_user in current_team.members.all():
         if selected_user in current_task.assigned_members.all():
             current_task.assigned_members.remove(selected_user)
+            messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
         else:
             current_task.assigned_members.add(selected_user)
+            messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
     return redirect('show_team', current_team.id)
 
 @login_required
@@ -328,6 +334,7 @@ class LogInView(LoginProhibitedMixin, View):
         user = form.get_user()
         if user is not None:
             login(request, user)
+            messages.add_message(request, messages.SUCCESS, "You have successfully Logged in!")
             return redirect(self.next)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
         return self.render()
@@ -343,6 +350,7 @@ def log_out(request):
     """Log out the current user"""
 
     logout(request)
+    messages.add_message(request, messages.SUCCESS, "You have signed out")
     return redirect('home')
 
 

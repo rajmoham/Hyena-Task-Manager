@@ -1,15 +1,22 @@
+<style>
+  .msg-container {
+    z-index: 100;
+    transform: translateX(-50%) translateY(calc(-100% - 10px));
+  }
+</style>
 {% if messages %}
-<div class="position-absolute">
+<div class="position-fixed top-100 start-50 msg-container">
   <div class="container">
     <div class="row">
       <div class="col-12">
         {% for message in messages %}
-          <div class="alert alert-{{ message.level_tag }}" role="alert">
-            {{ message }}
-          </div>
-        {% endfor %}
+        <div class="alert alert-{{ message.level_tag }} alert-dismissible show fade" role="alert">
+          {{ message }}
+          <button type="button" style="font-size: 14px;" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
+      {% endfor %}
     </div>
   </div>
+</div>
 </div>
 {% endif %}
