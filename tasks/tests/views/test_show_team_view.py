@@ -37,8 +37,8 @@ class ShowTeamViewTestCase(TestCase):
         self.myTeamTask1 = Task.objects.get(pk=1)
         self.myTeamTask2 = Task.objects.get(pk=2)
         self.myTeamTask3 = Task.objects.get(pk=3)
-        self.otherTeamTask1 = Task.objects.get(pk=4)
-        self.otherTeamTask2 = Task.objects.get(pk=5)
+        self.otherTeamTask1 = Task.objects.get(pk=5)
+        self.otherTeamTask2 = Task.objects.get(pk=6)
 
         '''
         - TO BE IMPLEMENTED AFTER USER INVITE FEATURE IS DONE: -
@@ -109,21 +109,16 @@ class ShowTeamViewTestCase(TestCase):
         for task in otherTeamTasks:
             self.assertNotContains(response, task.title) # given task titles are different
             # self.assertNotContains(response, task.description) if not unique could cause a fail
-            # self.assertNotContains(response, task.due_date) if not unique could cause a fail
+            # self.assertNotContains(response, task.due_date) if not unique could cause a fail 
 
-    # def test_show_team_displays_invite_members_button(self):
-    #     self.client.login(username=self.user.username, password="Password123")
-    #     response = self.client.get(self.url)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'show_team.html')
-    #     self.assertContains(response, '''<a href="{% url 'invite' team_id=team.id %}" class="btn btn-primary mb-3 mt-3">Invite Members</a>''', html=True)
+    # To Do: tests for live tasks and archived tasks
 
-    # def test_show_team_displays_create_tasks_button(self):
-    #     self.client.login(username=self.user.username, password="Password123")
-    #     response = self.client.get(self.url)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'show_team.html')
-    #     self.assertContains(response, '''<a href='{% url "create_task" team.id%}' class="btn btn-primary" style="color: white;">Create Task</a>''', html=True)
+    def test_show_team_page_displays_unarchived_tasks(self):
+        pass
+
+    def test_show_team_page_displays_archived_tasks(self):
+        pass
+
         
         
 

@@ -12,8 +12,8 @@
   }
 
   .bg-no-overdue {
-    background-color: #f1e587;
-    border: 1px solid #bdae40;
+    background-color: #d3f0cb;
+    border: 1px solid #84c971;
   }
   
   .bg-overdue {
@@ -34,9 +34,13 @@
             <h4 class="card-title">Welcome {{ user.first_name }},</h4>
           </div>
           <p class="card-text">
-            Nice job, you are not overdue on any tasks.
+            {% include 'partials/overdue_tasks.html' with late_tasks=late_tasks %}
           </p>
         </div>
+      </div>
+      <div class="mt-5">
+        <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Tasks ({{ user_tasks.count }})</h3>
+        {% include 'partials/tasks_on_dashboard.html' with user_tasks=user_tasks %}
       </div>
       <div class="mt-5">
         <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Teams ({{ user_teams.count }})</h3>

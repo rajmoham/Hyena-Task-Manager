@@ -9,13 +9,15 @@ from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited
+from tasks.helpers import login_prohibited, calculate_task_complete_score
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
 from django.template import loader
 from django.shortcuts import render
+from django.http import Http404
+from django.utils import timezone
 
 def custom_404(request, exception):
     """Display error page"""
@@ -24,11 +26,22 @@ def custom_404(request, exception):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-    current_user = request.user
+    current_user = request.user 
     form = TeamForm()
     user_teams = Team.objects.filter(Q(author=current_user) | Q(members=current_user)).distinct()
     user_notifications = Notification.objects.filter(user=current_user)
-    return render(request, 'dashboard.html', {'user': current_user, "user_teams" : user_teams, "user_notifications": user_notifications})
+
+    #All Tasks Assigned to the user
+    user_tasks = Task.objects.filter(assigned_members=current_user)
+
+    late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    
+
+    return render(request, 'dashboard.html', {'user': current_user,
+                                                "user_teams" : user_teams,
+                                                "user_notifications": user_notifications,
+                                                'user_tasks': user_tasks,
+                                                'late_tasks':late_tasks})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -48,8 +61,10 @@ def create_team(request):
                     description="You have created a new team",
                     actionable=False
                 )
+                messages.add_message(request, messages.SUCCESS, f"Created Team: {titleCleaned}!")
                 return redirect('dashboard')
             else:
+                messages.add_message(request, messages.ERROR, "Unable to create team")
                 return render(request, 'create_team.html', {'form': form})
         else:
             return redirect('log_in')
@@ -63,19 +78,25 @@ def create_team(request):
 @login_prohibited
 def home(request):
     """Display the application's start/home screen."""
-
     return render(request, 'home.html')
 
 @login_required
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
-        team = Team.objects.get(id=team_id)
-        tasks = Task.objects.filter(author=team)
+        # team = Team.objects.get(id=team_id)
+        # tasks = Task.objects.filter(author=team)
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        # members = set()
+        # for task in tasks:
+        #     members.update(task.assigned_members.all())
+
     except ObjectDoesNotExist:
         return redirect('dashboard')
+    except Http404:
+        return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': team, 'tasks': tasks})
+        return render(request, 'show_team.html', {'team': current_team, 'tasks': tasks, 'members': members})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -90,9 +111,10 @@ def create_task(request, team_id):
                 descriptionCleaned = form.cleaned_data.get('description')
                 dueDateCleaned = form.cleaned_data.get("due_date")
                 task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-
+                messages.add_message(request, messages.SUCCESS, "Successfully created task")
                 return redirect('show_team', team_id)
             else:
+                messages.add_message(request, messages.ERROR, "Unable to create task!")
                 return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
             return redirect('log_in')
@@ -103,22 +125,24 @@ def create_task(request, team_id):
             return render(request, 'create_task.html', {'team': current_team,'form': form})
         else:
             return redirect('log_in')
-        return redirect('log_in')
-    
+          
 @login_required
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
+
     if request.method == 'POST':
         form = TaskForm(instance=current_task, data=request.POST)
         if form.is_valid():
-            messages.success(request, "Task updated!")
             form.save()
+            messages.add_message(request, messages.SUCCESS, "Task Updated!")
             return redirect('show_team', current_team.id)
+        else:
+            messages.add_message(request, messages.ERROR, "Unable to edit task!")
     else:
         form = TaskForm(instance=current_task)
     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
-    
+
 @login_required
 def delete_task(request, task_id):
     current_user = request.user
@@ -135,6 +159,56 @@ def delete_task(request, task_id):
     return redirect('show_team', current_team.id)
 
 @login_required
+def toggle_task_status(request, task_id):
+    current_user = request.user
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
+            task_to_toggle.toggle_task_status()
+            task_to_toggle.save()
+            messages.add_message(request, messages.SUCCESS, "Task status changed!")
+        else: 
+            messages.add_message(request, messages.ERROR, "You cannot change task status because you are not in this team")
+            return redirect('dashboard')
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('leaderboard', current_team.id)
+
+@login_required
+def toggle_task_archive(request, task_id):
+    current_user = request.user
+    try:
+        task_to_toggle = Task.objects.get(id=task_id)
+        current_team = task_to_toggle.author
+        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
+            task_to_toggle.toggle_archive()
+            task_to_toggle.save()
+            if task_to_toggle.is_archived :
+                messages.add_message(request, messages.SUCCESS, "Task archived!")
+            else:
+                messages.add_message(request, messages.SUCCESS, "Task unarchived!")
+        else: 
+            messages.add_message(request, messages.ERROR, "You cannot toggle archive because you are not in this team")
+            return redirect('dashboard')
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', current_team.id)
+
+@login_required
+def leaderboard_view(request, team_id):
+    try:
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        return render(request, 'show_team.html', {'members': members, 'team': current_team, 'tasks': tasks})
+
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', team.id)
+
+@login_required
 def assign_member_to_task(request, task_id, user_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
@@ -142,8 +216,10 @@ def assign_member_to_task(request, task_id, user_id):
     if selected_user in current_team.members.all():
         if selected_user in current_task.assigned_members.all():
             current_task.assigned_members.remove(selected_user)
+            messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
         else:
             current_task.assigned_members.add(selected_user)
+            messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
     return redirect('show_team', current_team.id)
 
 @login_required
@@ -154,7 +230,7 @@ def invite(request, team_id):
         messages.error(request, "You do not have permission to invite members to this team.")
         return redirect('show_team', team_id=team_id)
 
-    form = TeamInviteForm(request.POST or None)
+    form = TeamInviteForm(request.POST or None, team=team)
 
     if request.method == 'POST' and form.is_valid():
         user_email = form.cleaned_data['email']
@@ -175,12 +251,19 @@ def list_invitations(request):
     invitations = Invitation.objects.filter(email=request.user.email)
     return render(request, 'list_invitations.html', {'invitations': invitations})
 
+
 @login_required
 def accept_invitation(request, invitation_id):
     invitation = get_object_or_404(Invitation, id=invitation_id, email=request.user.email)
     invitation.team.members.add(request.user)
     invitation.status = Invitation.ACCEPTED
     invitation.save()
+    try:
+        notification = Notification.objects.get(user=request.user, invitation=invitation)
+        notification.delete()
+    except Notification.DoesNotExist:
+        pass
+
     messages.success(request, "You have joined the team!")
     return redirect('dashboard')
 
@@ -191,6 +274,12 @@ def decline_invitation(request, invitation_id):
     if invitation.status != Invitation.DECLINED:
         invitation.status = Invitation.DECLINED
         invitation.save()
+        try:
+            notification = Notification.objects.get(user=request.user, invitation=invitation)
+            notification.delete()
+        except Notification.DoesNotExist:
+            pass
+
         messages.success(request, "You have declined the invitation.")
     else:
         messages.info(request, "You have already declined this invitation.")
@@ -245,6 +334,7 @@ class LogInView(LoginProhibitedMixin, View):
         user = form.get_user()
         if user is not None:
             login(request, user)
+            messages.add_message(request, messages.SUCCESS, "You have successfully Logged in!")
             return redirect(self.next)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
         return self.render()
@@ -260,6 +350,7 @@ def log_out(request):
     """Log out the current user"""
 
     logout(request)
+    messages.add_message(request, messages.SUCCESS, "You have signed out")
     return redirect('home')
 
 
@@ -351,19 +442,22 @@ def team_delete(request, pk):
 
     return render(request, 'show_team.html', {'team': team})
     # If method is not POST, render the default template.
-    # *Note*: Replace 'template_name.html' with your corresponding template name.
     
 @login_required
 def notifications(request):
-    """Display Notifications associated with the user"""
+    """Display Notifications associated with the user, including invitations."""
     if request.user.is_authenticated:
-        Notification.objects.create(
-            user=request.user,
-            title="Visited Notification Page",
-            description="",
-            actionable=False,
-        )
+        invitations = Invitation.objects.filter(email=request.user.email, status=Invitation.INVITED)
+        for invitation in invitations:
+            if not Notification.objects.filter(user=request.user, invitation=invitation).exists():
+                Notification.objects.create(
+                    user=request.user,
+                    title=f"Invitation to join {invitation.team.title}",
+                    description="",
+                    actionable=True,
+                    invitation=invitation
+                )
         user_notifications = Notification.objects.filter(user=request.user)
-        return render(request, 'notifications.html', {'user_notifications' : user_notifications})
+        return render(request, 'notifications.html', {'user_notifications': user_notifications})
     else:
         return redirect('log_in')

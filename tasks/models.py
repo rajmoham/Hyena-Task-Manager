@@ -18,6 +18,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    total_tasks_completed = models.IntegerField(default=0, blank=False)
 
 
     class Meta:
@@ -82,6 +83,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     actionable = models.BooleanField()
+    invitation = models.ForeignKey(Invitation, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         """Model options."""
@@ -102,6 +104,39 @@ class Task(models.Model):
             )]
     )
     assigned_members = models.ManyToManyField(User, related_name='tasks')
+    is_complete = models.BooleanField(blank=False, default=False)
+    is_archived = models.BooleanField(blank=False, default=False)
+    points = models.IntegerField(default=1, blank=False)
+
+    def toggle_task_status(self):
+        if self.is_complete:
+            self._mark_task_incomplete()
+        else:
+            self._mark_task_complete()
+
+    def _mark_task_complete(self):
+        self.is_complete = True
+
+    def _mark_task_incomplete(self):
+        self.is_complete = False
+
+    def toggle_archive(self):
+        if self.is_archived:
+            self._unarchive_task()
+        else:
+            self._archive_task()
+
+    def _archive_task(self):
+        self.is_archived = True
+
+    def _unarchive_task(self):
+        self.is_archived = False
+
+    
+
+    
+
+
     class Meta:
         """Model Options"""
 
