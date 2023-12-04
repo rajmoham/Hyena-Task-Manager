@@ -1,25 +1,36 @@
 {% extends 'base_content.html' %}
+
 {% block content %}
-<div class="container">
-    <div class="row">
-        <h3>Your Notifications</h3>
-        {% if user_notifications %}
-                {% for notification in user_notifications %}
-                <div style="display: flex; justify-content: space-between;">
-                  <p><strong>{{ notification.title }}</strong></p>
-                  <p>{{ notification.description }}</p>
-                  {% if notification.actionable %}
-                    {% if notification.invitation %}
-                        <a href="{% url 'accept_invitation' notification.invitation.id %}" class="btn btn-success btn-sm">Accept</a>
-                        <a href="{% url 'decline_invitation' notification.invitation.id %}" class="btn btn-danger btn-sm">Decline</a>
-                    {% else %}
-                    {% endif %}
-                {% endif %}
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="mb-0">Your Notifications</h3>
+        </div>
+        <div class="card-body">
+            {% if user_notifications %}
+                <div class="list-group">
+                    {% for notification in user_notifications %}
+                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ notification.title }}</h5>
+                                <small>{{ notification.created_at|date:"N j, Y" }}</small>
+                            </div>
+                            <p class="mb-1">{{ notification.description }}</p>
+                            {% if notification.actionable %}
+                                {% if notification.invitation %}
+                                    <div class="mt-2">
+                                        <a href="{% url 'accept_invitation' notification.invitation.id %}" class="btn btn-success btn-sm me-2">Accept</a>
+                                        <a href="{% url 'decline_invitation' notification.invitation.id %}" class="btn btn-danger btn-sm">Decline</a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-        {% else %}
-          <p>You don't have any new notifications.</p>
-        {% endif %}
+            {% else %}
+                <p class="text-center">You don't have any new notifications.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
