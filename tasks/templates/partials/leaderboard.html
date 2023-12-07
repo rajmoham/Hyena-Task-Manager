@@ -5,7 +5,7 @@
     <div class="card-body mb-2" style="overflow: hidden; text-overflow: ellipsis;">
         <ul class="list-group list-group-flush">
             {% if members %}
-                {% for member in members %}
+                {% for member in members|slice:"0:5" %}
                     <li class="list-group-item">{{ member.username }} - Total Tasks Completed: {{ member.total_tasks_completed }}</li>
                 {% endfor %}
             {% else %}
