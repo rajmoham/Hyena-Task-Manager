@@ -38,7 +38,7 @@ class TeamTest(TestCase):
             self.team.full_clean()
 
     def test_description_must_not_be_overlong(self):
-        self.team.title = 'x' * 10000
+        self.team.description = 'x' * 10000
         with self.assertRaises(ValidationError):
             self.team.full_clean()
 
