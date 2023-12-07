@@ -53,7 +53,8 @@
                     {{ task.description }}
                 </div>
                 <div class="col-2 table-col">
-                    {{ task.due_date }}
+                    {{ task.due_date|date:"D, d M, Y"}} <br>
+                    {{ task.due_date|date:"H:i" }}
                 </div>
                 <div class="col-2 table-col">
                     {{ task.author.title }}
