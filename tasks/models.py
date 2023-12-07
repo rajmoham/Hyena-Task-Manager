@@ -84,11 +84,15 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     actionable = models.BooleanField()
     invitation = models.ForeignKey(Invitation, on_delete=models.SET_NULL, null=True, blank=True)
+    seen = models.BooleanField(default=False)
 
     class Meta:
         """Model options."""
 
         ordering = ['-created_at']
+
+    def mark_as_seen(self):
+        self.seen = True
 
 """Task Created by a Team"""
 class Task(models.Model):

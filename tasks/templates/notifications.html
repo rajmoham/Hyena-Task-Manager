@@ -1,6 +1,26 @@
 {% extends 'base_content.html' %}
 
 {% block content %}
+<style>
+    .unseen {
+        background-color: rgb(185, 185, 235);
+        color: rgb(24, 24, 91);
+    }
+
+    .btn-read {
+        background-color: rgb(35, 35, 97);
+        color: white;
+    }
+
+    .btn-read:hover {
+        background-color: rgb(17, 17, 63);
+        color: white;
+    }
+    .button {
+        text-decoration: none;
+    }
+</style>
+
 <div class="container py-5">
     <div class="card shadow-sm">
         <div class="card-header">
@@ -8,29 +28,47 @@
         </div>
         <div class="card-body">
             {% if user_notifications %}
-                <div class="list-group">
-                    {% for notification in user_notifications %}
-                        <div class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ notification.title }}</h5>
-                                <small>{{ notification.created_at|date:"N j, Y" }}</small>
-                            </div>
-                            <p class="mb-1">{{ notification.description }}</p>
-                            {% if notification.actionable %}
-                                {% if notification.invitation %}
-                                    <div class="mt-2">
-                                        <a href="{% url 'accept_invitation' notification.invitation.id %}" class="btn btn-success btn-sm me-2">Accept</a>
-                                        <a href="{% url 'decline_invitation' notification.invitation.id %}" class="btn btn-danger btn-sm">Decline</a>
-                                    </div>
-                                {% endif %}
+            <div class="list-group">
+                {% for notification in user_notifications %}
+                {% if notification.seen %}
+                <div class="list-group-item d-flex justify-content-between align-items-start mb-2">
+                {% else %}
+                <div class="list-group-item unseen d-flex justify-content-between align-items-start mb-2">
+                {% endif %}
+                    <div class="d-flex align-items-center">
+                        <div class="mt-3">
+                            <h5 class="mx-1">{{ notification.title }}</h5>
+                            <p class="mx-">{{ notification.description }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        {% if notification.invitation %}
+                        <div class="h-100 d-flex align-items-center py-3">
+                            <a href="{% url 'accept_invitation' notification.invitation.id %}"
+                                class="btn-success button btn-sm me-2"><i class="bi bi-check"></i> Accept</a>
+                            <a href="{% url 'decline_invitation' notification.invitation.id %}"
+                                class="btn-danger button btn-sm"><i class="bi bi-x"></i> Decline</a>
+                        </div>
+                        {% else %}
+                        <div class="d-flex flex-column align-items-end">
+                            <small class="my-2">{{ notification.created_at|date:"N j, Y" }}</small>
+                            {% if not notification.seen %}
+                            <a href="{% url 'seen_notification' notification.id %}" class="btn btn-read"> <i
+                                    class="bi bi-check"></i> Mark as Read</a>
                             {% endif %}
                         </div>
+                        {% endif %}
+                    </div>
+
+
+
+                    </div>
                     {% endfor %}
                 </div>
-            {% else %}
+                {% else %}
                 <p class="text-center">You don't have any new notifications.</p>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

@@ -42,7 +42,15 @@
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'notifications' %}">
         <div class="p-2 d-flex align-items-center nav-item">
           <i class="bi bi-bell-fill mx-3"></i>
-          <span class="flex-grow-1 mx-2" style="font-size: 16px;">Notifications</span>
+          <span class="flex-grow-2 mx-2" style="font-size: 16px;">
+            Notifications
+          </span>
+          {% if unseen_notifs %}
+          <span class="badge rounded-pill bg-danger">
+            {{ unseen_notifs.count }}
+            <span class="visually-hidden">unread messages</span>
+            {% endif %}
+          </span>
         </div>
       </a>
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'create_team' %}">
@@ -75,8 +83,10 @@
         <span class="flex-grow-1 mx-2" style="font-size: 16px;">Log out</span>
       </div>
     </a>
-    <div class="d-flex shadow-lg py-2 px-3" style="background-color: #cec9e9; border-radius: 16px; border: 1px solid #c2bce2;">
-      <img src="{{ user.mini_gravatar }}" alt="User Gravatar" style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
+    <div class="d-flex shadow-lg py-2 px-3"
+      style="background-color: #cec9e9; border-radius: 16px; border: 1px solid #c2bce2;">
+      <img src="{{ user.mini_gravatar }}" alt="User Gravatar"
+        style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
       <div class="ms-3">
         <span>{{ user.full_name }}</span> <br>
         <span style="font-size: 0.75rem;">{{ user.username }}</span>

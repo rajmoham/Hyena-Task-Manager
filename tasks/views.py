@@ -461,3 +461,22 @@ def notifications(request):
         return render(request, 'notifications.html', {'user_notifications': user_notifications})
     else:
         return redirect('log_in')
+
+@login_required
+def seen_notificaiton(request, notification_id):
+    current_user = request.user
+    notification = Notification.objects.get(id=notification_id)
+    if (notification.user == current_user):
+        notification.mark_as_seen()
+        notification.save()
+        messages.add_message(request, messages.SUCCESS, "Marked as seen")
+    else:
+        return redirect('dashboard')
+    return redirect('notifications')
+
+def unseen_notifications(request):
+    unseen_notifs = []
+    if request.user.is_authenticated:
+        unseen_notifs = Notification.objects.filter(user=request.user, seen=False)
+    
+    return {'unseen_notifs': unseen_notifs}
