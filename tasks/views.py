@@ -35,13 +35,17 @@ def dashboard(request):
     user_tasks = Task.objects.filter(assigned_members=current_user)
 
     late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    late_task_text = ", ".join([task.title for task in late_tasks[:10]])
+    if (len(late_tasks) > 10):
+        late_task_text += f" and {len(late_tasks) - 10} more."
     
 
     return render(request, 'dashboard.html', {'user': current_user,
                                                 "user_teams" : user_teams,
                                                 "user_notifications": user_notifications,
                                                 'user_tasks': user_tasks,
-                                                'late_tasks':late_tasks})
+                                                'late_tasks':late_tasks,
+                                                'late_task_text':late_task_text})
 
 #TODO: Turn this into a form view class
 @login_required

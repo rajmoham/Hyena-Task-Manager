@@ -4,7 +4,7 @@
         border-radius: 8px;
         color: white;
         transition: all ease 0.3s;
-        width: 15rem;
+        width: 100%;
         height: 10rem;
     }
     .team-card:hover {
@@ -22,9 +22,18 @@
     .add-team:hover {
         background-color: #a4a1de;
     }
+    .card-container {
+        border: 2px solid #1a0d7a;
+        border-radius: 12px;
+        padding: 1rem;
+        max-height: 800px;
+        overflow: scroll;
+        display: grid;
+        grid-template-columns: auto auto auto auto auto;
+    }
 </style>
 <div class="w-100">
-<div class="d-flex flex-wrap">
+<div class="card-container">
     {% if user_teams %}
     {% for team in user_teams %}
     <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
