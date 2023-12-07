@@ -43,6 +43,13 @@
     border: 2px solid #756cba;
     position: absolute;
   }
+  .member-img {
+    height: 50px;
+    width: 50px;
+    margin: 4px;
+    border-radius: 50%;
+  }
+
 
   .btn-delete {
     background-color: rgb(225, 75, 75);
@@ -64,7 +71,29 @@
 .dropdown-menu .active:hover{
   background-color: #b6b1e5;
 }
+.user-tooltip {
+  position: relative;
+  border-radius: 50%;
+}
 
+.user-tooltip .tooltiptext {
+  visibility: none;
+  width: 120px;
+  background-color: #000000aa;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: -10;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(75%);
+}
+.user-tooltip:hover .tooltiptext {
+  visibility: visible;
+  z-index: 10;
+} */
 </style>
 
 <div>
@@ -154,9 +183,10 @@
               </div>
               <div class="d-flex flex-wrap my-2" style="width: 175px">
                 {% for member in task.assigned_members.all %}
-                <img src="{{member.gravatar}}" alt="User"
-                  style="height: 50px; width: 50px; margin: 4px; border-radius: 50%;" data-bs-toggle="tooltip"
-                  data-bs-placement="bottom" title="{{member.full_name}}" />
+                <div class="user-tooltip"> 
+                  <img src="{{member.gravatar}}" alt="User" class="member-img"/> 
+                  <span class="tooltiptext">{{member.full_name}}</span>
+                </div>
                 {% endfor %}
               </div>
             </div>
