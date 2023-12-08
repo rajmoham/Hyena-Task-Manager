@@ -135,17 +135,7 @@ class Task(models.Model):
     def _unarchive_task(self):
         self.is_archived = False
 
-    
-
-    
-
-
     class Meta:
         """Model Options"""
 
         ordering = ['due_date']
-
-
-""" One User can have many Teams and One Team can have many Users: Many to Many
-    One Team can have Many Tasks but One Task can only have one Team: One to Many
-    One User can have Many Tasks and One Tasks can have many Users: Many to Many"""

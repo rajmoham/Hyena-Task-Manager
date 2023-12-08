@@ -17,6 +17,7 @@ from django.template import loader
 from django.shortcuts import render
 from django.http import Http404
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 def custom_404(request, exception):
     """Display error page"""
@@ -34,16 +35,18 @@ def dashboard(request):
     user_tasks = Task.objects.filter(assigned_members=current_user)
 
     late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    late_task_text = ", ".join([task.title for task in late_tasks[:10]])
+    if (len(late_tasks) > 10):
+        late_task_text += f" and {len(late_tasks) - 10} more."
     
 
     return render(request, 'dashboard.html', {'user': current_user,
                                                 "user_teams" : user_teams,
                                                 "user_notifications": user_notifications,
                                                 'user_tasks': user_tasks,
-                                                'late_tasks':late_tasks
-                                            })
+                                                'late_tasks':late_tasks,
+                                                'late_task_text':late_task_text})
 
-#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     if request.method == 'POST':
@@ -91,15 +94,16 @@ def show_team(request, team_id):
         # members = set()
         # for task in tasks:
         #     members.update(task.assigned_members.all())
+        unarchived_tasks = tasks.filter(is_archived=False)
+        archived_tasks = tasks.filter(is_archived=True)
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
     except Http404:
         return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': current_team, 'tasks': tasks, 'members': members})
+        return render(request, 'show_team.html', {'team': current_team, 'unarchived': unarchived_tasks, 'archived': archived_tasks, 'members': members})
 
-#TODO: Turn this into a form view class
 @login_required
 @team_member_prohibited_to_view_team
 def create_task(request, team_id):
@@ -133,7 +137,6 @@ def create_task(request, team_id):
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
-
     if request.method == 'POST':
         form = TaskForm(instance=current_task, data=request.POST)
         if form.is_valid():
@@ -208,7 +211,7 @@ def toggle_task_archive(request, task_id):
 def leaderboard_view(request, team_id):
     try:
         members, current_team, tasks = calculate_task_complete_score(team_id)
-        return render(request, 'show_team.html', {'members': members, 'team': current_team, 'tasks': tasks})
+        return redirect('show_team', current_team.id)
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
@@ -276,9 +279,14 @@ def accept_invitation(request, invitation_id):
         notification.delete()
     except Notification.DoesNotExist:
         redirect('dashboard')
+    Notification.objects.create(
+                user=request.user,
+                title=f"Joined a team",
+                description=f"You have joined {invitation.team.title}",
+                actionable=False)
 
     messages.success(request, "You have joined the team!")
-    return redirect('dashboard')
+    return redirect('notifications')
 
 @login_required
 def decline_invitation(request, invitation_id):
