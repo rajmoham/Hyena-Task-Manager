@@ -90,13 +90,15 @@ def show_team(request, team_id):
         # members = set()
         # for task in tasks:
         #     members.update(task.assigned_members.all())
+        unarchived_tasks = tasks.filter(is_archived=False)
+        archived_tasks = tasks.filter(is_archived=True)
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
     except Http404:
         return redirect('dashboard')
     else:
-        return render(request, 'show_team.html', {'team': current_team, 'tasks': tasks, 'members': members})
+        return render(request, 'show_team.html', {'team': current_team, 'unarchived': unarchived_tasks, 'archived': archived_tasks, 'members': members})
 
 #TODO: Turn this into a form view class
 @login_required
@@ -201,7 +203,7 @@ def toggle_task_archive(request, task_id):
 def leaderboard_view(request, team_id):
     try:
         members, current_team, tasks = calculate_task_complete_score(team_id)
-        return render(request, 'show_team.html', {'members': members, 'team': current_team, 'tasks': tasks})
+        return redirect('show_team', current_team.id)
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
