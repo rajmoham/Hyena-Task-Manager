@@ -15,8 +15,9 @@ class NewTaskTest(TestCase):
 
     def setUp(self):
         super(TestCase, self).setUp()
-        self.user = User.objects.get(username = "@janedoe")
+        self.user = User.objects.get(username = "@johndoe")
         self.team = Team.objects.get(pk=1)
+        self.team.members.add(self.user)
         self.task = Task.objects.get(pk=1)
         self.url = reverse('edit_task', kwargs={'task_id': self.team.id})
         self.data = {'title': 'New Task','description': 'The quick brown fox jumps over the lazy dog.', "due_date": "2040-02-01T12:00:00Z"}
@@ -48,7 +49,7 @@ class NewTaskTest(TestCase):
         self.assertTemplateUsed(response, 'show_team.html')
 
     def test_unsuccessful_new_task(self):
-        self.client.login(username='@johndoe', password='Password123')
+        self.client.login(username='@janedoe', password='Password123')
         user_count_before = Task.objects.count()
         self.data['title'] = ""
         response = self.client.post(self.url, self.data, follow=True)

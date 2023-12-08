@@ -40,29 +40,27 @@ class ToggleTaskStatusTestCase(TestCase):
 
     def test_get_toggle_task_status_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
-        response = self.client.get(self.url)
+        response = self.client.post(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_toggle_task_status_redirects_to_leaderboard(self):
         self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
-        self.myTeamTask.toggle_task_status()
-        # Check the first redirect to leaderboard
+        response = self.client.post(self.url, follow=True)
+        self.myTeamTask.refresh_from_db()
+        self.assertTrue(self.myTeamTask.is_complete)
         response_url_leaderboard = reverse('leaderboard', kwargs={'team_id': self.myTeamTask.author.id})
         self.assertRedirects(response, response_url_leaderboard, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_team.html')
-
-        # Check the second redirect to show_team
-        # response_url_show_team = reverse('show_team', kwargs={'team_id': self.myTeamTask.author.id})
-        # self.assertRedirects(response, response_url_show_team, status_code=302, target_status_code=200)
-        # self.assertTemplateUsed(response, 'show_team.html')
 
     def test_cannot_toggle_task_of_different_team(self):
         self.client.login(username=self.user.username, password='Password123')
         otherTeamTasks = Task.objects.exclude(author=self.team)
         for task in otherTeamTasks:
             self.assertFalse(task.is_complete)
-            response = self.client.get(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
+            response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
+            self.myTeamTask.refresh_from_db()
+            response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
+            self.myTeamTask.refresh_from_db()
             self.assertFalse(task.is_complete)
             response_url = reverse('dashboard')
             # if user gets redirected to dashboard, this means toggling task was unsuccessful

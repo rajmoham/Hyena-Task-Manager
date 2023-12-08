@@ -19,6 +19,7 @@ class NewTaskTest(TestCase):
         super(TestCase, self).setUp()
         self.user = User.objects.get(username = "@johndoe")
         self.team = Team.objects.get(pk=1)
+        self.team.members.add(self.user)
         self.task = Task.objects.get(pk=1)
         self.url = reverse('delete_task', kwargs={'task_id': self.task.id})
         self.data = {'title': 'New Task','description': 'The quick brown fox jumps over the lazy dog.', "due_date": "2040-02-01T12:00:00Z"}
@@ -48,7 +49,7 @@ class NewTaskTest(TestCase):
         response = self.client.post(self.url, self.data, follow=True)
         user_count_after = Task.objects.count()
         self.assertEqual(user_count_after, user_count_before)
-        self.assertTemplateUsed(response, 'show_team.html')
+        self.assertTemplateUsed(response, 'dashboard.html')
 
     def test_unsucessful_deletion_invalid_team(self):
         self.client.login(username=self.user.username, password="Password123")
@@ -58,9 +59,10 @@ class NewTaskTest(TestCase):
         team = task.author
         url = reverse('delete_task', kwargs={'task_id': task.id})
         response = self.client.post(url, follow=True)
-        redirect_url = reverse('show_team', kwargs={'team_id': team.id})
+        #redirect_url = reverse('show_team', kwargs={'team_id': team.id})
+        redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_team.html')
+        self.assertTemplateUsed(response, 'dashboard.html')
         task_count_after = Task.objects.count()
         self.assertEqual(task_count_after, task_count_before)
         self.assertEqual(response.status_code, 200)

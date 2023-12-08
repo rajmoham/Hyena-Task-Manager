@@ -56,7 +56,6 @@ class Team(models.Model):
 
         ordering = ['-created_at']
 
-
 class Invitation(models.Model):
     INVITED = 'invited'
     ACCEPTED = 'accepted'

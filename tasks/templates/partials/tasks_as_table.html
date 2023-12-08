@@ -183,7 +183,8 @@
                     Delete Task
                   </button>
                 </form>
-                <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
+                  {% csrf_token %}
                     <span class="float-end">
                       {% if task.is_complete %}
                           <button class="btn btn-complete">Complete</button>
@@ -192,7 +193,8 @@
                       {% endif %}
                   </span>
                 </form>
-                <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
+                <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
+                  {% csrf_token %}
                   <span class="float-end">
                     {% if not task.is_archived %}
                         <button class="btn btn-archive">Archive</button>
