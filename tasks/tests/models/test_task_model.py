@@ -61,13 +61,13 @@ class TaskTest(TestCase):
     def test_created_at_is_not_null(self):
         self.assertIsNotNone(self.task.created_at)
 
-    # def test_task_creation_with_invalid_due_date(self): 
-    #     self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00+00:00")
-    #     with self.assertRaises(ValidationError):
-    #         self.task.full_clean()
+    def test_task_creation_with_invalid_due_date(self): 
+        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00+00:00")
+        with self.assertRaises(ValidationError):
+            self.task.full_clean()
 
     def test_task_creation_with_valid_due_date(self): 
-        self.task.due_date = datetime.fromisoformat("5004-02-01T12:00:00Z")
+        self.task.due_date = datetime.fromisoformat("5004-02-01T12:00:00+00:00")
         self.task.full_clean()
 
     def test_due_date_must_not_be_blank(self):

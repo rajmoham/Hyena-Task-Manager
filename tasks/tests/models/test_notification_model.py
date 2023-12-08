@@ -21,7 +21,7 @@ class NotificationTest(TestCase):
         self.notification = Notification.objects.create(
             title='Title',
             description="Description",
-            created_at=datetime.fromisoformat("2004-02-01T12:00:00Z"),
+            created_at=datetime.fromisoformat("2004-02-01T12:00:00+00:00"),
             user = self.user,
             actionable=True,
             seen=False,
