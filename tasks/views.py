@@ -43,7 +43,6 @@ def dashboard(request):
                                                 'user_tasks': user_tasks,
                                                 'late_tasks':late_tasks})
 
-#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     if request.method == 'POST':
