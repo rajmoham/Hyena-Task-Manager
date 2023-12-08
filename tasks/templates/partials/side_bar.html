@@ -1,21 +1,43 @@
 <style>
-  .nav-item-top {
-    transition: 0.5s all ease;
-    color: #241969;
-    font-size: 18px;
-    background-color: #847bc0;
-  }
-
   .nav-item {
     color: #241969;
     transition: 0.5s all ease;
-    border-radius: 8px;
+  }
+
+  .nav-item-top {
+    border-radius: 8px 8px;
   }
 
   .nav-item:hover {
     color: white;
     background-color: #847bc0;
     filter: drop-shadow(0 0 4px #adadad);
+  }
+  .purple-text {
+    color: #2c1f7d;
+  }
+  .user-container {
+    background-color: #cec9e9;
+    border-radius: 16px;
+    border: 1px solid #c2bce2;
+    transition: 0.3s ease all;
+  }
+  .user-container:hover {
+    background-color: #afa8da;
+  }
+  .user-options {
+    position: absolute;
+    width: 90%;
+    transition: 300ms ease all;
+    bottom: 100%;
+    left: 5%;  
+    z-index: 0;
+    max-height: 0;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
+  .user-container:hover .user-options{
+    max-height: 300px;
   }
 </style>
 
@@ -34,13 +56,13 @@
 
     <div class="mt-4 w-100 d-flex flex-column align-items-center">
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'dashboard' %}">
-        <div class="p-2 d-flex align-items-center nav-item">
+        <div class="p-2 d-flex align-items-center nav-item nav-item-top">
           <i class="bi bi-house-fill mx-3"></i>
           <span class="flex-grow-1 mx-2" style="font-size: 16px;">Dashboard</span>
         </div>
       </a>
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'notifications' %}">
-        <div class="p-2 d-flex align-items-center nav-item">
+        <div class="p-2 d-flex align-items-center nav-item nav-item-top">
           <i class="bi bi-bell-fill mx-3"></i>
           <span class="flex-grow-2 mx-2" style="font-size: 16px;">
             Notifications
@@ -54,7 +76,7 @@
         </div>
       </a>
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'create_team' %}">
-        <div class="p-2 d-flex align-items-center nav-item">
+        <div class="p-2 d-flex align-items-center nav-item nav-item-top">
           <i class="bi bi-people-fill mx-3"></i>
           <span class="flex-grow-1 mx-2" style="font-size: 16px;">New Team</span>
         </div>
@@ -64,33 +86,44 @@
   </div>
 
   <div class="w-100 mb-1 d-flex flex-column" style="max-width: 230px;">
-    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'profile' %}">
-      <div class="p-2 d-flex align-items-center nav-item">
-        <i class="bi bi-person-fill mx-3"></i>
-        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Update Profile</span>
+    <div class="d-flex justify-content-between shadow-lg py-2 px-3 position-relative user-container">
+      <div class="d-flex">
+        <img src="{{ user.mini_gravatar }}" alt="User Gravatar"
+          style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
+        <div class="ms-3">
+          <span class="purple-text">{{ user.full_name }}</span> <br>
+          <span class="purple-text" style="font-size: 0.75rem;">{{ user.username }}</span>
+        </div>
       </div>
-    </a>
-    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'password' %}">
-      <div class="p-2 d-flex align-items-center nav-item">
-        <i class="bi bi-lock-fill mx-3"></i>
-        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Change Password</span>
+      <div class="d-flex align-items-center">
+        <span class="purple-text">
+          <i class="bi bi-chevron-double-up"></i>
+        </span>
       </div>
-    </a>
-    <hr class="dropdown-divider mb-3">
-    <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'log_out' %}">
-      <div class="p-2 d-flex align-items-center nav-item">
-        <i class="bi bi-box-arrow-right mx-3"></i>
-        <span class="flex-grow-1 mx-2" style="font-size: 16px;">Log out</span>
+
+      <div class="user-options shadow-lg">
+        <a style="width: 100%; max-width: 230px; text-decoration: none;" href="{% url 'profile' %}">
+          <div class="p-2 d-flex align-items-center nav-item">
+            <i class="bi bi-person-fill mx-3"></i>
+            <span class="flex-grow-1 mx-2" style="font-size: 16px;">Update Profile</span>
+          </div>
+        </a>
+        <div class="border-2 border-bottom">
+        <a style="width: 100%; max-width: 230px; text-decoration: none;" href="{% url 'password' %}">
+          <div class="p-2 d-flex align-items-center nav-item">
+            <i class="bi bi-lock-fill mx-3"></i>
+            <span class="flex-grow-1 mx-2" style="font-size: 16px;">Change Password</span>
+          </div>
+        </a>
       </div>
-    </a>
-    <div class="d-flex shadow-lg py-2 px-3"
-      style="background-color: #cec9e9; border-radius: 16px; border: 1px solid #c2bce2;">
-      <img src="{{ user.mini_gravatar }}" alt="User Gravatar"
-        style="border: 2px solid #8e84ca; border-radius: 50%; height: 50px; width: 50px;">
-      <div class="ms-3">
-        <span>{{ user.full_name }}</span> <br>
-        <span style="font-size: 0.75rem;">{{ user.username }}</span>
+        <a style="width: 100%; max-width: 230px; text-decoration: none;" href="{% url 'log_out' %}">
+          <div class="p-2 d-flex align-items-center nav-item">
+            <i class="bi bi-box-arrow-right mx-3"></i>
+            <span class="flex-grow-1 mx-2" style="font-size: 16px;">Log out</span>
+          </div>
+        </a>
       </div>
+
     </div>
   </div>
 </nav>
