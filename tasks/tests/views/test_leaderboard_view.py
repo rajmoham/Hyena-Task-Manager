@@ -54,6 +54,7 @@ class LeaderboardViewTestCase(TestCase):
     def test_leaderboard_ranks_user_completed_tasks_in_descending_order(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
+ 
         # mark tasks 1-4 as complete
         self.myTeamTask1.toggle_task_status()
         self.myTeamTask2.toggle_task_status()

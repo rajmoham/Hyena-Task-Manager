@@ -153,21 +153,21 @@
         <div class="accordion-body">
           <h4 class="mb-4">{{ task.title }}</h4>
 
-          <div class="row">
-            <div class="col-4">
-              <div class="mb-2">
-                <span style="font-weight: bold;">Task Description:</span> </br>
-                <span>{{ task.description }}</span>
+            <div class="row">
+              <div class="col-4">
+                <div class="mb-2">
+                  <span style="font-weight: bold;">Task Description:</span> </br>
+                  <span>{{ task.description }}</span>
+                </div>
+                <div class="mb-2">
+                  <span style="font-weight: bold;">Created:</span> </br>
+                  <span>{{ task.created_at|date:"F j, Y" }}</span>
+                </div>
+                <div class="mb-2">
+                  <span style="font-weight: bold;">Due Date:</span> </br>
+                  <span>{{ task.due_date|date:"F j, Y" }}</span>
+                </div>
               </div>
-              <div class="mb-2">
-                <span style="font-weight: bold;">Created:</span> </br>
-                <span>{{ task.created_at|date:"F j, Y" }}</span>
-              </div>
-              <div class="mb-2">
-                <span style="font-weight: bold;">Due Date:</span> </br>
-                <span>{{ task.due_date|date:"F j, Y" }}</span>
-              </div>
-            </div>
 
             <div class="task-members col-4 d-flex justify-content-center">
               <div>
@@ -233,7 +233,7 @@
                   </button>
                 </form>
 
-                <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
                   {% if task.is_complete %}
                   <button class="btn btn-complete w-100">
                     <i class="bi bi-check-lg"></i> Completed
@@ -245,7 +245,7 @@
                   {% endif %}
                 </form>
 
-                <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
+                <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
                   <span class="">
                     {% if not task.is_archived %}
                     <button class="btn btn-archive w-100">
@@ -257,12 +257,13 @@
               </div>
             </div>
 
+            </div>
+
           </div>
 
         </div>
-
       </div>
-    </div>
+      {% endif %}
     {% endfor %}
     {% else %}
     <div class="table-body py-3 d-flex justify-content-center">

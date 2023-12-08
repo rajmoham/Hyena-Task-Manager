@@ -16,6 +16,7 @@ class NewTaskTest(TestCase):
         super(TestCase, self).setUp()
         self.user = User.objects.get(username = "@janedoe")
         self.team = Team.objects.get(pk=1)
+        self.team.members.add(self.user)
         self.url = reverse('create_task', kwargs={'team_id': self.team.id})
         self.data = {'title': 'New Task','description': 'The quick brown fox jumps over the lazy dog.', "due_date": "2040-02-01T12:00:00Z"}
 

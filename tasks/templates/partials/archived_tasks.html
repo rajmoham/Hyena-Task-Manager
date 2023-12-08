@@ -24,7 +24,8 @@
                         <br/>
                         <div class="task-status">
                             <span class="statuslabel" style="font-weight:bold">Mark Completed:</span>
-                            <form action="{% url 'task_toggle' task_id=task.id %}" method="get">
+                            <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
+                                {% csrf_token %}
                                 <span class="float">
                                 {% if task.is_complete %}
                                     <button class="btn btn-complete">Complete</button>
@@ -71,7 +72,8 @@
                         <br/>
                         <div class="task-archive">
                             <span class="delete-task-label" style="font-weight:bold">Unarchive Task:</span>
-                            <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
+                            <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
+                                {% csrf_token %}
                                 <span class="float">
                                 {% if task.is_archived %}
                                     <button class="btn btn-unarchive">Unarchive</button>

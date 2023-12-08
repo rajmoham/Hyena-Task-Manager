@@ -116,7 +116,7 @@ class DashboardViewTestCase(TestCase):
     def test_dashboard_displays_overdue_tasks(self):
         self.client.login(username=self.user.username, password="Password123")
         self.task.assigned_members.add(self.user)
-        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
+        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00+00:00")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'dashboard.html')

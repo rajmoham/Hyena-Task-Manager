@@ -9,8 +9,7 @@ from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited, calculate_task_complete_score
-from django.core.exceptions import ObjectDoesNotExist
+from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team, team_member_prohibited_to_customise_task
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
@@ -18,6 +17,7 @@ from django.template import loader
 from django.shortcuts import render
 from django.http import Http404
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 def custom_404(request, exception):
     """Display error page"""
@@ -84,6 +84,7 @@ def home(request):
     return render(request, 'home.html')
 
 @login_required
+@team_member_prohibited_to_view_team
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
@@ -104,6 +105,7 @@ def show_team(request, team_id):
         return render(request, 'show_team.html', {'team': current_team, 'unarchived': unarchived_tasks, 'archived': archived_tasks, 'members': members})
 
 @login_required
+@team_member_prohibited_to_view_team
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
     if request.method == "POST":
@@ -131,6 +133,7 @@ def create_task(request, team_id):
             return redirect('log_in')
           
 @login_required
+@team_member_prohibited_to_customise_task
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
@@ -147,6 +150,7 @@ def edit_task(request, task_id):
     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
 
 @login_required
+@team_member_prohibited_to_customise_task
 def delete_task(request, task_id):
     current_user = request.user
     current_task = Task.objects.get(id=task_id)
@@ -162,6 +166,7 @@ def delete_task(request, task_id):
     return redirect('show_team', current_team.id)
 
 @login_required
+@team_member_prohibited_to_customise_task
 def toggle_task_status(request, task_id):
     current_user = request.user
     try:
@@ -180,6 +185,7 @@ def toggle_task_status(request, task_id):
         return redirect('leaderboard', current_team.id)
 
 @login_required
+@team_member_prohibited_to_customise_task
 def toggle_task_archive(request, task_id):
     current_user = request.user
     try:
@@ -201,6 +207,7 @@ def toggle_task_archive(request, task_id):
         return redirect('show_team', current_team.id)
 
 @login_required
+@team_member_prohibited_to_view_team
 def leaderboard_view(request, team_id):
     try:
         members, current_team, tasks = calculate_task_complete_score(team_id)
@@ -212,20 +219,26 @@ def leaderboard_view(request, team_id):
         return redirect('show_team', team.id)
 
 @login_required
+@team_member_prohibited_to_customise_task
 def assign_member_to_task(request, task_id, user_id):
+    current_logged_in_user = request.user
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
     selected_user = User.objects.get(id = user_id)
-    if selected_user in current_team.members.all():
-        if selected_user in current_task.assigned_members.all():
-            current_task.assigned_members.remove(selected_user)
-            messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
-        else:
-            current_task.assigned_members.add(selected_user)
-            messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
+    if current_logged_in_user in current_team.members.all():
+        if selected_user in current_team.members.all():
+            if selected_user in current_task.assigned_members.all():
+                current_task.assigned_members.remove(selected_user)
+                messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
+            else:
+                current_task.assigned_members.add(selected_user)
+                messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
+    else:
+        messages.add_message(request, messages.WARNING, f"Cannot assign task ask you are not in the team")
     return redirect('show_team', current_team.id)
 
 @login_required
+@team_member_prohibited_to_view_team
 def invite(request, team_id):
     team = get_object_or_404(Team, pk=team_id)
 
@@ -265,13 +278,13 @@ def accept_invitation(request, invitation_id):
         notification = Notification.objects.get(user=request.user, invitation=invitation)
         notification.delete()
     except Notification.DoesNotExist:
-        pass
-    
+        redirect('dashboard')
     Notification.objects.create(
                 user=request.user,
                 title=f"Joined a team",
                 description=f"You have joined {invitation.team.title}",
                 actionable=False)
+
     messages.success(request, "You have joined the team!")
     return redirect('notifications')
 
@@ -286,7 +299,7 @@ def decline_invitation(request, invitation_id):
             notification = Notification.objects.get(user=request.user, invitation=invitation)
             notification.delete()
         except Notification.DoesNotExist:
-            pass
+            redirect('dashboard')
 
         messages.success(request, "You have declined the invitation.")
     else:
