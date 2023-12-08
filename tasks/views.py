@@ -263,9 +263,14 @@ def accept_invitation(request, invitation_id):
         notification.delete()
     except Notification.DoesNotExist:
         pass
-
+    
+    Notification.objects.create(
+                user=request.user,
+                title=f"Joined a team",
+                description=f"You have joined {invitation.team.title}",
+                actionable=False)
     messages.success(request, "You have joined the team!")
-    return redirect('dashboard')
+    return redirect('notifications')
 
 @login_required
 def decline_invitation(request, invitation_id):
