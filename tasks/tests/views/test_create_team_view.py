@@ -55,7 +55,7 @@ class NewTeamTest(TestCase):
         self.assertEqual(user_count_after, user_count_before)
         self.assertTemplateUsed(response, 'create_team.html')
 
-    def test_cannot_create_team_for_other_user(self):
+    def test_cannot_create_team_for_another_user(self):
         self.client.login(username='@johndoe', password='Password123')
         other_user = User.objects.get(username = "@janedoe")
         self.data['author'] = other_user.id
@@ -76,3 +76,10 @@ class NewTeamTest(TestCase):
         team_count_after = Team.objects.count()
         self.assertEqual(team_count_after, team_count_before + 1)
         self.assertEqual(response.status_code, 200)
+
+    def test_invalid_team_user_is_not_logged_in(self):
+        team_count_before = Team.objects.count()
+        response = self.client.post(self.url, self.data, follow=True)
+        team_count_after = Team.objects.count()
+        self.assertEqual(team_count_after, team_count_before)
+        self.assertTemplateUsed(response, 'log_in.html')

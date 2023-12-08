@@ -35,15 +35,18 @@ def dashboard(request):
     user_tasks = Task.objects.filter(assigned_members=current_user)
 
     late_tasks = Task.objects.filter(assigned_members=current_user, due_date__lt=timezone.now())
+    late_task_text = ", ".join([task.title for task in late_tasks[:10]])
+    if (len(late_tasks) > 10):
+        late_task_text += f" and {len(late_tasks) - 10} more."
     
 
     return render(request, 'dashboard.html', {'user': current_user,
                                                 "user_teams" : user_teams,
                                                 "user_notifications": user_notifications,
                                                 'user_tasks': user_tasks,
-                                                'late_tasks':late_tasks})
+                                                'late_tasks':late_tasks,
+                                                'late_task_text':late_task_text})
 
-#TODO: Turn this into a form view class
 @login_required
 def create_team(request):
     if request.method == 'POST':
@@ -100,7 +103,6 @@ def show_team(request, team_id):
     else:
         return render(request, 'show_team.html', {'team': current_team, 'unarchived': unarchived_tasks, 'archived': archived_tasks, 'members': members})
 
-#TODO: Turn this into a form view class
 @login_required
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
@@ -132,7 +134,6 @@ def create_task(request, team_id):
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
-
     if request.method == 'POST':
         form = TaskForm(instance=current_task, data=request.POST)
         if form.is_valid():
