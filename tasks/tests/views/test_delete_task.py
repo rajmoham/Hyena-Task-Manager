@@ -25,7 +25,7 @@ class NewTaskTest(TestCase):
         self.data = {'title': 'New Task','description': 'The quick brown fox jumps over the lazy dog.', "due_date": "2040-02-01T12:00:00Z"}
 
 
-    def test_new_task_url(self): 
+    def test_delete_task_url(self): 
         self.assertEqual(self.url,'/delete_task/' + str(self.task.id))
 
     def test_successful_delete_task(self):

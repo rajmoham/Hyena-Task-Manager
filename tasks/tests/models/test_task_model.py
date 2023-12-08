@@ -57,7 +57,7 @@ class TaskTest(TestCase):
         self.assertIsNotNone(self.task.created_at)
 
     # def test_task_creation_with_invalid_due_date(self): 
-    #     self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
+    #     self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00+00:00")
     #     with self.assertRaises(ValidationError):
     #         self.task.full_clean()
 

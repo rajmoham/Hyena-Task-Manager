@@ -9,8 +9,7 @@ from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited
-from django.core.exceptions import ObjectDoesNotExist
+from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team, team_member_prohibited_to_customise_task
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
@@ -41,7 +40,8 @@ def dashboard(request):
                                                 "user_teams" : user_teams,
                                                 "user_notifications": user_notifications,
                                                 'user_tasks': user_tasks,
-                                                'late_tasks':late_tasks})
+                                                'late_tasks':late_tasks
+                                            })
 
 #TODO: Turn this into a form view class
 @login_required
@@ -81,7 +81,7 @@ def home(request):
     return render(request, 'home.html')
 
 @login_required
-@team_member_prohibited
+@team_member_prohibited_to_view_team
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
@@ -101,7 +101,7 @@ def show_team(request, team_id):
 
 #TODO: Turn this into a form view class
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_view_team
 def create_task(request, team_id):
     """Allow the user to create a Task for their Team"""
     if request.method == "POST":
@@ -129,7 +129,7 @@ def create_task(request, team_id):
             return redirect('log_in')
           
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_customise_task
 def edit_task(request, task_id):
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
@@ -147,7 +147,7 @@ def edit_task(request, task_id):
     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_customise_task
 def delete_task(request, task_id):
     current_user = request.user
     current_task = Task.objects.get(id=task_id)
@@ -163,7 +163,7 @@ def delete_task(request, task_id):
     return redirect('show_team', current_team.id)
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_customise_task
 def toggle_task_status(request, task_id):
     current_user = request.user
     try:
@@ -182,7 +182,7 @@ def toggle_task_status(request, task_id):
         return redirect('leaderboard', current_team.id)
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_customise_task
 def toggle_task_archive(request, task_id):
     current_user = request.user
     try:
@@ -204,7 +204,7 @@ def toggle_task_archive(request, task_id):
         return redirect('show_team', current_team.id)
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_view_team
 def leaderboard_view(request, team_id):
     try:
         members, current_team, tasks = calculate_task_complete_score(team_id)
@@ -216,7 +216,7 @@ def leaderboard_view(request, team_id):
         return redirect('show_team', team.id)
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_customise_task
 def assign_member_to_task(request, task_id, user_id):
     current_logged_in_user = request.user
     current_task = Task.objects.get(id=task_id)
@@ -235,7 +235,7 @@ def assign_member_to_task(request, task_id, user_id):
     return redirect('show_team', current_team.id)
 
 @login_required
-#@team_member_prohibited
+@team_member_prohibited_to_view_team
 def invite(request, team_id):
     team = get_object_or_404(Team, pk=team_id)
 
@@ -275,7 +275,7 @@ def accept_invitation(request, invitation_id):
         notification = Notification.objects.get(user=request.user, invitation=invitation)
         notification.delete()
     except Notification.DoesNotExist:
-        pass
+        redirect('dashboard')
 
     messages.success(request, "You have joined the team!")
     return redirect('dashboard')
@@ -291,7 +291,7 @@ def decline_invitation(request, invitation_id):
             notification = Notification.objects.get(user=request.user, invitation=invitation)
             notification.delete()
         except Notification.DoesNotExist:
-            pass
+            redirect('dashboard')
 
         messages.success(request, "You have declined the invitation.")
     else:
