@@ -53,6 +53,11 @@ class TaskTest(TestCase):
         with self.assertRaises(ValidationError):
             self.task.full_clean()
 
+    def test_description_must_not_be_overlong(self):
+        self.team.description = 'x' * 10000
+        with self.assertRaises(ValidationError):
+            self.team.full_clean()
+
     def test_created_at_is_not_null(self):
         self.assertIsNotNone(self.task.created_at)
 
@@ -60,6 +65,10 @@ class TaskTest(TestCase):
         self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
         with self.assertRaises(ValidationError):
             self.task.full_clean()
+
+    def test_task_creation_with_valid_due_date(self): 
+        self.task.due_date = datetime.fromisoformat("5004-02-01T12:00:00Z")
+        self.task.full_clean()
 
     def test_due_date_must_not_be_blank(self):
         self.task.due_date = ''
@@ -160,11 +169,3 @@ class TaskTest(TestCase):
         for task in tasks:
             task.toggle_archive()
             self.assertEquals(True, task.is_archived)
-
-    """ def test_due_date_is_overdue(self):
-        self.task.due_date = datetime.fromisoformat("2004-02-01T12:00:00Z")
-        self.assertTrue(self.task.is_overdue())
-    
-    def test_due_date_is_not_overdue(self):
-        self.task.due_date = datetime.fromisoformat("3030-02-01T12:00:00Z")
-        self.assertFalse(self.task.is_overdue()) """
