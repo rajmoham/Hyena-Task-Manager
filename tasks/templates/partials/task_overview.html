@@ -1,0 +1,34 @@
+<style>
+  .bg-no-overdue {
+    background-color: #d3f0cb;
+    border: 1px solid #84c971;
+  }
+
+  .bg-overdue {
+    background-color: #c73c3c;
+    border: 1px solid #8d1313;
+    color: white;
+  }
+</style>
+{% if late_tasks %}
+<div class="info-card bg-overdue my-3 shadow-lg" style="max-width: 32rem;">
+  {% else %}
+<div class="info-card bg-no-overdue my-3 shadow-lg" style="max-width: 32rem;">
+{% endif %}
+
+  <div class="card-body">
+    <div class="mb-3">
+      <h4 class="card-title">Welcome {{ user.first_name }},</h4>
+    </div>
+    <p class="card-text">
+      {% if late_tasks %}
+      Your Overdue Tasks:
+      <div>
+        <span class="card-title" style="color: rgb(255, 225, 225);"><strong>{{ late_task_text }}</strong></span>
+      </div>
+    {% else %}
+    You have no overdue Tasks!
+    {% endif %}
+    </p>
+  </div>
+</div>
