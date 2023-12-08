@@ -221,7 +221,8 @@
                                     </button>
                                 </form>
 
-                                <form action="{% url 'toggle_archive' task_id=task.id %}" method="get">
+                                <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
+                                    {% csrf_token %}
                                     <span class="">
                                         {% if task.is_archived %}
                                         <button class="btn btn-archive w-100">

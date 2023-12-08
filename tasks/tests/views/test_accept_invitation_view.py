@@ -24,7 +24,7 @@ class AcceptInviteViewTestCase(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "You have joined the team!")
-        self.assertRedirects(response, reverse('dashboard'))
+        self.assertRedirects(response, reverse('notifications'))
 
     def test_unauthorized_accept_invitation(self):
         self.client.login(username='otheruser', password='Password123')

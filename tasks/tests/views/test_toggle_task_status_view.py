@@ -48,7 +48,7 @@ class ToggleTaskStatusTestCase(TestCase):
         response = self.client.post(self.url, follow=True)
         self.myTeamTask.refresh_from_db()
         self.assertTrue(self.myTeamTask.is_complete)
-        response_url_leaderboard = reverse('leaderboard', kwargs={'team_id': self.myTeamTask.author.id})
+        response_url_leaderboard = reverse('show_team', kwargs={'team_id': self.myTeamTask.author.id})
         self.assertRedirects(response, response_url_leaderboard, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_team.html')
 
