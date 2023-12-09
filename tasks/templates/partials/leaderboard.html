@@ -1,16 +1,48 @@
-  <div class="d-flex flex-column team team-card mb-4" style="width: 18rem;">
-    <div class="card-header">
-        Leaderboard
-    </div>
-    <div class="card-body mb-2" style="overflow: scroll; text-overflow: ellipsis; max-height: 300px;">
-        <ul class="list-group list-group-flush">
-            {% if members %}
-                {% for member in members|slice:"0:5" %}
-                    <li class="list-group-item">{{ member.username }} - Total Tasks Completed: {{ member.total_tasks_completed }}</li>
-                {% endfor %}
-            {% else %}
-                <p>No tasks completed.</p>
-            {% endif %}
-        </ul>
+<div class="mb-5">
+    <h3 class="mb-2">Leaderboard</h3>
+    <div class="row">
+        <div class="leaderboard-container col-2 d-flex flex-column justify-content-between align-items-center m-3">
+            <img class="gravatar" src="{{members.0.gravatar}}" alt="" style="width: 100px; height: 100px;">
+            <div class="mt-2 text-center">
+                <h4><span class="badge bg-warning">{{members.0.username}}</span></h4>
+                <h5><span class="badge">Total Tasks: {{ members.0.total_tasks_completed }}</span></h5>
+            </div>
+        </div>
+        {% if members.1 %}
+        <div class="leaderboard-container col-2 d-flex flex-column justify-content-between align-items-center m-3">
+            <img class="gravatar" src="{{members.1.gravatar}}" alt="" style="width: 100px; height: 100px;">
+            <div class="mt-2 text-center">
+                <h4><span class="badge bg-secondary">{{members.1.username}}</span></h4>
+                <h5><span class="badge">Total Tasks: {{ members.1.total_tasks_completed }}</span></h5>
+            </div>
+        </div>
+        {% endif %}
+        {% if members.2 %}
+        <div class="leaderboard-container col-2 d-flex flex-column justify-content-between align-items-center m-3">
+            <img class="gravatar" src="{{members.2.gravatar}}" alt="" style="width: 100px; height: 100px;">
+            <div class="mt-2 text-center">
+                <h4><span class="badge bg-bronze">{{members.2.username}}</span></h4>
+                <h5><span class="badge">Total Tasks: {{ members.2.total_tasks_completed }}</span></h5>
+            </div>
+        </div>
+        {% endif %}
+        {% if members.3 %}
+        <div class="leaderboard-container col-2 d-flex flex-column justify-content-between align-items-center m-3">
+            <img class="gravatar" src="{{members.3.gravatar}}" alt="" style="width: 100px; height: 100px;">
+            <div class="mt-2 text-center">
+                <h4><span class="badge">{{members.3.username}}</span></h4>
+                <h5><span class="badge">Total Tasks: {{ members.3.total_tasks_completed }}</span></h5>
+            </div>
+        </div>
+        {% endif %}
+        {% if members.4 %}
+        <div class="leaderboard-container col-2 d-flex flex-column justify-content-between align-items-center m-3">
+            <img class="gravatar" src="{{members.4.gravatar}}" alt="" style="width: 100px; height: 100px;">
+            <div class="mt-2 text-center">
+                <h4><span class="badge">{{members.4.username}}</span></h4>
+                <h5><span class="badge">Total Tasks: {{ members.4.total_tasks_completed }}</span></h5>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>

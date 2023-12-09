@@ -1,68 +1,9 @@
 * {
-    font-family: var(--font-family-display,'Charlie Display',); 
+    font-family: var(--font-family-display, 'Charlie Display', );
 }
 
 body {
     background-color: #c2bfe9;
-}
-
-#home {
-    background-image: linear-gradient(to bottom right, #8A2BE2, #BA55D3);
-}
-
-h1.cover-heading {
-    color: white;
-}
-
-p.cover-text {
-    color: white;
-}
-
-.btn {
-    background-color: #1E90FF;
-}
-
-.btn:hover {
-    background-color: #0a4b8c;
-}
-
-.btn-complete {
-    background-color: #33B864;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-complete:hover {
-    background-color: #234F1E;
-    color: white;
-    transition: all ease 300ms;
-}
-
-.btn-red {
-    background-color: #960018;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-red:hover {
-    background-color: #420D09;
-    color: white;
-    transition: all ease 300ms;
-}
-
-.btn-incomplete {
-    background-color: #708090;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-incomplete:hover {
-    background-color: #36454F;
-    color: white;
-    transition: all ease 300ms;
 }
 
 .btn-purple {
@@ -78,61 +19,322 @@ p.cover-text {
     transition: all ease 300ms;
 }
 
-.btn-assign {
-    background-color: #32127A;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-assign:hover {
-    background-color: #1F095A;
-    color: white;
-    transition: all ease 300ms;
-}
-
-.btn-archive {
-    background-color: #02b8e0;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-archive:hover {
-    background-color: #035de0;
-    color: white;
-    transition: all ease 300ms;
-}
-
-.btn-unarchive {
-    background-color: #e385e0;
-    color: white;
-    transition: all ease 300ms;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.btn-unarchive:hover {
-    background-color: #9d1ee0;
-    color: white;
-    transition: all ease 300ms;
-}
-
 .title-color {
     color: #1a0d7a;
 }
 
-.cover-card {
-    background-color: rgba(255, 255, 255, 0.6);
-    max-width: 30rem;
-    padding-top: 30px;
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-bottom: 30px;
-    border-radius: 15%;
-  }
-  .cover-card-block {
-    opacity: 1
-  }
+.info-card {
+    border-radius: 16px;
+    border: 1px solid #111111;
+}
 
-    
+.landing-bg {
+    opacity: 1;
+    background-image: radial-gradient(#a484e9 0.9px, transparent 0.9px), radial-gradient(#a484e9 0.9px, #eeeffa 0.9px);
+    background-size: 36px 36px;
+    background-position: 0 0, 18px 18px;
+}
 
+.landing-container {
+    background-color: white;
+    padding: 16px 32px;
+    height: 500px;
+    border-radius: 32px;
+    filter: drop-shadow(0 0 10px #c2c2c2);
+}
+
+.btn-fancy {
+    transition: all ease 0.3s;
+}
+
+.btn-fancy:hover {
+    filter: drop-shadow(0 0 20px #8a89c8);
+}
+
+
+.logo-home {
+    width: 100px;
+    margin: 0 auto;
+}
+
+.unseen {
+    background-color: rgb(185, 185, 235);
+    color: rgb(24, 24, 91);
+}
+
+
+.card-header {
+    background-color: #756cba;
+    color: white;
+}
+
+.card-body {
+    background-color: #e4e2f3;
+    padding: 0 0;
+}
+
+.member-item {
+    background-color: #b9b5e6;
+}
+
+.bg-bronze {
+    background-color: rgb(171, 84, 33);
+}
+
+.leaderboard-container {
+    background-color: rgb(159, 136, 213);
+    padding: 16px 8px;
+    border-radius: 16px;
+    filter: drop-shadow(3px 3px 7px rgb(182, 182, 182));
+}
+
+.msg-container {
+    z-index: 100;
+    transform: translateX(-50%) translateY(calc(-100% - 10px));
+}
+
+.btn-outline-purple {
+    background-color: transparent !important;
+    color: #2c1f7d !important;
+    border: 2px solid #2c1f7d;
+    transition: all ease 300ms;
+}
+
+.btn-outline-purple:hover {
+    background-color: #5f5bb6 !important;
+    color: white !important;
+    border: 2px solid transparent;
+}
+
+.nav-item {
+    color: #241969;
+    transition: 0.5s all ease;
+}
+
+.nav-item-top {
+    border-radius: 8px 8px;
+}
+
+.nav-item:hover {
+    color: white;
+    background-color: #847bc0;
+    filter: drop-shadow(0 0 4px #adadad);
+}
+
+.purple-text {
+    color: #2c1f7d;
+}
+
+.user-container {
+    background-color: #cec9e9;
+    border-radius: 16px;
+    border: 1px solid #c2bce2;
+    transition: 0.3s ease all;
+}
+
+.user-container:hover {
+    background-color: #afa8da;
+}
+
+.user-options {
+    position: absolute;
+    width: 90%;
+    transition: 300ms ease all;
+    bottom: 100%;
+    left: 5%;
+    z-index: 0;
+    max-height: 0;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+.user-container:hover .user-options {
+    max-height: 300px;
+}
+
+.bg-no-overdue {
+    background-color: #d3f0cb;
+    border: 1px solid #84c971;
+}
+
+.bg-overdue {
+    background-color: #c73c3c;
+    border: 1px solid #8d1313;
+    color: white;
+}
+
+.table-title {
+    font-size: 18px;
+    background-color: #756cba;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 0;
+}
+
+.table-col {
+    display: flex;
+    align-items: center;
+}
+
+.table-body {
+    background-color: #e4e2f3;
+    border-radius: 8px !important;
+}
+
+.task-item {
+    background-color: #b9b5e6;
+}
+
+.accordion-button {
+    background-color: transparent !important;
+}
+
+.accordion-body {
+    background-color: #e4e2f3;
+    border-radius: 16px;
+}
+
+.user-image {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    border: 2px solid #756cba;
+    position: absolute;
+}
+
+.member-img {
+    height: 50px;
+    width: 50px;
+    margin: 4px;
+    border-radius: 50%;
+}
+
+.dropdown-menu {
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dropdown-menu .active {
+    background-color: #c9c3f7;
+}
+
+.dropdown-menu .active:hover {
+    background-color: #b6b1e5;
+}
+
+.user-tooltip {
+    position: relative;
+    border-radius: 50%;
+}
+
+.user-tooltip .tooltiptext {
+    visibility: none;
+    width: 100px;
+    background-color: #000000aa;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: -10;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%) translateY(75%);
+}
+
+.user-tooltip:hover .tooltiptext {
+    visibility: visible;
+    z-index: 10;
+}
+
+.table-row {
+    font-size: 18px;
+    background-color: #cfcbe9;
+    color: #0a071f;
+    border-radius: 8px;
+    padding: 8px 0;
+}
+
+.overdue-task {
+    background-color: #c73c3c;
+    color: white;
+}
+
+.gravatar {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    border: 2px solid #5448b0;
+}
+
+.member-item {
+    background-color: #b9b5e6;
+}
+
+.text-secondary {
+    color: #5d578c !important;
+}
+
+.team-card {
+    border: 2px solid #1a0d7a;
+    border-radius: 8px;
+    color: white;
+    transition: all ease 0.3s;
+    width: 100%;
+    height: 7rem;
+}
+
+.team-card:hover {
+    box-shadow: 0 0 10px rgb(141, 141, 141);
+}
+
+.team {
+    background-color: #5f5bb6b3;
+}
+
+.add-team {
+    background-color: #bab8ddb3;
+}
+
+.team:hover {
+    background-color: #5f5bb6;
+}
+
+.add-team:hover {
+    background-color: #a4a1de;
+}
+
+.card-container {
+    border: 2px solid #1a0d7a;
+    border-radius: 12px;
+    padding: 1rem;
+    max-height: 800px;
+    overflow: scroll;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+}
+
+.toggle-nav-item {
+    transition: all ease 300ms;
+    border: 2px solid #5f5bb6;
+    border-radius: 0.5rem;
+}
+
+.toggle-nav-item:hover {
+    background-color: #5f5bb6 !important;
+    color: white !important;
+}
+
+.toggle-nav-link {
+    color: #5f5bb6 !important;
+}
+
+.toggle-nav-link:hover {
+    color: white !important;
+}
+
+.active {
+    background-color: #5f5bb6 !important;
+    color: white !important;
+}

@@ -1,114 +1,7 @@
-<style>
-  .btn-purple {
-    background-color: #5448b0;
-    color: white;
-    transition: all ease 300ms;
-  }
-
-  .table-title {
-    font-size: 18px;
-    background-color: #756cba;
-    color: white;
-    border-radius: 8px;
-    padding: 8px 0;
-  }
-
-  .table-col {
-    display: flex;
-    align-items: center;
-  }
-
-  .table-body {
-    background-color: #e4e2f3;
-    border-radius: 8px !important;
-  }
-
-  .task-item {
-    background-color: #b9b5e6;
-  }
-
-  .accordion-button {
-    background-color: transparent !important;
-  }
-
-  .accordion-body {
-    background-color: #e4e2f3;
-    border-radius: 16px;
-  }
-
-  .user-image {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-    border: 2px solid #756cba;
-    position: absolute;
-  }
-
-  .member-img {
-    height: 50px;
-    width: 50px;
-    margin: 4px;
-    border-radius: 50%;
-  }
-
-
-  .btn-delete {
-    background-color: rgb(225, 75, 75);
-    color: white;
-    filter: drop-shadow(0 8px 3px #00000022);
-  }
-
-  .btn-delete:hover {
-    background-color: rgb(149, 13, 13);
-    color: white;
-  }
-
-  .dropdown-menu {
-    padding: 0;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .dropdown-menu .active {
-    background-color: #c9c3f7;
-  }
-
-  .dropdown-menu .active:hover {
-    background-color: #b6b1e5;
-  }
-
-  .user-tooltip {
-    position: relative;
-    border-radius: 50%;
-  }
-
-  .user-tooltip .tooltiptext {
-    visibility: none;
-    width: 100px;
-    background-color: #000000aa;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-    position: absolute;
-    z-index: -10;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%) translateY(75%);
-  }
-
-  .user-tooltip:hover .tooltiptext {
-    visibility: visible;
-    z-index: 10;
-  }
-
-  */
-</style>
-
-<div class="mb-4">
-  <div class="d-flex justify-content-between">
+<div class="mb-5">
+  <div class="d-flex justify-content-between me-2 mb-4">
     <h3>Your Tasks</h3>
-    <a href="{% url 'create_task' team.id %}" class="btn btn-purple me-2 mb-4" style="color: white;">
+    <a href="{% url 'create_task' team.id %}" class="btn btn-purple" style="color: white;">
       <i class="bi bi-plus-square-dotted"></i> Create Task
     </a>
   </div>
@@ -154,6 +47,13 @@
         <div class="col-3 table-col">
           {{task.due_date}}
         </div>
+        <div class="col-3 table-col" style="font-size: 18px;">
+          {% if task.is_complete %}
+          <span class="badge bg-success ms-auto me-5">Completed</span>
+          {% else %}
+          <span class="badge bg-secondary ms-auto me-5">Not Completed</span>
+          {% endif %}
+      </div>
       </div>
 
       <div id="task-collapse{{task.pk}}" class="accordion-collpase collapse py-3"
@@ -197,8 +97,8 @@
                     {% endfor %}
                   </div>
                 </div>
-                <div class="px-4" style="overflow-y: scroll; max-height: 200px; overflow-x:visible;">
-                  <div class="d-flex flex-wrap my-2" style="">
+                <div class="px-4" style="overflow-y: scroll; min-height: 200px; max-height: 200px; overflow-x:visible;">
+                  <div class="d-flex flex-wrap my-2">
                     {% for member in task.assigned_members.all %}
                     <div class="user-tooltip">
                       <img src="{{member.gravatar}}" alt="User" class="member-img" />
@@ -211,51 +111,41 @@
 
             <div class="col-4">
               <div class="d-grid gap-3 col-5 mx-auto">
-                <a class="btn-purple btn w-100" href='{% url "edit_task" task.id%}'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-pencil-square" viewBox="0 0 16 16">
-                    <path
-                      d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                    <path fill-rule="evenodd"
-                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                  </svg>
-                  Edit Task
-                </a>
-
-                <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-delete btn w-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                      class="bi bi-trash3 me-1" viewBox="0 0 16 16">
-                      <path
-                        d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                    </svg>
-                    Delete Task
-                  </button>
-                </form>
-
                 <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
                   {% csrf_token %}
                   {% if task.is_complete %}
-                  <button class="btn btn-complete w-100">
+                  <button class="btn btn-success w-100">
                     <i class="bi bi-check-lg"></i> Completed
                   </button>
                   {% else %}
-                  <button class="btn btn-incomplete w-100">
+                  <button class="btn btn-secondary w-100">
                     <i class="bi bi-check-lg"></i> Mark Complete
                   </button>
                   {% endif %}
                 </form>
 
+                <a class="btn-purple btn w-100" href='{% url "edit_task" task.id%}'>
+                  <i class="bi bi-pencil-square"></i>
+                  Edit Task
+                </a>
+
                 <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
                   {% csrf_token %}
                   <span class="">
                     {% if not task.is_archived %}
-                    <button class="btn btn-archive w-100">
+                    <button class="btn btn-info w-100">
                       <i class="bi bi-archive"></i> Archive
                     </button>
                     {% endif %}
                   </span>
+                </form>
+
+                <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn w-100">
+                    <i class="bi bi-trash"></i>
+                    Delete Task
+                  </button>
                 </form>
               </div>
             </div>
