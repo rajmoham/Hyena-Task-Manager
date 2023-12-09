@@ -25,7 +25,7 @@ def team_member_prohibited_to_view_team(view_function):
 
         current_team = None
 
-        if 'team_id' is not None:
+        if 'team_id' != None:
             try: 
                 current_team = Team.objects.get(id=team_id)
             except ObjectDoesNotExist:
@@ -49,7 +49,7 @@ def team_member_prohibited_to_customise_task(view_function):
 
         current_team = None
 
-        if 'task_id' is not None:
+        if 'task_id' != None:
             try: 
                 current_task = Task.objects.get(id=task_id)
                 current_team = Team.objects.get(id=current_task.author.id)

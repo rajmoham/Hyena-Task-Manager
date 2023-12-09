@@ -43,7 +43,7 @@ class ToggleTaskStatusTestCase(TestCase):
         response = self.client.post(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_get_toggle_task_status_redirects_to_leaderboard(self):
+    def test_get_toggle_task_status_redirects_to_show_team(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.post(self.url, follow=True)
         self.myTeamTask.refresh_from_db()
@@ -57,8 +57,6 @@ class ToggleTaskStatusTestCase(TestCase):
         otherTeamTasks = Task.objects.exclude(author=self.team)
         for task in otherTeamTasks:
             self.assertFalse(task.is_complete)
-            response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
-            self.myTeamTask.refresh_from_db()
             response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
             self.myTeamTask.refresh_from_db()
             self.assertFalse(task.is_complete)

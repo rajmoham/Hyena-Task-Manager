@@ -334,6 +334,82 @@ class LoginProhibitedMixin:
         else:
             return self.redirect_when_logged_in_url
 
+class TeamMemberProhibitedMixin:
+    """Mixin that redirects when a user is not a team member."""
+
+    redirect_if_not_team_member = None
+
+    def dispatch(self, *args, **kwargs):
+        """Redirect when not team member, or dispatch as normal otherwise."""
+        team_id = kwargs.get('team_id', None)
+
+        if team_id is not None:
+            try:
+                current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                raise Http404("Team does not exist")
+
+            if not self.user_is_team_member(current_team):
+                return self.handle_not_team_member(*args, **kwargs)
+
+        return super().dispatch(*args, **kwargs)
+
+    def handle_not_team_member(self, *args, **kwargs):
+        url = self.get_redirect_when_not_team_member(self.request)
+        return redirect(url)
+
+    def user_is_team_member(self, team):
+        return self.request.user.is_authenticated and (self.request.user in team.members.all() or self.request.user == team.author)
+
+    def get_redirect_when_not_team_member(self):
+        """Returns the url to redirect to when user is not team member."""
+        if self.redirect_if_not_team_member is None:
+            raise ImproperlyConfigured(
+                "TeamMemberProhibitedMixin requires either a value for "
+                "'redirect_if_not_team_member', or an implementation for "
+                "'get_redirect_when_not_team_member()'."
+            )
+        else:
+            return reverse(self.redirect_if_not_team_member)
+
+class TeamAuthorProhibitedMixin:
+    """Mixin that redirects when a user is not a team creator or author."""
+
+    redirect_if_not_team_author = None
+
+    def dispatch(self, *args, **kwargs):
+        """Redirect when not team creator or author, or dispatch as normal otherwise."""
+        team_id = kwargs.get('team_id', None)
+
+        if team_id is not None:
+            try:
+                current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                raise Http404("Team does not exist")
+
+            if not self.user_is_team_author(current_team):
+                return self.handle_not_team_author(*args, **kwargs)
+
+        return super().dispatch(*args, **kwargs)
+
+    def handle_not_team_author(self, *args, **kwargs):
+        url = self.get_redirect_when_not_team_author()
+        return redirect(url)
+
+    def user_is_team_author(self, team):
+        return self.request.user.is_authenticated and (self.request.user == team.author)
+
+    def get_redirect_when_not_team_author(self):
+        """Returns the url to redirect to when user is not team author."""
+        if self.redirect_if_not_team_author is None:
+            raise ImproperlyConfigured(
+                "TeamAuthorProhibitedMixin requires either a value for "
+                "'redirect_if_not_team_author', or an implementation for "
+                "'get_redirect_when_not_team_author()'."
+            )
+        else:
+            return reverse(self.redirect_if_not_team_author)
+
 
 class LogInView(LoginProhibitedMixin, View):
     """Display login screen and handle user login."""
@@ -436,12 +512,13 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 
-class TeamUpdateView(UpdateView):
+class TeamUpdateView(LoginRequiredMixin, TeamAuthorProhibitedMixin, UpdateView):
     """Display team editing screen, and handle team details modifications."""
 
     model = Team
     template_name = "edit_team.html"
     form_class = TeamForm
+    redirect_if_not_team_author = 'dashboard'
 
     def get_object(self):
         """Return the object (team) to be updated."""
@@ -455,14 +532,14 @@ class TeamUpdateView(UpdateView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 def team_delete(request, pk):
-    team = get_object_or_404(Team, pk=pk)  # Get your current team
+    team = get_object_or_404(Team, pk=pk)  
 
-    if request.method == 'POST':         # If method is POST,
-        team.delete()                     # delete the team.
-        return redirect('/')             # Finally, redirect to the homepage.
+    if request.method == 'POST':        
+        team.delete()                     
+        return redirect('/')            
 
     return render(request, 'show_team.html', {'team': team})
-    # If method is not POST, render the default template.
+
     
 @login_required
 def notifications(request):
