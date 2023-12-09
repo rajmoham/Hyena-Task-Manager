@@ -15,9 +15,15 @@
   <div class="row">
     <div class="col-12">
       <h1 class="mt-2 mb-4 title-color">Dashboard</h1>
-
-      {% include 'partials/task_overview.html' with late_tasks=late_tasks %}
-
+      <div class="row">
+        <div class="col-6">
+          {% include 'partials/task_overview.html' with late_tasks=late_tasks %}
+        </div>
+        <div class="col-6">
+          {% include 'partials/unseen_notifications.html' %}
+        </div>
+      </div>
+      
       <div class="mt-5">
         <h3 class="mb-3"><i class="bi bi-people"></i> &Tab; Your Tasks ({{ user_tasks.count }})</h3>
         {% include 'partials/tasks_on_dashboard.html' with user_tasks=user_tasks %}
