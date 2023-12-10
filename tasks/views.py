@@ -88,12 +88,7 @@ def home(request):
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
-        # team = Team.objects.get(id=team_id)
-        # tasks = Task.objects.filter(author=team)
         members, current_team, tasks = calculate_task_complete_score(team_id)
-        # members = set()
-        # for task in tasks:
-        #     members.update(task.assigned_members.all())
         unarchived_tasks = tasks.filter(is_archived=False)
         archived_tasks = tasks.filter(is_archived=True)
 
@@ -531,14 +526,30 @@ class TeamUpdateView(LoginRequiredMixin, TeamAuthorProhibitedMixin, UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
-def team_delete(request, pk):
-    team = get_object_or_404(Team, pk=pk)  
-
-    if request.method == 'POST':        
-        team.delete()                     
-        return redirect('/')            
+@login_required
+@team_member_prohibited_to_view_team
+def team_delete(request, team_id):
+    try:
+        team = Team.objects.get(id=team_id)
+        if request.method == 'POST':        
+            team.delete()                     
+            return redirect('/') 
+    except ObjectDoesNotExist:
+        return redirect('dashboard')  
 
     return render(request, 'show_team.html', {'team': team})
+
+@login_required
+@team_member_prohibited_to_view_team
+def leaderboard_view(request, team_id):
+    try:
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        return redirect('show_team', current_team.id)
+
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', team.id)
 
     
 @login_required
@@ -561,7 +572,7 @@ def notifications(request):
         return redirect('log_in')
 
 @login_required
-def seen_notificaiton(request, notification_id):
+def seen_notification(request, notification_id):
     current_user = request.user
     notification = Notification.objects.get(id=notification_id)
     if (notification.user == current_user):
@@ -571,6 +582,7 @@ def seen_notificaiton(request, notification_id):
     else:
         return redirect('dashboard')
     return redirect('notifications')
+
 
 def unseen_notifications(request):
     unseen_notifs = []

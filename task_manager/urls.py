@@ -48,8 +48,8 @@ urlpatterns = [
     path('task_toggle/<int:task_id>', views.toggle_task_status, name='task_toggle'),
     path('toggle_archive/<int:task_id>', views.toggle_task_archive, name='toggle_archive'),
     path('leaderboard/<int:team_id>', views.leaderboard_view, name='leaderboard'),
-    path('seen_notification/<int:notification_id>', views.seen_notificaiton, name="seen_notification"),
-    url(r'^delete/(?P<pk>[0-9]+)/$', views.team_delete, name='team_delete'),
+    path('seen_notification/<int:notification_id>', views.seen_notification, name="seen_notification"),
+    path('delete/<int:team_id>', views.team_delete, name='team_delete'),
 ]
 
 handler404 = 'tasks.views.custom_404'

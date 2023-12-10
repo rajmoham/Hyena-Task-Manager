@@ -1,10 +1,11 @@
+"""Tests of the delete task view."""
 from django.test import TestCase
 from django.urls import reverse
 from tasks.models import Task, User, Team
 
 
 class NewTaskTest(TestCase):
-
+    """Tests of the delete task view."""
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',

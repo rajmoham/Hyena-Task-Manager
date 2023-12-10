@@ -6,6 +6,7 @@ from tasks.tests.helpers import reverse_with_next
 
 class LeaderboardViewTestCase(TestCase):
     '''Unit test for leaderboard view'''
+    
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/other_users.json',
