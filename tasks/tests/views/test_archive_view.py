@@ -6,7 +6,7 @@ from tasks.tests.helpers import reverse_with_next
 
 class ToggleArchiveStatusTestCase(TestCase):
     '''Unit test for toggling archive status'''
-    
+
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/other_users.json',
@@ -63,4 +63,12 @@ class ToggleArchiveStatusTestCase(TestCase):
             # if user gets redirected to dashboard, this means toggling task was unsuccessful
             self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
             self.assertTemplateUsed(response, 'dashboard.html')
+
+    def test_toggle_archive_redirects_when_invalid_team_id_is_entered(self):
+        self.client.login(username=self.user.username, password="Password123")
+        url = reverse('toggle_archive', kwargs={'task_id': self.myTeamTask.id+9999999})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('dashboard')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
 

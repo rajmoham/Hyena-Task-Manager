@@ -25,9 +25,16 @@ def team_member_prohibited_to_view_team(view_function):
 
         current_team = None
 
-        if 'team_id' != None:
+        if team_id != None:
             try: 
                 current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+        if task_id != None:
+            try: 
+                current_task = Task.objects.get(id=task_id)
+                current_team = Team.objects.get(id=current_task.author.id)
             except ObjectDoesNotExist:
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 

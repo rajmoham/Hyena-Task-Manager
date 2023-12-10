@@ -108,6 +108,10 @@ class ShowTeamViewTestCase(TestCase):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
 
+
+
+
+
     
 
 
