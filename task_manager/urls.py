@@ -53,7 +53,8 @@ urlpatterns = [
     path('toggle_archive/<int:task_id>', views.toggle_task_archive, name='toggle_archive'),
     path('leaderboard/<int:team_id>', views.leaderboard_view, name='leaderboard'),
     path('seen_notification/<int:notification_id>', views.seen_notification, name="seen_notification"),
-    path('delete/<int:team_id>', views.team_delete, name='team_delete'),
+    # path('delete/<int:team_id>', views.team_delete, name='team_delete'),
+    path('delete/<int:team_id>', views.DeleteTeamView.as_view(), name='team_delete'),
 ]
 
 handler404 = 'tasks.views.custom_404'

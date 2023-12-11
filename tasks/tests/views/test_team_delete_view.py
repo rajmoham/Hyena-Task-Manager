@@ -47,10 +47,10 @@ class TeamViewTestCase(TestCase):
 
     def test_successful_delete_team(self):
         self.client.login(username=self.user.username, password="Password123")
-        user_count_before = Team.objects.count()
+        team_count_before = Team.objects.count()
         response = self.client.post(self.url, follow=True)
-        user_count_after = Team.objects.count()
-        self.assertEqual(user_count_after, user_count_before - 1)
+        team_count_after = Team.objects.count()
+        self.assertEqual(team_count_after, team_count_before - 1)
         response_url = reverse('dashboard')
         self.assertRedirects(
             response, response_url,
@@ -70,3 +70,12 @@ class TeamViewTestCase(TestCase):
         team_count_after = Team.objects.count()
         self.assertEqual(team_count_after, team_count_before)
         self.assertTemplateUsed(response, 'log_in.html')
+
+    def test_get_delete_team_does_not_delete_team(self):
+        self.client.login(username=self.user.username, password='Password123')
+        team_count_before = Team.objects.count()
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_team', kwargs={'team_id': self.team.id})
+        team_count_after = Team.objects.count()
+        self.assertEqual(team_count_after, team_count_before)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

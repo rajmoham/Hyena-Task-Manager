@@ -48,10 +48,10 @@ class TeamViewTestCase(TestCase):
 
     def test_successful_edit_team(self):
         self.client.login(username=self.user.username, password="Password123")
-        user_count_before = Team.objects.count()
+        team_count_before = Team.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Team.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        team_count_after = Team.objects.count()
+        self.assertEqual(team_count_after, team_count_before)
         response_url = reverse('dashboard')
         self.assertRedirects(
             response, response_url,

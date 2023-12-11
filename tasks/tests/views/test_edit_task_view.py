@@ -4,7 +4,7 @@ from django.urls import reverse
 from tasks.models import Task, User, Team
 
 
-class NewTaskTest(TestCase):
+class EditTaskTest(TestCase):
     """Tests of the edit task view."""
 
     fixtures = [
@@ -37,10 +37,10 @@ class NewTaskTest(TestCase):
 
     def test_successful_edit_task(self):
         self.client.login(username=self.user.username, password="Password123")
-        user_count_before = Task.objects.count()
+        task_count_before = Task.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Task.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        task_count_after = Task.objects.count()
+        self.assertEqual(task_count_after, task_count_before)
         new_task = Task.objects.latest('created_at')
         response_url = reverse('show_team', kwargs={'team_id': self.team.id})
         self.assertRedirects(
@@ -52,10 +52,10 @@ class NewTaskTest(TestCase):
 
     def test_unsuccessful_edit_task_from_user_not_in_team(self):
         self.client.login(username=self.other_user.username, password='Password123')
-        user_count_before = Task.objects.count()
+        task_count_before = Task.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Task.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        task_count_after = Task.objects.count()
+        self.assertEqual(task_count_after, task_count_before)
         self.assertTemplateUsed(response, 'dashboard.html')
 
     def test_sucessful_task_edit_redirects_to_team_page(self):

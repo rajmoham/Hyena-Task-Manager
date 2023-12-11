@@ -9,7 +9,7 @@ from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team, team_member_prohibited_to_customise_task
+from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
@@ -265,6 +265,14 @@ class EditTaskView(LoginRequiredMixin, TeamMemberProhibitedMixin, UpdateView):
         context['task'] = current_task
         context['team'] = Team.objects.get(id=current_task.author.id)
         return context
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, "Task Updated!")  # Add success message
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "Unable to edit task!")  # Add error message
+        return super().form_invalid(form)
 
     def get_success_url(self):
         task_id = self.kwargs['task_id']
@@ -321,6 +329,7 @@ class TeamAuthorProhibitedMixin:
 
     def handle_not_team_author(self, *args, **kwargs):
         url = self.get_redirect_when_not_team_author()
+        messages.add_message(self.request, messages.ERROR, "You cannot perform this task because you are not creator of the team")
         return redirect(url)
 
     def user_is_team_author(self, team):
@@ -341,7 +350,7 @@ class DeleteTaskView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
     """ Class-based generic view for delete task handling """
 
     model = Task
-    http_method_names = ['post']
+    http_method_names = ['post', 'get']
     context_object_name = "task"
     pk_url_kwarg = 'task_id'
     redirect_if_not_team_author = 'dashboard'
@@ -350,6 +359,13 @@ class DeleteTaskView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
         task_id = self.kwargs['task_id']
         task = Task.objects.get(id=task_id)
         return task
+
+    def get(self, request, *args, **kwargs):
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        team_id = current_task.author.id
+        messages.add_message(self.request, messages.ERROR, "GET requests are not allowed. Please use the provided button.")
+        return redirect('show_team', team_id=team_id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -363,10 +379,11 @@ class DeleteTaskView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
         task_id = self.kwargs['task_id']
         current_task = Task.objects.get(id=task_id)
         team_id = current_task.author.id
+        messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
         return reverse('show_team', kwargs={'team_id': team_id})
 
 @login_required
-@team_member_prohibited_to_customise_task
+@team_member_prohibited_to_view_team
 def toggle_task_status(request, task_id):
     current_user = request.user
     try:
@@ -383,7 +400,7 @@ def toggle_task_status(request, task_id):
         return redirect('leaderboard', current_team.id)
 
 @login_required
-@team_member_prohibited_to_customise_task
+@team_member_prohibited_to_view_team
 def toggle_task_archive(request, task_id):
     current_user = request.user
     try:
@@ -648,18 +665,51 @@ class TeamUpdateView(LoginRequiredMixin, TeamAuthorProhibitedMixin, UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
-@login_required
-@team_member_prohibited_to_view_team
-def team_delete(request, team_id):
-    try:
-        team = Team.objects.get(id=team_id)
-        if request.method == 'POST':        
-            team.delete()                     
-            return redirect('/') 
-    except ObjectDoesNotExist:
-        return redirect('dashboard')  
+# @login_required
+# @team_member_prohibited_to_view_team
+# def team_delete(request, team_id):
+#     try:
+#         team = Team.objects.get(id=team_id)
+#         if request.method == 'POST':        
+#             team.delete()          
+#             messages.add_message(request, messages.SUCCESS, "Team deleted!")           
+#             return redirect('dashboard') 
+#     except ObjectDoesNotExist:
+#         return redirect('dashboard')  
 
-    return render(request, 'show_team.html', {'team': team})
+#     return render(request, 'show_team.html', {'team': team})
+
+class DeleteTeamView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
+    """ Class-based generic view for delete team handling """
+
+    model = Team
+    http_method_names = ['post', 'get']
+    context_object_name = "team"
+    pk_url_kwarg = 'team_id'
+    redirect_if_not_team_author = 'dashboard'
+
+    def get_object(self):
+        team_id = self.kwargs['team_id']
+        team = Team.objects.get(id=team_id)
+        return team
+    
+    def get(self, request, *args, **kwargs):
+        team_id = self.kwargs['team_id']
+        current_team = Team.objects.get(id=team_id)
+        messages.add_message(self.request, messages.ERROR, "GET requests are not allowed. Please use the provided button.")
+        return redirect('show_team', team_id=team_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        team_id = self.kwargs['team_id']
+        context['team'] = Team.objects.get(id=team_id)
+        return context
+
+    def get_success_url(self):
+        team_id = self.kwargs['team_id']
+        current_team = Team.objects.get(id=team_id)
+        messages.add_message(self.request, messages.SUCCESS, "Team deleted!")
+        return reverse(dashboard)
 
 @login_required
 @team_member_prohibited_to_view_team
