@@ -1,7 +1,6 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 from tasks.views import LoginProhibitedMixin, TeamAuthorProhibitedMixin, TeamMemberProhibitedMixin
-from tasks.models import Team, User
 
 class LoginProhibitedMixinTestCase(TestCase):
 	def test_login_prohibited_throws_exception_when_not_configured(self):
