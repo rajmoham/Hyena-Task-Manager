@@ -1,58 +1,4 @@
-<style>
-    .unseen {
-        background-color: rgb(185, 185, 235);
-        color: rgb(24, 24, 91);
-    }
-
-    .btn-read {
-        background-color: rgb(35, 35, 97);
-        color: white;
-    }
-
-    .btn-read:hover {
-        background-color: rgb(17, 17, 63);
-        color: white;
-    }
-
-    .button {
-        text-decoration: none;
-    }
-
-    .card-header {
-        background-color: #756cba;
-        color: white;
-    }
-
-    .card-body-unseen {
-        background-color: #e4e2f3;
-        padding: 0 0;
-    }
-
-    .member-item {
-        background-color: #b9b5e6;
-    }
-
-    .btn-purple {
-        background-color: #5448b0;
-        color: white;
-        transition: all ease 300ms;
-    }
-
-    .invite-btn {
-        height: 30px;
-        font-size: 0.75rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .btn-purple:hover {
-        background-color: #3b3189;
-        color: white;
-    }
-</style>
-
-<div class="shadow-lg" style="border-radius: 16px; overflow: hidden;">
+<div class="shadow-lg" style="border-radius: 16px; overflow: hidden; max-height: 250px;">
     <div class="card-header">
         <h3 class="mb-0 py-1" style="font-size: 16px;">Unseen Notifications ({{ unseen_notifs.count}})</h3>
     </div>
@@ -69,9 +15,9 @@
                 {% if notification.invitation %}
                 <div class="h-100 d-flex align-items-center">
                     <a href="{% url 'accept_invitation' notification.invitation.id %}"
-                        class="btn-success button btn-sm me-2"><i class="bi bi-check"></i> Accept</a>
+                        class="btn-success btn btn-sm me-2"><i class="bi bi-check"></i> Accept</a>
                     <a href="{% url 'decline_invitation' notification.invitation.id %}"
-                        class="btn-danger button btn-sm"><i class="bi bi-x"></i> Decline</a>
+                        class="btn-danger btn btn-sm"><i class="bi bi-x"></i> Decline</a>
                 </div>
                 {% else %}
                 <div class="d-flex flex-column align-items-end">
