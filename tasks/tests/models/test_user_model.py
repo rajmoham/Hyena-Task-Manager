@@ -152,7 +152,7 @@ class UserModelTestCase(TestCase):
             self.user.full_clean()
 
     def _gravatar_url(self, size):
-        gravatar_url = f"{UserModelTestCase.GRAVATAR_URL}?size={size}&default=mp"
+        gravatar_url = f"{UserModelTestCase.GRAVATAR_URL}?size={size}&default=retro"
         return gravatar_url
 
 

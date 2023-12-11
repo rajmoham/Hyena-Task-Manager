@@ -40,7 +40,7 @@
                 {% for member in team.members.all %}
                 <li class="list-group-item member-item">
                     <div class="d-flex align-items-center">
-                        <img class="gravatar me-4" src="{{ team.members.all.first.mini_gravatar }}" alt="User Gravatar">
+                        <img class="gravatar me-4" src="{{ member.mini_gravatar }}" alt="User Gravatar">
                         <div>
                             <span>{{ member.full_name }}</span>
                             {%if member == team.author %}

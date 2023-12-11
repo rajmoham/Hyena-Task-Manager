@@ -35,7 +35,7 @@ class User(AbstractUser):
         """Return a URL to the user's gravatar."""
 
         gravatar_object = Gravatar(self.email)
-        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        gravatar_url = gravatar_object.get_image(size=size, default='retro')
         return gravatar_url
 
     def mini_gravatar(self):
