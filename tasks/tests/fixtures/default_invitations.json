@@ -28,5 +28,15 @@
             "status": "Invited",
             "date_sent": "2023-01-01T12:00:00Z"
         }
+    },
+    {
+        "model": "tasks.invitation",
+        "pk": 4,
+        "fields": {
+            "team": 5, 
+            "email": "johndoe@example.org",
+            "status": "Invited",
+            "date_sent": "2023-01-01T12:00:00Z"
+        }
     }
   ]

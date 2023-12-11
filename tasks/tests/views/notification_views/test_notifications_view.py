@@ -31,7 +31,6 @@ class NotificationsViewTestCase(TestCase):
         self.other_user_invitation = Invitation.objects.get(pk=2)
         self.other_user_notification = Notification.objects.get(pk=2)
 
-
     def test_notifications_url(self):
         expectedURL = '/notifications'
         self.assertEquals(self.url, expectedURL)
@@ -55,3 +54,18 @@ class NotificationsViewTestCase(TestCase):
         redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.post(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_notification_is_created_for_invitations_without_notifications_initially(self):
+        self.client.login(username=self.user.username, password = 'Password123')
+
+        # invitation object where notification object is not created with it
+
+        other_team_invited = Team.objects.get(pk=5)
+        invitation_without_notification_object = Invitation.objects.create(team=other_team_invited, email="johndoe@example.org", status=Invitation.INVITED)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"Invitation to join Team Test5")
+        notifications = Notification.objects.filter(user=self.user)
+        # must equal to two since only self.invitation and the newly created invite is supposed to be seen
+        self.assertEqual(len(notifications), 2)

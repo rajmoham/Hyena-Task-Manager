@@ -9,7 +9,7 @@ def notifications(request):
     invitations = Invitation.objects.filter(email=request.user.email, status=Invitation.INVITED)
     for invitation in invitations:
         if not Notification.objects.filter(user=request.user, invitation=invitation).exists():
-            Notification.objects.create(
+            notif = Notification.objects.create(
                 user=request.user,
                 title=f"Invitation to join {invitation.team.title}",
                 description="",

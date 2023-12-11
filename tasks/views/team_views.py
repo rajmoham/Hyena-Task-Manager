@@ -101,12 +101,6 @@ class DeleteTeamView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
         messages.add_message(self.request, messages.ERROR, "GET requests are not allowed. Please use the provided button.")
         return redirect('show_team', team_id=team_id)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        team_id = self.kwargs['team_id']
-        context['team'] = Team.objects.get(id=team_id)
-        return context
-
     def get_success_url(self):
         team_id = self.kwargs['team_id']
         current_team = Team.objects.get(id=team_id)
