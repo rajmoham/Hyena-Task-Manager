@@ -6,10 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from django.views.generic.edit import FormView, UpdateView, DeleteView
+from django.views.generic.edit import FormView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm , TeamForm, TeamInviteForm, TaskForm
-from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team, team_member_prohibited_to_customise_task
+from tasks.helpers import login_prohibited, calculate_task_complete_score, team_member_prohibited_to_view_team
 from django.http import HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 from tasks.models import Team, Invitation, Notification, Task, User
@@ -47,36 +47,60 @@ def dashboard(request):
                                                 'late_tasks':late_tasks,
                                                 'late_task_text':late_task_text})
 
-@login_required
-def create_team(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            current_user = request.user
-            form = TeamForm(request.POST)
-            if form.is_valid():
-                titleCleaned = form.cleaned_data.get("title")
-                descriptionCleaned = form.cleaned_data.get('description')
-                team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
-                team.members.add(current_user) # adds only the team creator for now
-                notification = Notification.objects.create(
-                    user=current_user,
-                    title="New Team Created: " + titleCleaned,
-                    description="You have created a new team",
-                    actionable=False
-                )
-                messages.add_message(request, messages.SUCCESS, f"Created Team: {titleCleaned}!")
-                return redirect('dashboard')
-            else:
-                messages.add_message(request, messages.ERROR, "Unable to create team")
-                return render(request, 'create_team.html', {'form': form})
-        else:
-            return redirect('log_in')
-    else:
-        if request.user.is_authenticated:
-            form = TeamForm()
-            return render(request, 'create_team.html', {'form': form})
-        else:
-            return redirect('log_in')
+# @login_required
+# def create_team(request):
+#     if request.method == 'POST':
+#         current_user = request.user
+#         form = TeamForm(request.POST)
+#         if form.is_valid():
+#             titleCleaned = form.cleaned_data.get("title")
+#             descriptionCleaned = form.cleaned_data.get('description')
+#             team = Team.objects.create(author=current_user, title = titleCleaned, description=descriptionCleaned)
+#             team.members.add(current_user)
+#             notification = Notification.objects.create(
+#                 user=current_user,
+#                 title="New Team Created: " + titleCleaned,
+#                 description="You have created a new team",
+#                 actionable=False
+#             )
+#             messages.add_message(request, messages.SUCCESS, f"Created Team: {titleCleaned}!")
+#             return redirect('dashboard')
+#         else:
+#             messages.add_message(request, messages.ERROR, "Unable to create team")
+#             return render(request, 'create_team.html', {'form': form})
+#     else:
+#         form = TeamForm()
+#         return render(request, 'create_team.html', {'form': form})
+
+class CreateTeamView(LoginRequiredMixin, CreateView):
+    """ Class-based generic view for new team handling """
+
+    model = Team
+    template_name = 'create_team.html'
+    form_class = TeamForm
+    http_method_names = ['post', 'get']
+
+    def form_valid(self, form):
+        current_user = self.request.user
+        form.instance.author = current_user
+        response = super().form_valid(form)
+        titleCleaned = form.cleaned_data.get("title")
+        self.object.members.add(current_user)
+        notification = Notification.objects.create(
+            user=current_user,
+            title="New Team Created: " + titleCleaned,
+            description="You have created a new team",
+            actionable=False
+        )
+        messages.add_message(self.request, messages.SUCCESS, f"Created Team: {titleCleaned}!")
+        return response
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "Unable to create team")
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard')
 
 @login_prohibited
 def home(request):
@@ -88,121 +112,311 @@ def home(request):
 def show_team(request, team_id):
     """Show the team details: team name, description, members"""
     try:
-        # team = Team.objects.get(id=team_id)
-        # tasks = Task.objects.filter(author=team)
         members, current_team, tasks = calculate_task_complete_score(team_id)
-        # members = set()
-        # for task in tasks:
-        #     members.update(task.assigned_members.all())
         unarchived_tasks = tasks.filter(is_archived=False)
         archived_tasks = tasks.filter(is_archived=True)
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
-    except Http404:
-        return redirect('dashboard')
+
     else:
         return render(request, 'show_team.html', {'team': current_team, 'unarchived': unarchived_tasks, 'archived': archived_tasks, 'members': members})
 
+# @login_required
+# @team_member_prohibited_to_view_team
+# def create_task(request, team_id):
+#     """Allow the user to create a Task for their Team"""
+#     if request.method == "POST":
+#         current_team = Team.objects.get(id = team_id)
+#         form = TaskForm(request.POST)
+#         if form.is_valid():
+#             titleCleaned = form.cleaned_data.get("title")
+#             descriptionCleaned = form.cleaned_data.get('description')
+#             dueDateCleaned = form.cleaned_data.get("due_date")
+#             task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
+#             messages.add_message(request, messages.SUCCESS, "Successfully created task")
+#             return redirect('show_team', team_id)
+#         else:
+#             messages.add_message(request, messages.ERROR, "Unable to create task!")
+#             return render(request, 'create_task.html', {'team': current_team,'form': form})
+#     else:
+#         form = TaskForm()
+#         current_team = Team.objects.get(id = team_id)
+#         return render(request, 'create_task.html', {'team': current_team,'form': form})
+
+class TeamMemberProhibitedMixin:
+    """Mixin that redirects when a user is not a team member."""
+
+    redirect_if_not_team_member = None
+
+    def dispatch(self, *args, **kwargs):
+        """Redirect when not team member, or dispatch as normal otherwise."""
+        team_id = kwargs.get('team_id', None)
+        task_id = kwargs.get('task_id', None)
+
+        if team_id != None:
+            try:
+                current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                raise Http404("Team does not exist")
+
+            if not self.user_is_team_member(current_team):
+                return self.handle_not_team_member(*args, **kwargs)
+
+        if task_id != None:
+            try: 
+                current_task = Task.objects.get(id=task_id)
+                current_team = Team.objects.get(id=current_task.author.id)
+            except ObjectDoesNotExist:
+                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+            if not self.user_is_team_member(current_team):
+                return self.handle_not_team_member(*args, **kwargs)
+
+        return super().dispatch(*args, **kwargs)
+
+    def handle_not_team_member(self, *args, **kwargs):
+        url = self.get_redirect_when_not_team_member()
+        return redirect(url)
+
+    def user_is_team_member(self, team):
+        return self.request.user.is_authenticated and (self.request.user in team.members.all() or self.request.user == team.author)
+
+    def get_redirect_when_not_team_member(self):
+        """Returns the url to redirect to when user is not team member."""
+        if self.redirect_if_not_team_member is None:
+            raise ImproperlyConfigured(
+                "TeamMemberProhibitedMixin requires either a value for "
+                "'redirect_if_not_team_member', or an implementation for "
+                "'get_redirect_when_not_team_member()'."
+            )
+        else:
+            return reverse(self.redirect_if_not_team_member)
+
+class CreateTaskView(LoginRequiredMixin, TeamMemberProhibitedMixin, CreateView):
+    """ Class-based generic view for new task handling """
+
+    model = Task
+    template_name = 'create_task.html'
+    form_class = TaskForm
+    http_method_names = ['post', 'get']
+    context_object_name = "task"
+    pk_url_kwarg = 'team_id'
+    redirect_if_not_team_member = 'dashboard'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        team_id = self.kwargs['team_id']
+        context['team'] = Team.objects.get(id=team_id)
+        return context
+
+    def form_valid(self, form):
+        team_id = self.kwargs['team_id']
+        current_team = Team.objects.get(id=team_id)
+        form.instance.author = current_team
+        messages.add_message(self.request, messages.SUCCESS, "Successfully created task")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "Unable to create task!")
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        team_id = self.kwargs['team_id']
+        return reverse('show_team', kwargs={'team_id': team_id})
+          
+# @login_required
+# @team_member_prohibited_to_customise_task
+# def edit_task(request, task_id):
+#     current_task = Task.objects.get(id=task_id)
+#     current_team = current_task.author
+#     if request.method == 'POST':
+#         form = TaskForm(instance=current_task, data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.add_message(request, messages.SUCCESS, "Task Updated!")
+#             return redirect('show_team', current_team.id)
+#         else:
+#             messages.add_message(request, messages.ERROR, "Unable to edit task!")
+#     else:
+#         form = TaskForm(instance=current_task)
+#     return render(request, 'edit_task.html', {'task': current_task, 'form': form})
+
+class EditTaskView(LoginRequiredMixin, TeamMemberProhibitedMixin, UpdateView):
+    """ Class-based generic view for edit task handling """
+
+    model = Task
+    template_name = 'edit_task.html'
+    form_class = TaskForm
+    http_method_names = ['post', 'get']
+    context_object_name = "task"
+    pk_url_kwarg = 'task_id'
+    redirect_if_not_team_member = 'dashboard'
+
+    def get_object(self):
+        task_id = self.kwargs['task_id']
+        task = Task.objects.get(id=task_id)
+        return task
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        context['task'] = current_task
+        context['team'] = Team.objects.get(id=current_task.author.id)
+        return context
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, "Task Updated!")  # Add success message
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "Unable to edit task!")  # Add error message
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        team_id = current_task.author.id
+        return reverse('show_team', kwargs={'team_id': team_id})
+
+# @login_required
+# @team_member_prohibited_to_customise_task
+# def delete_task(request, task_id):
+#     current_user = request.user
+#     current_task = Task.objects.get(id=task_id)
+#     current_team = current_task.author
+#     if current_task.author == current_team:
+#         if current_team.author == current_user:
+#             current_task.delete()
+#             messages.add_message(request, messages.SUCCESS, "Task deleted!")
+#         else:
+#             messages.add_message(request, messages.ERROR, "You cannot delete a Task in a Team you did not create")
+#     else:
+#         messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
+#     return redirect('show_team', current_team.id)
+
+class TeamAuthorProhibitedMixin:
+    """Mixin that redirects when a user is not a team creator or author."""
+
+    redirect_if_not_team_author = None
+
+    def dispatch(self, *args, **kwargs):
+        """Redirect when not team creator or author, or dispatch as normal otherwise."""
+        team_id = kwargs.get('team_id', None)
+        task_id = kwargs.get('task_id', None)
+
+        if team_id is not None:
+            try:
+                current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                raise Http404("Team does not exist")
+
+            if not self.user_is_team_author(current_team):
+                return self.handle_not_team_author(*args, **kwargs)
+
+        if task_id != None:
+            try: 
+                current_task = Task.objects.get(id=task_id)
+                current_team = Team.objects.get(id=current_task.author.id)
+            except ObjectDoesNotExist:
+                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+            if not self.user_is_team_author(current_team):
+                return self.handle_not_team_author(*args, **kwargs)
+
+        return super().dispatch(*args, **kwargs)
+
+    def handle_not_team_author(self, *args, **kwargs):
+        url = self.get_redirect_when_not_team_author()
+        messages.add_message(self.request, messages.ERROR, "You cannot perform this task because you are not creator of the team")
+        return redirect(url)
+
+    def user_is_team_author(self, team):
+        return self.request.user.is_authenticated and self.request.user == team.author and self.request.user in team.members.all()
+
+    def get_redirect_when_not_team_author(self):
+        """Returns the url to redirect to when user is not team author."""
+        if self.redirect_if_not_team_author is None:
+            raise ImproperlyConfigured(
+                "TeamAuthorProhibitedMixin requires either a value for "
+                "'redirect_if_not_team_author', or an implementation for "
+                "'get_redirect_when_not_team_author()'."
+            )
+        else:
+            return reverse(self.redirect_if_not_team_author)
+
+class DeleteTaskView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
+    """ Class-based generic view for delete task handling """
+
+    model = Task
+    http_method_names = ['post', 'get']
+    context_object_name = "task"
+    pk_url_kwarg = 'task_id'
+    redirect_if_not_team_author = 'dashboard'
+
+    def get_object(self):
+        task_id = self.kwargs['task_id']
+        task = Task.objects.get(id=task_id)
+        return task
+
+    def get(self, request, *args, **kwargs):
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        team_id = current_task.author.id
+        messages.add_message(self.request, messages.ERROR, "GET requests are not allowed. Please use the provided button.")
+        return redirect('show_team', team_id=team_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        context['task'] = current_task
+        context['team'] = Team.objects.get(id=current_task.author.id)
+        return context
+
+    def get_success_url(self):
+        task_id = self.kwargs['task_id']
+        current_task = Task.objects.get(id=task_id)
+        team_id = current_task.author.id
+        messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
+        return reverse('show_team', kwargs={'team_id': team_id})
+
 @login_required
 @team_member_prohibited_to_view_team
-def create_task(request, team_id):
-    """Allow the user to create a Task for their Team"""
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            current_team = Team.objects.get(id = team_id)
-            form = TaskForm(request.POST)
-            if form.is_valid():
-                titleCleaned = form.cleaned_data.get("title")
-                descriptionCleaned = form.cleaned_data.get('description')
-                dueDateCleaned = form.cleaned_data.get("due_date")
-                task = Task.objects.create(author=current_team, title = titleCleaned, description=descriptionCleaned, due_date=dueDateCleaned)
-                messages.add_message(request, messages.SUCCESS, "Successfully created task")
-                return redirect('show_team', team_id)
-            else:
-                messages.add_message(request, messages.ERROR, "Unable to create task!")
-                return render(request, 'create_task.html', {'team': current_team,'form': form})
-        else:
-            return redirect('log_in')
-    else:
-        if request.user.is_authenticated:
-            form = TaskForm()
-            current_team = Team.objects.get(id = team_id)
-            return render(request, 'create_task.html', {'team': current_team,'form': form})
-        else:
-            return redirect('log_in')
-          
-@login_required
-@team_member_prohibited_to_customise_task
-def edit_task(request, task_id):
-    current_task = Task.objects.get(id=task_id)
-    current_team = current_task.author
-    if request.method == 'POST':
-        form = TaskForm(instance=current_task, data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS, "Task Updated!")
-            return redirect('show_team', current_team.id)
-        else:
-            messages.add_message(request, messages.ERROR, "Unable to edit task!")
-    else:
-        form = TaskForm(instance=current_task)
-    return render(request, 'edit_task.html', {'task': current_task, 'form': form})
-
-@login_required
-@team_member_prohibited_to_customise_task
-def delete_task(request, task_id):
-    current_user = request.user
-    current_task = Task.objects.get(id=task_id)
-    current_team = current_task.author
-    if current_task.author == current_team:
-        if current_team.author == current_user:
-            current_task.delete()
-            messages.add_message(request, messages.SUCCESS, "Task deleted!")
-        else:
-            messages.add_message(request, messages.ERROR, "You cannot delete a Task in a Team you did not create")
-    else:
-        messages.add_message(request, messages.ERROR, "You cannot delete another Teams Task")
-    return redirect('show_team', current_team.id)
-
-@login_required
-@team_member_prohibited_to_customise_task
 def toggle_task_status(request, task_id):
     current_user = request.user
     try:
         task_to_toggle = Task.objects.get(id=task_id)
         current_team = task_to_toggle.author
-        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
-            task_to_toggle.toggle_task_status()
-            task_to_toggle.save()
-            messages.add_message(request, messages.SUCCESS, "Task status changed!")
-        else: 
-            messages.add_message(request, messages.ERROR, "You cannot change task status because you are not in this team")
-            return redirect('dashboard')
+        task_to_toggle.toggle_task_status()
+        task_to_toggle.save()
+        messages.add_message(request, messages.SUCCESS, "Task status changed!")
+
     except ObjectDoesNotExist:
         return redirect('dashboard')
+
     else:
         return redirect('leaderboard', current_team.id)
 
 @login_required
-@team_member_prohibited_to_customise_task
+@team_member_prohibited_to_view_team
 def toggle_task_archive(request, task_id):
     current_user = request.user
     try:
         task_to_toggle = Task.objects.get(id=task_id)
         current_team = task_to_toggle.author
-        if (task_to_toggle.author == current_team) and (current_team.members.filter(id=current_user.id).exists()):
-            task_to_toggle.toggle_archive()
-            task_to_toggle.save()
-            if task_to_toggle.is_archived :
-                messages.add_message(request, messages.SUCCESS, "Task archived!")
-            else:
-                messages.add_message(request, messages.SUCCESS, "Task unarchived!")
-        else: 
-            messages.add_message(request, messages.ERROR, "You cannot toggle archive because you are not in this team")
-            return redirect('dashboard')
+        task_to_toggle.toggle_archive()
+        task_to_toggle.save()
+        if task_to_toggle.is_archived :
+            messages.add_message(request, messages.SUCCESS, "Task archived!")
+
+        else:
+            messages.add_message(request, messages.SUCCESS, "Task unarchived!")
+
     except ObjectDoesNotExist:
         return redirect('dashboard')
+
     else:
         return redirect('show_team', current_team.id)
 
@@ -215,26 +429,22 @@ def leaderboard_view(request, team_id):
 
     except ObjectDoesNotExist:
         return redirect('dashboard')
-    else:
-        return redirect('show_team', team.id)
 
 @login_required
-@team_member_prohibited_to_customise_task
+@team_member_prohibited_to_view_team
 def assign_member_to_task(request, task_id, user_id):
     current_logged_in_user = request.user
     current_task = Task.objects.get(id=task_id)
     current_team = current_task.author
     selected_user = User.objects.get(id = user_id)
-    if current_logged_in_user in current_team.members.all():
-        if selected_user in current_team.members.all():
-            if selected_user in current_task.assigned_members.all():
-                current_task.assigned_members.remove(selected_user)
-                messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
-            else:
-                current_task.assigned_members.add(selected_user)
-                messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
-    else:
-        messages.add_message(request, messages.WARNING, f"Cannot assign task ask you are not in the team")
+    if selected_user in current_team.members.all():
+        if selected_user in current_task.assigned_members.all():
+            current_task.assigned_members.remove(selected_user)
+            messages.add_message(request, messages.WARNING, f"Removed {selected_user.full_name()}")
+        else:
+            current_task.assigned_members.add(selected_user)
+            messages.add_message(request, messages.INFO, f"Added {selected_user.full_name()}")
+
     return redirect('show_team', current_team.id)
 
 @login_required
@@ -436,12 +646,13 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 
-class TeamUpdateView(UpdateView):
+class TeamUpdateView(LoginRequiredMixin, TeamAuthorProhibitedMixin, UpdateView):
     """Display team editing screen, and handle team details modifications."""
 
     model = Team
     template_name = "edit_team.html"
     form_class = TeamForm
+    redirect_if_not_team_author = 'dashboard'
 
     def get_object(self):
         """Return the object (team) to be updated."""
@@ -454,37 +665,83 @@ class TeamUpdateView(UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Team updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
-def team_delete(request, pk):
-    team = get_object_or_404(Team, pk=pk)  # Get your current team
+# @login_required
+# @team_member_prohibited_to_view_team
+# def team_delete(request, team_id):
+#     try:
+#         team = Team.objects.get(id=team_id)
+#         if request.method == 'POST':        
+#             team.delete()          
+#             messages.add_message(request, messages.SUCCESS, "Team deleted!")           
+#             return redirect('dashboard') 
+#     except ObjectDoesNotExist:
+#         return redirect('dashboard')  
 
-    if request.method == 'POST':         # If method is POST,
-        team.delete()                     # delete the team.
-        return redirect('/')             # Finally, redirect to the homepage.
+#     return render(request, 'show_team.html', {'team': team})
 
-    return render(request, 'show_team.html', {'team': team})
-    # If method is not POST, render the default template.
+class DeleteTeamView(LoginRequiredMixin, TeamAuthorProhibitedMixin, DeleteView):
+    """ Class-based generic view for delete team handling """
+
+    model = Team
+    http_method_names = ['post', 'get']
+    context_object_name = "team"
+    pk_url_kwarg = 'team_id'
+    redirect_if_not_team_author = 'dashboard'
+
+    def get_object(self):
+        team_id = self.kwargs['team_id']
+        team = Team.objects.get(id=team_id)
+        return team
+    
+    def get(self, request, *args, **kwargs):
+        team_id = self.kwargs['team_id']
+        current_team = Team.objects.get(id=team_id)
+        messages.add_message(self.request, messages.ERROR, "GET requests are not allowed. Please use the provided button.")
+        return redirect('show_team', team_id=team_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        team_id = self.kwargs['team_id']
+        context['team'] = Team.objects.get(id=team_id)
+        return context
+
+    def get_success_url(self):
+        team_id = self.kwargs['team_id']
+        current_team = Team.objects.get(id=team_id)
+        messages.add_message(self.request, messages.SUCCESS, "Team deleted!")
+        return reverse(dashboard)
+
+@login_required
+@team_member_prohibited_to_view_team
+def leaderboard_view(request, team_id):
+    try:
+        members, current_team, tasks = calculate_task_complete_score(team_id)
+        return redirect('show_team', current_team.id)
+
+    except ObjectDoesNotExist:
+        return redirect('dashboard')
+    else:
+        return redirect('show_team', team.id)
+
     
 @login_required
 def notifications(request):
     """Display Notifications associated with the user, including invitations."""
-    if request.user.is_authenticated:
-        invitations = Invitation.objects.filter(email=request.user.email, status=Invitation.INVITED)
-        for invitation in invitations:
-            if not Notification.objects.filter(user=request.user, invitation=invitation).exists():
-                Notification.objects.create(
-                    user=request.user,
-                    title=f"Invitation to join {invitation.team.title}",
-                    description="",
-                    actionable=True,
-                    invitation=invitation
-                )
-        user_notifications = Notification.objects.filter(user=request.user)
-        return render(request, 'notifications.html', {'user_notifications': user_notifications})
-    else:
-        return redirect('log_in')
+    invitations = Invitation.objects.filter(email=request.user.email, status=Invitation.INVITED)
+    for invitation in invitations:
+        if not Notification.objects.filter(user=request.user, invitation=invitation).exists():
+            Notification.objects.create(
+                user=request.user,
+                title=f"Invitation to join {invitation.team.title}",
+                description="",
+                actionable=True,
+                invitation=invitation
+            )
+    user_notifications = Notification.objects.filter(user=request.user)
+    return render(request, 'notifications.html', {'user_notifications': user_notifications})
 
 @login_required
-def seen_notificaiton(request, notification_id):
+def seen_notification(request, notification_id):
     current_user = request.user
     notification = Notification.objects.get(id=notification_id)
     if (notification.user == current_user):
@@ -494,6 +751,7 @@ def seen_notificaiton(request, notification_id):
     else:
         return redirect('dashboard')
     return redirect('notifications')
+
 
 def unseen_notifications(request):
     unseen_notifs = []

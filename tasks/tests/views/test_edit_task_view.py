@@ -1,10 +1,11 @@
+"""Tests of the edit task view."""
 from django.test import TestCase
 from django.urls import reverse
 from tasks.models import Task, User, Team
 
 
-class NewTaskTest(TestCase):
-
+class EditTaskTest(TestCase):
+    """Tests of the edit task view."""
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
@@ -16,6 +17,7 @@ class NewTaskTest(TestCase):
     def setUp(self):
         super(TestCase, self).setUp()
         self.user = User.objects.get(username = "@johndoe")
+        self.other_user = User.objects.get(username="@janedoe")
         self.team = Team.objects.get(pk=1)
         self.team.members.add(self.user)
         self.task = Task.objects.get(pk=1)
@@ -25,7 +27,7 @@ class NewTaskTest(TestCase):
     def test_edit_task_url(self): 
         self.assertEqual(self.url,'/edit_task/' + str(self.task.id))
 
-    def test_get_edit_task_is_allowed(self):
+    def test_get_edit_task_is_allowed_for_user_in_same_team(self):
         self.client.login(username=self.user.username, password="Password123")
         task_count_before = Task.objects.count()
         response = self.client.get(self.url, follow=True)
@@ -35,10 +37,10 @@ class NewTaskTest(TestCase):
 
     def test_successful_edit_task(self):
         self.client.login(username=self.user.username, password="Password123")
-        user_count_before = Task.objects.count()
+        task_count_before = Task.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Task.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        task_count_after = Task.objects.count()
+        self.assertEqual(task_count_after, task_count_before)
         new_task = Task.objects.latest('created_at')
         response_url = reverse('show_team', kwargs={'team_id': self.team.id})
         self.assertRedirects(
@@ -49,11 +51,11 @@ class NewTaskTest(TestCase):
         self.assertTemplateUsed(response, 'show_team.html')
 
     def test_unsuccessful_edit_task_from_user_not_in_team(self):
-        self.client.login(username='@janedoe', password='Password123')
-        user_count_before = Task.objects.count()
+        self.client.login(username=self.other_user.username, password='Password123')
+        task_count_before = Task.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Task.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        task_count_after = Task.objects.count()
+        self.assertEqual(task_count_after, task_count_before)
         self.assertTemplateUsed(response, 'dashboard.html')
 
     def test_sucessful_task_edit_redirects_to_team_page(self):

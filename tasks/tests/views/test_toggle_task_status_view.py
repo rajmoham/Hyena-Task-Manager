@@ -43,7 +43,7 @@ class ToggleTaskStatusTestCase(TestCase):
         response = self.client.post(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_get_toggle_task_status_redirects_to_leaderboard(self):
+    def test_get_toggle_task_status_redirects_to_show_team(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.post(self.url, follow=True)
         self.myTeamTask.refresh_from_db()
@@ -59,13 +59,19 @@ class ToggleTaskStatusTestCase(TestCase):
             self.assertFalse(task.is_complete)
             response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
             self.myTeamTask.refresh_from_db()
-            response = self.client.post(reverse('task_toggle', kwargs={'task_id': task.id}), follow=True)
-            self.myTeamTask.refresh_from_db()
             self.assertFalse(task.is_complete)
             response_url = reverse('dashboard')
             # if user gets redirected to dashboard, this means toggling task was unsuccessful
             self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
             self.assertTemplateUsed(response, 'dashboard.html')
+
+    def test_toggle_task_status_redirects_for_invalid_task_id(self):
+        self.client.login(username=self.user.username, password="Password123")
+        url = reverse('task_toggle', kwargs={'task_id': self.myTeamTask.id+9999999})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('dashboard')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
 
 
 
