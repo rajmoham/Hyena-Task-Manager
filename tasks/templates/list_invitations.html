@@ -1,16 +1,16 @@
 {% extends 'base_content.html' %}
-
 {% block content %}
-<div class="container py-5">
-    <div class="card shadow-sm">
+<div class="container pb-4">
+    <h2 class="title-color my-4">Your Invitations</h2>
+    <div class="shadow-sm" style="border-radius: 16px; overflow: hidden;">
         <div class="card-header">
-            <h3 class="mb-0">Your Invitations</h3>
+            <h3 class="mb-0 py-1" style="font-size: 24px;">Invitations ({{ invitations.count }})</h3>
         </div>
         <div class="card-body">
             {% if invitations %}
                 <div class="list-group">
                     {% for invitation in invitations %}
-                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="list-group-item unseen flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{ invitation.team.title }}</h5>
                                 <small>Sent on: {{ invitation.date_sent|date:"N j, Y" }}</small>
@@ -29,9 +29,10 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-center">You have no invitations.</p>
+            <div class="py-4 d-flex align-items-center justify-content-center">
+                <span>You don't have any invitations.</span>
+            </div>
             {% endif %}
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

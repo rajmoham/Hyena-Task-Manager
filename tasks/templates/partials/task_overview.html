@@ -1,22 +1,10 @@
-<style>
-  .bg-no-overdue {
-    background-color: #d3f0cb;
-    border: 1px solid #84c971;
-  }
-
-  .bg-overdue {
-    background-color: #c73c3c;
-    border: 1px solid #8d1313;
-    color: white;
-  }
-</style>
 {% if late_tasks %}
 <div class="info-card bg-overdue shadow-lg w-100">
   {% else %}
 <div class="info-card bg-no-overdue shadow-lg w-100">
 {% endif %}
 
-  <div class="card-body">
+  <div class="p-3">
     <div class="mb-3">
       <h4 class="card-title">Welcome {{ user.first_name }},</h4>
     </div>

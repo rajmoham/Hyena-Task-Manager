@@ -1,246 +1,155 @@
-<!-- <div>
-    <h3>Archived Tasks</h3>
-    {% if tasks %}
-        {% for task in tasks %}
-            {% if task.is_archived %}
-                <div class="accordion" id="tasks">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="task-heading{{  task.pk }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#task-collapse{{ task.pk }}" aria-expanded="false" aria-controls="task-collapse{{ task.pk }}">
-                            {{ task.title }}
-                    </button>
-                    </h2>
-                    <div id="task-collapse{{ task.pk }}" class="accordion-collapse collapse" aria-labelledby="task-heading{{ task.pk }}">
-                        <div class="accordion-body">
-                        <div class="task-description">
-                            <span class="description-label" style="font-weight:bold">Task Description:</span>
-                            <p>{{ task.description }}</p>
-                        </div>
-                        <br/>
-                        <div class="task-due-date">
-                            <span class="due-date-label" style="font-weight:bold">Due Date:</span>
-                            <p>{{ task.due_date|date:"F j, Y" }}</p>
-                        </div>
-                        <br/>
-                        <div class="task-status">
-                            <span class="statuslabel" style="font-weight:bold">Mark Completed:</span>
-                            <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
-                                {% csrf_token %}
-                                <span class="float">
-                                {% if task.is_complete %}
-                                    <button class="btn btn-complete">Complete</button>
-                                {% else %}
-                                    <button class="btn btn-incomplete">Incomplete</button>
-                                {% endif %}
-                                </span>
-                            </form>
-                        </div>
-                        <br/>
-                        <div class="task-assigned-members">
-                            <span class="assigned-members-label" style="font-weight:bold">Assigned Members:</span>
-                                {% for member in task.assigned_members.all %}
-                                    {{ member.username }}
-                                {% endfor %}
-                                <div class="btn-group">
-                                    <span class="float"> 
-                                        <button type="button" class="btn btn-assign btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Assign Members
-                                        </button>
-                                    </span>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        {% for user in team.members.all %}
-                                            <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">{{ user.username }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                        </div>
-                        <br/>
-                        <div class="task-edit">
-                            <span class="edit-task-label" style="font-weight:bold">Edit Task:</span>
-                            <a href='{% url "edit_task" task.id%}'> Edit Task </a>
-                        </div>
-                        <br/>
-                        <div class="task-delete">
-                            <span class="delete-task-label" style="font-weight:bold">Delete Task:</span>
-                            <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <span class="float">
-                                    <button type="submit" class="btn btn-red btn-sm">Delete Task</button>
-                                </span>
-                            </form>
-                        </div>
-                        <br/>
-                        <div class="task-archive">
-                            <span class="delete-task-label" style="font-weight:bold">Unarchive Task:</span>
-                            <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
-                                {% csrf_token %}
-                                <span class="float">
-                                {% if task.is_archived %}
-                                    <button class="btn btn-unarchive">Unarchive</button>
-                                {% endif %}
-                            </span>
-                            </form>
-                            </form>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% else %}
-      <p>You haven't created any tasks yet.</p>
-    {% endif %}
-</div>
-</div>
-         
-
- -->
 {% if archived %}
 <div class="mb-4">
-    <div class="d-flex justify-content-between">
-        <h3>Archived Tasks</h3>
+  <div class="d-flex justify-content-between me-2 mb-4">
+    <h3>Archived Tasks</h3>
+  </div>
+
+  <div class="row table-title mb-2">
+    <div class="col-3 table-col">
+      Task name
     </div>
-
-    <div class="row table-title mb-2">
-        <div class="col-3 table-col">
-            Task name
-        </div>
-        <div class="col-3 table-col">
-            Members
-        </div>
-        <div class="col-3 table-col">
-            Due Date
-        </div>
+    <div class="col-3 table-col">
+      Members
     </div>
+    <div class="col-3 table-col">
+      Due Date
+    </div>
+  </div>
 
-    <div class="accordion row table-body" id="tasks">
-        {% for task in archived %}
-        <div class="accordion-item task-item">
-            <div class="row py-3" id="task-heading{{ task.pk }}" type="button" data-bs-toggle="collapse"
-                data-bs-target="#task-collapse{{ task.pk }}" aria-expanded="false"
-                aria-controls="task-collapse{{ task.pk }}">
+  <div class="accordion row table-body" id="tasks">
+    {% for task in archived %}
+    <div class="accordion-item task-item">
+      <div class="row py-3" id="task-heading{{ task.pk }}" type="button" data-bs-toggle="collapse"
+        data-bs-target="#task-collapse{{ task.pk }}" aria-expanded="false" aria-controls="task-collapse{{ task.pk }}">
 
-                <div class="col-3 table-col">
-                    {{task.title}}
+        <div class="col-3 table-col">
+          {{task.title}}
+        </div>
+        <div class="col-3 table-col d-flex align-items-center position-relative">
+          {%if task.assigned_members.all.count %}
+          {% for member in task.assigned_members.all|slice:"5" %}
+          <img src="{{member.gravatar}}" alt="User" class="user-image"
+            style="left: calc({{forloop.counter0}}px * 20);" />
+          {% endfor %}
+          {% if task.assigned_members.all.count > 5 %}
+          <div class="user-image d-flex justify-content-center align-items-center"
+            style="background-color: #474367; left: 100px; color: rgb(239, 239, 239); font-size: 12px;">
+            <span>+{{task.assigned_members.all.count|add:"-5"}}</span>
+          </div>
+          {% endif %}
+          {%else%}
+          No Members
+          {%endif%}
+        </div>
+        <div class="col-3 table-col">
+          {{task.due_date}}
+        </div>
+        <div class="col-3 table-col" style="font-size: 18px;">
+          <span class="badge bg-info text-dark ms-auto me-5">Archived</span>
+        </div>
+      </div>
+
+      <div id="task-collapse{{task.pk}}" class="accordion-collpase collapse py-3"
+        aria-labelledby="task-heading{{ task.pk }}">
+        <div class="accordion-body">
+          <h4 class="mb-4">{{ task.title }}</h4>
+
+          <div class="row">
+            <div class="col-4">
+              <div class="mb-2">
+                <span style="font-weight: bold;">Task Description:</span> </br>
+                <span>{{ task.description }}</span>
+              </div>
+              <div class="mb-2">
+                <span style="font-weight: bold;">Created:</span> </br>
+                <span>{{ task.created_at|date:"F j, Y" }}</span>
+              </div>
+              <div class="mb-2">
+                <span style="font-weight: bold;">Due Date:</span> </br>
+                <span>{{ task.due_date|date:"F j, Y" }}</span>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <span class="members-label px-4" style="font-weight:bold">Members Assigned:</span> </br>
+              <div class="btn-group my-2 px-4">
+                <button type="button" class="btn btn-purple btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+                  Assign Members
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"
+                  style="max-height: 210px; overflow-y: scroll;">
+                  {% for user in team.members.all %}
+                  {% if user in task.assigned_members.all %}
+                  <a class="dropdown-item active" href="{% url 'assign_member_to_task' task.id user.id %}">
+                    {{ user.username }}</a>
+                  {%else%}
+                  <a class="dropdown-item" href="{% url 'assign_member_to_task' task.id user.id %}">
+                    {{ user.username }}</a>
+                  {% endif %}
+                  {% endfor %}
                 </div>
-                <div class="col-3 table-col d-flex align-items-center position-relative">
-                    {%if task.assigned_members.all.count %}
-                    {% for member in task.assigned_members.all|slice:"5" %}
-                    <img src="{{member.gravatar}}" alt="User" class="user-image"
-                        style="left: calc({{forloop.counter0}}px * 20);" />
-                    {% endfor %}
-                    {% if task.assigned_members.all.count > 5 %}
-                    <div class="user-image d-flex justify-content-center align-items-center"
-                        style="background-color: #474367; left: 100px; color: rgb(239, 239, 239); font-size: 12px;">
-                        <span>+{{task.assigned_members.all.count|add:"-5"}}</span>
-                    </div>
+              </div>
+              <div class="px-4" style="overflow-y: scroll; min-height: 200px; max-height: 200px; overflow-x:visible;">
+                <div class="d-flex flex-wrap my-2">
+                  {% for member in task.assigned_members.all %}
+                  <div class="user-tooltip">
+                    <img src="{{member.gravatar}}" alt="User" class="member-img" />
+                    <span class="tooltiptext">{{member.full_name}}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="d-grid gap-3 col-5 mx-auto">
+                <form action="{% url 'task_toggle' task_id=task.id %}" method="post">
+                  {% csrf_token %}
+                  {% if task.is_complete %}
+                  <button class="btn btn-success w-100">
+                    <i class="bi bi-check-lg"></i> Completed
+                  </button>
+                  {% else %}
+                  <button class="btn btn-secondary w-100">
+                    <i class="bi bi-check-lg"></i> Mark Complete
+                  </button>
+                  {% endif %}
+                </form>
+
+                <a class="btn-purple btn w-100" href='{% url "edit_task" task.id%}'>
+                  <i class="bi bi-pencil-square"></i>
+                  Edit Task
+                </a>
+
+                <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
+                  {% csrf_token %}
+                  <span class="">
+                    {% if not task.is_archived %}
+                    <button class="btn btn-info w-100">
+                      <i class="bi bi-archive"></i> Archive
+                    </button>
                     {% endif %}
-                    {%else%}
-                    No Members
-                    {%endif%}
-                </div>
-                <div class="col-3 table-col">
-                    {{task.due_date}}
-                </div>
+                  </span>
+                </form>
+
+                <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn w-100">
+                    <i class="bi bi-trash"></i>
+                    Delete Task
+                  </button>
+                </form>
+              </div>
             </div>
 
-            <div id="task-collapse{{task.pk}}" class="accordion-collpase collapse py-3"
-                aria-labelledby="task-heading{{ task.pk }}">
-                <div class="accordion-body">
-                    <h4 class="mb-4">{{ task.title }}</h4>
+          </div>
 
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="mb-2">
-                                <span style="font-weight: bold;">Task Description:</span> </br>
-                                <span>{{ task.description }}</span>
-                            </div>
-                            <div class="mb-2">
-                                <span style="font-weight: bold;">Created:</span> </br>
-                                <span>{{ task.created_at|date:"F j, Y" }}</span>
-                            </div>
-                            <div class="mb-2">
-                                <span style="font-weight: bold;">Due Date:</span> </br>
-                                <span>{{ task.due_date|date:"F j, Y" }}</span>
-                            </div>
-                        </div>
-
-                        <div class="task-members col-4 d-flex justify-content-center">
-                            <div>
-                                <span class="members-label" style="font-weight:bold">Members Assigned:</span> </br>
-                                <div class="btn-group my-2">
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"
-                                        style="max-height: 210px; overflow-y: scroll;">
-                                        {% for user in team.members.all %}
-                                        {% if user in task.assigned_members.all %}
-                                        <a class="dropdown-item active"
-                                            href="{% url 'assign_member_to_task' task.id user.id %}">
-                                            {{ user.username }}</a>
-                                        {%else%}
-                                        <a class="dropdown-item"
-                                            href="{% url 'assign_member_to_task' task.id user.id %}">
-                                            {{ user.username }}</a>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-wrap my-2" style="width: 175px">
-                                    {% for member in task.assigned_members.all %}
-                                    <img src="{{member.gravatar}}" alt="User"
-                                        style="height: 50px; width: 50px; margin: 4px; border-radius: 50%;"
-                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                        title="{{member.full_name}}" />
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <div class="d-grid gap-3 col-5 mx-auto">
-                                <a class="btn-purple btn w-100" href='{% url "edit_task" task.id%}'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path
-                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                        <path fill-rule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                    </svg>
-                                    Edit Task
-                                </a>
-
-                                <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-delete btn w-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-trash3 me-1" viewBox="0 0 16 16">
-                                            <path
-                                                d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                                        </svg>
-                                        Delete Task
-                                    </button>
-                                </form>
-
-                                <form action="{% url 'toggle_archive' task_id=task.id %}" method="post">
-                                    {% csrf_token %}
-                                    <span class="">
-                                        {% if task.is_archived %}
-                                        <button class="btn btn-archive w-100">
-                                            <i class="bi bi-archive"></i> Unarchive
-                                        </button>
-                                        {% endif %}
-                                    </span>
-                                </form>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
         </div>
-        {% endfor %}
+
+      </div>
     </div>
+    {% endfor %}
+  </div>
 </div>
 {% endif %}

@@ -1,25 +1,3 @@
-<style>
-    .table-title {
-        font-size: 18px;
-        background-color: #756cba;
-        color: white;
-        border-radius: 8px;
-        padding: 8px 0;
-    }
-
-    .table-row {
-        font-size: 18px;
-        background-color: #cfcbe9;
-        color: #0a071f;
-        border-radius: 8px;
-        padding: 8px 0;
-    }
-    .overdue-task {
-        background-color: #c73c3c;
-        color: white;
-    }
-</style>
-
 <div class="mx-3">
     <div class="list-group">
         <div class="row table-title mb-2">
@@ -66,8 +44,10 @@
     {% else %}
     <div class="list-group">
         <div class="row table-row mb-2">
-            <div class="col table-col" style="text-align: center;">
-                You have no tasks assigned to you
+            <div class="col table-col">
+                <span class="mx-auto py-2" style="font-size: 16px;">
+                    You have no tasks assigned to you
+                </span>
             </div>
         </div>
     </div>
