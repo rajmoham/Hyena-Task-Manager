@@ -11,7 +11,7 @@
             <a href="{% url 'edit_team' team_id=team.id %}" class="btn btn-purple" style="color: white;">Edit Team</a>
             <form action="{% url 'team_delete' team_id=team.id %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Delete Team" class="btn btn-danger" style="margin-left:10px;" onclick="return confirm('Are you sure you want to submit?')">
+                <input type="submit" value="Delete Team" class="btn btn-danger" style="margin-left:10px;" onclick="return confirm('Are you sure you want to delete?')">
             </form>
             {%else%}
             <a href="" class="btn btn-purple disabled me-2" style="color: white;">Edit Team</a>

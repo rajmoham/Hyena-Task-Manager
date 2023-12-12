@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h2 class="title-color my-4"> Create a New Task</h2>
+            <h2 class="title-color my-4">Create a New Task</h2>
             <div class="my-5 mx-5">
                 <form method="post" action="{% url 'create_task' team.id %}">
                     {% csrf_token %}
