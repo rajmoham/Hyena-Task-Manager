@@ -1,6 +1,16 @@
 {% extends 'base_content.html' %}
 {% block title %} | {{team.title}} {% endblock%}
 {% block content %}
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#myForm').submit(function() {
+            return confirm("Are you sure you want to delete this team?");
+        });
+    });
+</script>
+
 <div class="container">
     <div class="row content">
         <div class="mb-5">
@@ -8,13 +18,22 @@
         </div>
         <div class="mb-5">
             {% include 'partials/leaderboard.html' with members=members %}
+        <div class="mb-4" style="display: flex;">
+            {%if request.user == team.author%}
+                <a href="{% url 'edit_team' team.id %}" class="btn btn-purple" style="color: white;">Edit Team</a>
+                <form id="myForm" action="{% url 'team_delete' team.id %}"  method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete Team" class="btn btn-purple" style="margin-left:10px;">
+                </form>
 
-            <div class="mb-4 mx-4">
-                {% include 'partials/tasks_as_table.html' with tasks=tasks %}
-            </div>
-            <div class="mb-4 mx-4">
-                {% include 'partials/archived_tasks.html' with tasks=tasks %}
-            </div>
+            {%endif%}
+        </div>
+        <a href="{% url 'create_task' team.id %}" class="btn btn-purple" style="color: white;">Create Task</a>
+        <div class="mb-4">
+            {% include 'partials/tasks_as_table.html' with tasks=tasks %}
+        </div>
+        <div class="mb-4">
+            {% include 'partials/archived_tasks.html' with tasks=tasks %}
         </div>
     </div>
 </div>
