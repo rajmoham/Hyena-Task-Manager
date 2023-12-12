@@ -1,10 +1,12 @@
+''' Test case for Create Team view '''
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Team, User, Team
+from tasks.models import Team, User
+from tasks.tests.helpers import reverse_with_next
 
 
 class NewTeamTest(TestCase):
-
+    ''' Test case for Create Team view '''
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
@@ -15,7 +17,6 @@ class NewTeamTest(TestCase):
     def setUp(self):
         super(TestCase, self).setUp()
         self.user = User.objects.get(username = "@johndoe")
-        self.team = Team.objects.get(pk=1)
         self.url = reverse('create_team')
         self.data = {'title': 'New Team','description': 'The quick brown fox jumps over the lazy dog.',}
 
@@ -77,9 +78,14 @@ class NewTeamTest(TestCase):
         self.assertEqual(team_count_after, team_count_before + 1)
         self.assertEqual(response.status_code, 200)
 
-    def test_invalid_team_user_is_not_logged_in(self):
+    def test_post_create_team_redirects_when_user_is_not_logged_in(self):
         team_count_before = Team.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
         team_count_after = Team.objects.count()
         self.assertEqual(team_count_after, team_count_before)
         self.assertTemplateUsed(response, 'log_in.html')
+
+    def test_get_create_new_team_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

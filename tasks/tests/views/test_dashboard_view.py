@@ -15,7 +15,8 @@ class DashboardViewTestCase(TestCase):
         'tasks/tests/fixtures/other_users.json',
         'tasks/tests/fixtures/default_team.json',
         'tasks/tests/fixtures/other_teams.json',
-        'tasks/tests/fixtures/default_task.json'
+        'tasks/tests/fixtures/default_task.json',
+        'tasks/tests/fixtures/other_tasks.json'
     ]
 
     def setUp(self):
@@ -47,8 +48,8 @@ class DashboardViewTestCase(TestCase):
         #mock team created by other user but did not invite current user
         self.team_other_not_invited = Team.objects.get(pk=6)
         self.team_other_not_invited.members.add(self.other_registered_user)
+
         self.task = Task.objects.get(pk=1)
-        
 
     def test_dashboard_url(self):
         self.assertEqual(self.url, '/dashboard/')
@@ -102,8 +103,6 @@ class DashboardViewTestCase(TestCase):
         response_user_teams = response.context['user_teams']
         self.assertEqual(set(response_user_teams), set(my_teams))
         self.assertEqual(len(response_user_teams), len(my_teams))
-
-    # TO DO: test for notifications once feature is done
 
     def test_dashboard_displays_tasks(self):
         self.client.login(username=self.user.username, password="Password123")

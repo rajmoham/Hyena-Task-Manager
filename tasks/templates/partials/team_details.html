@@ -1,53 +1,3 @@
-<style>
-    .text-purple {
-        color: #1a0d7a;
-    }
-
-    .text-purple-dull {
-        color: #3e3582;
-    }
-
-    .gravatar {
-        border-radius: 50%;
-        height: 50px;
-        width: 50px;
-        border: 2px solid #5448b0;
-    }
-
-    .card-header {
-        background-color: #756cba;
-        color: white;
-    }
-
-    .card-body {
-        background-color: #e4e2f3;
-        padding: 0 0;
-    }
-
-    .member-item {
-        background-color: #b9b5e6;
-    }
-
-    .btn-purple {
-        background-color: #5448b0;
-        color: white;
-        transition: all ease 300ms;
-    }
-
-    .invite-btn {
-        height: 30px;
-        font-size: 0.75rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .btn-purple:hover {
-        background-color: #3b3189;
-        color: white;
-    }
-</style>
-
 <div class="row mt-5">
     <div class="col-5 d-flex flex-column justify-content-between">
         <div>
@@ -58,42 +8,40 @@
         </div>
         <div class="mb-4 d-flex">
             {%if request.user == team.author%}
-            <a href="{% url 'edit_team' team.id %}" class="btn btn-purple" style="color: white;">Edit Team</a>
-
-
-            <form action="{% url 'team_delete' team.id %}" method="post">
+            <a href="{% url 'edit_team' team_id=team.id %}" class="btn btn-purple" style="color: white;">Edit Team</a>
+            <form action="{% url 'team_delete' team_id=team.id %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Delete Team" class="btn btn-delete" style="margin-left:10px;" onclick="return confirm('Are you sure you want to submit?')">
+                <input type="submit" value="Delete Team" class="btn btn-danger" style="margin-left:10px;" onclick="return confirm('Are you sure you want to delete?')">
             </form>
 
             {%else%}
             <a href="" class="btn btn-purple disabled me-2" style="color: white;">Edit Team</a>
-            <a href="" class="btn btn-delete disabled" style="color: white;">Delete Team</a>
+            <a href="" class="btn btn-danger disabled" style="color: white;">Delete Team</a>
             {%endif%}
         </div>
     </div>
 
-    <div class="card" style="width: 25rem; border-radius: 9px; overflow: hidden; padding: 0;">
+    <div class="card ms-auto me-5" style="width: 25rem; border-radius: 9px; overflow: hidden; padding: 0;">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span class="header">Members ({{team.members.all.count}})</span>
             {%if request.user == team.author%}
-            <a href="{% url 'invite' team_id=team.id %}" class="btn btn-purple invite-btn">
+            <a href="{% url 'invite' team_id=team.id %}" class="btn btn-purple btn-sm shadow">
                 <i class="bi bi-plus-lg"></i>
                 <span class="ms-3">Invite</span>
             </a>
             {% else %}
-            <a href="" class="btn btn-purple invite-btn disabled">
+            <a href="" class="btn btn-purple btn-sm disabled shadow">
                 <i class="bi bi-plus-lg"></i>
                 <span class="ms-3">Invite</span>
             </a>
             {%endif%}
         </div>
-        <div style="height: 250px; overflow: scroll;" class="card-body">
+        <div style="height: 250px; overflow-y: scroll;" class="card-body">
             <ul class="list-group list-group-flush w-100">
                 {% for member in team.members.all %}
                 <li class="list-group-item member-item">
                     <div class="d-flex align-items-center">
-                        <img class="gravatar me-4" src="{{ team.members.all.first.mini_gravatar }}" alt="User Gravatar">
+                        <img class="gravatar me-4" src="{{ member.mini_gravatar }}" alt="User Gravatar">
                         <div>
                             <span>{{ member.full_name }}</span>
                             {%if member == team.author %}

@@ -1,10 +1,11 @@
+''' Test case for Assign Member to Task view '''
 from django.test import TestCase
 from django.urls import reverse
 from tasks.models import Task, User, Team
 
 
 class NewTaskTest(TestCase):
-
+    ''' Test case for Assign Member to Task view '''
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',

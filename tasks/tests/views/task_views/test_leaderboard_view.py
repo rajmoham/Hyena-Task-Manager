@@ -6,6 +6,7 @@ from tasks.tests.helpers import reverse_with_next
 
 class LeaderboardViewTestCase(TestCase):
     '''Unit test for leaderboard view'''
+
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/other_users.json',
@@ -66,6 +67,14 @@ class LeaderboardViewTestCase(TestCase):
         user = members_list[0]
         teammate = members_list[1]
         self.assertGreaterEqual(user.total_tasks_completed, teammate.total_tasks_completed)
+
+    def test_leaderboard_redirects_when_invalid_team_id_is_entered(self):
+        self.client.login(username=self.user.username, password="Password123")
+        url = reverse('leaderboard', kwargs={'team_id': self.team.id+9999999})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('dashboard')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
 
 
 

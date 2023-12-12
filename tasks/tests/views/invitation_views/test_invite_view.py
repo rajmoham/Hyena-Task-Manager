@@ -1,3 +1,4 @@
+'''Unit test for invite view'''
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.messages import get_messages
@@ -5,6 +6,8 @@ from tasks.models import Team, Invitation, User
 from tasks.forms import TeamInviteForm
 
 class InviteViewTestCase(TestCase):
+    '''Unit test for invite view'''
+
     fixtures = ['tasks/tests/fixtures/default_user.json',
                 'tasks/tests/fixtures/other_users.json',
                 'tasks/tests/fixtures/default_team.json']
@@ -14,7 +17,6 @@ class InviteViewTestCase(TestCase):
         self.team = Team.objects.get(pk=1)
         self.team.members.add(self.user)
         
-
     def test_invite_view_without_permission(self):
         """No one except the author of the team can invite a user to the team"""
         other_user = User.objects.get(username='@janedoe')

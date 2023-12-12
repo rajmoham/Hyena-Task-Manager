@@ -18,9 +18,9 @@ class Command(BaseCommand):
 
     USER_COUNT = 300
     INVITATION_COUNT = 100
-    TEAM_COUNT = 1000
-    TASK_COUNT = 2000
-    OVERDUE_PROB = 0.05
+    TEAM_COUNT = 300
+    TASK_COUNT = 600
+    OVERDUE_PROB = 0.1
     MEMBER_PROB = 0.1
     ASSIGN_PROB = 0.1
     INVITATION_ACCEPTED_PROB = 0.3
@@ -34,6 +34,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create_users()
         self.users = User.objects.all()
+        self.seeded_data_for_marker()
         self.create_teams()
         self.create_tasks()
         self.add_team_members()
@@ -78,6 +79,27 @@ class Command(BaseCommand):
             first_name=data['first_name'],
             last_name=data['last_name'],
         )
+
+    #There is Two Teams belonging to Jane and John, and Charlie is a member of both
+    def seeded_data_for_marker(self):
+        john = User.objects.get(username='@johndoe')
+        jane = User.objects.get(username='@janedoe')
+        charlie = User.objects.get(username='@charlie')
+        johnteam = Team.objects.create(
+            author=john,
+            title='John Does Seeded Team',
+            description='In this Team John Doe is the author of the Team so had all functionality required',
+            created_at=self.faker.past_datetime(start_date='-365d', tzinfo=pytz.UTC),
+        )
+        johnteam.members.add(john, jane, charlie)
+        janeteam = Team.objects.create(
+            author=jane,
+            title='Jane Does Seeded Team',
+            description='In this Team Jane Doe is the author of the Team so had all functionality required',
+            created_at=self.faker.past_datetime(start_date='-365d', tzinfo=pytz.UTC),
+        )
+        janeteam.members.add(jane, john, charlie)
+
 
     '''Generating Teams - Fills the Database with Random Teams'''
     def create_teams(self):
@@ -150,9 +172,9 @@ class Command(BaseCommand):
         description = self.faker.text(max_nb_chars=280)
         created_at = self.faker.past_datetime(start_date='-365d', tzinfo=pytz.UTC)
         if random() < self.OVERDUE_PROB:
-            due_date = self.faker.future_datetime(end_date='+30d', tzinfo=pytz.UTC)
-        else:
             due_date = self.faker.past_datetime(start_date='-365d', tzinfo=pytz.UTC)
+        else:
+            due_date = self.faker.future_datetime(end_date='+30d', tzinfo=pytz.UTC)
         self.try_create_task({'author': author, 'title': title, 'description': description, 'created_at': created_at, 'due_date': due_date})
 
     def get_random_team(self):

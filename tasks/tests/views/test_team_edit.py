@@ -35,3 +35,4 @@ class TeamFormTestCase(TestCase):
         data = {'title': '', 'description': ''}
         form = TeamForm(data=data)
         self.assertFalse(form.is_valid())
+

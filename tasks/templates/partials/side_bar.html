@@ -1,47 +1,3 @@
-<style>
-  .nav-item {
-    color: #241969;
-    transition: 0.5s all ease;
-  }
-
-  .nav-item-top {
-    border-radius: 8px 8px;
-  }
-
-  .nav-item:hover {
-    color: white;
-    background-color: #847bc0;
-    filter: drop-shadow(0 0 4px #adadad);
-  }
-  .purple-text {
-    color: #2c1f7d;
-  }
-  .user-container {
-    background-color: #cec9e9;
-    border-radius: 16px;
-    border: 1px solid #c2bce2;
-    transition: 0.3s ease all;
-  }
-  .user-container:hover {
-    background-color: #afa8da;
-  }
-  .user-options {
-    position: absolute;
-    width: 90%;
-    transition: 300ms ease all;
-    bottom: 100%;
-    left: 5%;  
-    z-index: 0;
-    max-height: 0;
-    overflow: hidden;
-    border-radius: 12px 12px 0 0;
-  }
-  .user-container:hover .user-options{
-    max-height: 300px;
-  }
-</style>
-
-
 <nav class="d-flex flex-column justify-content-between align-items-center px-3 py-5 h-100">
   <div class="w-100 mb-3">
 
@@ -70,9 +26,15 @@
           {% if unseen_notifs %}
           <span class="badge rounded-pill bg-danger">
             {{ unseen_notifs.count }}
-            <span class="visually-hidden">unread messages</span>
+            <span class="visually-hidden">Unread Messages</span>
             {% endif %}
           </span>
+        </div>
+      </a>
+      <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'list_invitations' %}">
+        <div class="p-2 d-flex align-items-center nav-item nav-item-top">
+          <i class="bi bi-envelope-fill mx-3"></i>
+          <span class="flex-grow-1 mx-2" style="font-size: 16px;">Invitations</span>
         </div>
       </a>
       <a style="width: 100%; max-width: 230px; text-decoration: none;" class="mb-3" href="{% url 'create_team' %}">

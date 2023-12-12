@@ -1,0 +1,37 @@
+<div class="shadow-lg" style="border-radius: 16px; overflow-y: scroll; max-height: 250px;">
+    <div class="card-header">
+        <h3 class="mb-0 py-1" style="font-size: 16px;">Unseen Notifications ({{ unseen_notifs.count}})</h3>
+    </div>
+    {% if unseen_notifs %}
+    <div class="list-group">
+        {% for notification in unseen_notifs %}
+        <div class="list-group-item unseen d-flex justify-content-between align-items-start border-bottom">
+            <div class="d-flex align-items-center">
+                <div class="mt-2">
+                    <h6 class="mx-1">{{ notification.title }}</h5>
+                </div>
+            </div>
+            <div>
+                {% if notification.invitation %}
+                <div class="h-100 d-flex align-items-center">
+                    <a href="{% url 'accept_invitation' notification.invitation.id %}"
+                        class="btn-success btn btn-sm me-2"><i class="bi bi-check"></i>Accept</a>
+                    <a href="{% url 'decline_invitation' notification.invitation.id %}"
+                        class="btn-danger btn btn-sm"><i class="bi bi-x"></i>Decline</a>
+                </div>
+                {% else %}
+                <div class="d-flex flex-column align-items-end">
+                    <small class="my-2">{{ notification.created_at|date:"N j, Y" }}</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="py-4 d-flex align-items-center justify-content-center">
+        <span>You are up to date!</span>
+    </div>
+    {% endif %}
+</div>
+</div>
