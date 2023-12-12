@@ -6,6 +6,7 @@ from tasks.tests.helpers import reverse_with_next
 
 class ToggleArchiveStatusTestCase(TestCase):
     '''Unit test for toggling archive status'''
+
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/other_users.json',
@@ -40,12 +41,12 @@ class ToggleArchiveStatusTestCase(TestCase):
 
     def test_get_toggle_archive_status_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
-        response = self.client.get(self.url)
+        response = self.client.post(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_toggle_archive_status_redirects_to_show_team(self):
         self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.post(self.url, follow=True)
         response_url = reverse('show_team', kwargs={'team_id': self.myTeamTask.author.id})
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_team.html')
@@ -56,10 +57,18 @@ class ToggleArchiveStatusTestCase(TestCase):
         for task in otherTeamTasks:
             # intially false
             self.assertFalse(task.is_archived)
-            response = self.client.get(reverse('toggle_archive', kwargs={'task_id': task.id}), follow=True)
+            response = self.client.post(reverse('toggle_archive', kwargs={'task_id': task.id}), follow=True)
             self.assertFalse(task.is_archived)
             response_url = reverse('dashboard')
             # if user gets redirected to dashboard, this means toggling task was unsuccessful
             self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
             self.assertTemplateUsed(response, 'dashboard.html')
+
+    def test_toggle_archive_redirects_when_invalid_team_id_is_entered(self):
+        self.client.login(username=self.user.username, password="Password123")
+        url = reverse('toggle_archive', kwargs={'task_id': self.myTeamTask.id+9999999})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('dashboard')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
 

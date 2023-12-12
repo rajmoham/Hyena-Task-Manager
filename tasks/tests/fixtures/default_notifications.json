@@ -1,0 +1,41 @@
+[
+    {
+        "model": "tasks.notification",
+        "pk": 1,
+        "fields": {
+            "title": "Noti Test 1", 
+            "description": "test1",
+            "created_at": "2023-01-01T12:00:00Z",
+            "user": 1,
+            "actionable": true,
+            "invitation": 1,
+            "seen": false        
+        }
+    },
+    {
+        "model": "tasks.notification",
+        "pk": 2,
+        "fields": {
+            "title": "Noti Test 2", 
+            "description": "test2",
+            "created_at": "2023-01-01T12:00:00Z",
+            "user": 2,
+            "actionable": true,
+            "invitation": 2,
+            "seen": false        
+        }
+    },
+    {
+        "model": "tasks.notification",
+        "pk": 3,
+        "fields": {
+            "title": "Noti Test 3", 
+            "description": "test3",
+            "created_at": "2023-01-01T12:00:00Z",
+            "user": 3,
+            "actionable": true,
+            "invitation": 3,
+            "seen": false        
+        }
+    }
+]

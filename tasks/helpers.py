@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.shortcuts import redirect
-from .models import Team, Task
+from .models import Team, Task, User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 
@@ -14,7 +14,38 @@ def login_prohibited(view_function):
             return view_function(request)
     return modified_view_function
 
+def team_member_prohibited_to_view_team(view_function):
+    """ Decorator for view functions that redirect users away if they are not a team member of that team when they want to view team. """
+    def modified_view_function(request, *args, **kwargs):
+        current_user = request.user
+
+        team_id = kwargs.get('team_id', None)
+        task_id = kwargs.get('task_id', None)
+
+        current_team = None
+
+        if team_id != None:
+            try: 
+                current_team = Team.objects.get(id=team_id)
+            except ObjectDoesNotExist:
+                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+        if task_id != None:
+            try: 
+                current_task = Task.objects.get(id=task_id)
+                current_team = Team.objects.get(id=current_task.author.id)
+            except ObjectDoesNotExist:
+                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+        if current_user.is_authenticated and (current_user in current_team.members.all() or current_user == current_team.author):
+            return view_function(request, *args, **kwargs)
+        else:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+    return modified_view_function
+
 def calculate_task_complete_score(team_id):
+    """ Helper function to calculate the tasks each user has completed."""
     try:
         current_team = Team.objects.get(pk=team_id)
         members = current_team.members.all()

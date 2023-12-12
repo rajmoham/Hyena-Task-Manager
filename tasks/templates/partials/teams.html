@@ -187,12 +187,12 @@ a, li {
 <link href='https://fonts.googleapis.com/css?family=Nunito:400,700,300' rel='stylesheet' type='text/css'>
 
 <div class="w-100">
-<div class="d-flex flex-wrap">
+<div class="card-container">
     {% if user_teams %}
     {% for team in user_teams %}
     <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
         <div class="d-flex flex-column team team-card overflow-hidden">
-            <div class="card-body mb-2" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
                 <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
             </div>
         </div>

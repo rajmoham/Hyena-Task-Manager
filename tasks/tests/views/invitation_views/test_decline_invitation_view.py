@@ -1,16 +1,31 @@
+"""Tests of the decline invitations view."""
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from tasks.models import Team, Invitation, User
 
 class DeclineInvitationViewTestCase(TestCase):
-    fixtures = ['tasks/tests/fixtures/default_user.json']
+    """Tests of the decline invitations view."""
+
+    fixtures = [
+            'tasks/tests/fixtures/default_user.json',
+            'tasks/tests/fixtures/other_users.json',
+            'tasks/tests/fixtures/default_team.json',
+            'tasks/tests/fixtures/other_teams.json',
+            'tasks/tests/fixtures/default_invitations.json'
+        ]
 
     def setUp(self):
         self.user = self.user = User.objects.get(username='@johndoe')
-        self.other_user = User.objects.create_user('otheruser', 'other@example.com', 'Password123')
-        self.team = Team.objects.create(author=self.user, title='Test Team', description='Test description')
-        self.invitation = Invitation.objects.create(team=self.team, email=self.user.email)
+        self.other_user = User.objects.get(username='@janedoe')
+        self.team = Team.objects.get(pk=4)
+
+        # invitation for John Doe
+        self.invitation = Invitation.objects.get(pk=1)
+        self.url = reverse('decline_invitation', args=[self.invitation.id])
+
+    def test_decline_invitation_url(self): 
+        self.assertEqual(self.url,'/invitations/decline/' + str(self.invitation.id)+"/")
 
     def test_decline_invitation(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -36,6 +51,6 @@ class DeclineInvitationViewTestCase(TestCase):
         self.assertEqual(str(messages[0]), "You have already declined this invitation.")
 
     def test_unauthorized_decline_invitation(self):
-        self.client.login(username='otheruser', password='Password123')
+        self.client.login(username=self.other_user.username, password='Password123')
         response = self.client.post(reverse('decline_invitation', args=[self.invitation.id]))
         self.assertEqual(response.status_code, 404)
