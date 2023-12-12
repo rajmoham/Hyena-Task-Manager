@@ -1,46 +1,15 @@
-<style>
-  .btn-purple {
-    background-color: #5f5bb6 !important;
-    color: white !important;
-    transition: all ease 300ms;
-  }
-
-  .btn-purple:hover {
-    background-color: #2c1f7d !important;
-    color: white !important;
-  }
-  .nav-item {
-    transition: all ease 300ms;
-    border: 2px solid #5f5bb6;
-    border-radius: 0.5rem;
-  }
-  .nav-item:hover {
-    background-color: #5f5bb6 !important;
-    color: white !important;
-  }
-  .nav-link{
-    color: #5f5bb6 !important;
-  }
-  .nav-link:hover {
-    color: white !important;
-  }
-  .active {
-    background-color: #5f5bb6 !important;
-    color: white !important;
-  }
-</style>
 {% extends 'base_content.html' %}
 {% block title %} | Log In{% endblock%}
 {% block content %}
 <div class=" d-flex justify-content-center align-items-center h-100">
   <div style="width: 500px; background-color: #ffffffaa; border-radius: 12px;" class="p-4 shadow-lg">
     <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
-      <li class="nav-item me-1" role="presentation">
-        <a class="nav-link active" id="tab-login" data-mdb-toggle="pill" role="tab" aria-controls="pills-login"
+      <li class="toggle-nav-item nav-item me-1" role="presentation">
+        <a class="toggle-nav-link nav-link active" id="tab-login" data-mdb-toggle="pill" role="tab" aria-controls="pills-login"
           aria-selected="true">Log in</a>
       </li>
-      <li class="nav-item ms-1" role="presentation">
-        <a class="nav-link" id="tab-register" data-mdb-toggle="pill" href="{% url 'sign_up' %}" role="tab"
+      <li class="toggle-nav-item nav-item  ms-1" role="presentation">
+        <a class="toggle-nav-link nav-link" id="tab-register" data-mdb-toggle="pill" href="{% url 'sign_up' %}" role="tab"
           aria-controls="pills-register" aria-selected="false">Sign Up</a>
       </li>
     </ul>

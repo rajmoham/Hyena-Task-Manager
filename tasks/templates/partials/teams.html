@@ -1,35 +1,10 @@
-<style>
-    .team-card {
-        border: 2px solid #1a0d7a;
-        border-radius: 8px;
-        color: white;
-        transition: all ease 0.3s;
-        width: 15rem;
-        height: 10rem;
-    }
-    .team-card:hover {
-        box-shadow: 0 0 10px rgb(141, 141, 141);
-    }
-    .team {
-        background-color: #5f5bb6b3;
-    }
-    .add-team {
-        background-color: #bab8ddb3;
-    }
-    .team:hover {
-        background-color: #5f5bb6;
-    }
-    .add-team:hover {
-        background-color: #a4a1de;
-    }
-</style>
 <div class="w-100">
-<div class="d-flex flex-wrap">
+<div class="card-container">
     {% if user_teams %}
     {% for team in user_teams %}
     <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
         <div class="d-flex flex-column team team-card overflow-hidden">
-            <div class="card-body mb-2" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
                 <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
             </div>
         </div>

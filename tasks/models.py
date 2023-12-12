@@ -35,7 +35,7 @@ class User(AbstractUser):
         """Return a URL to the user's gravatar."""
 
         gravatar_object = Gravatar(self.email)
-        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        gravatar_url = gravatar_object.get_image(size=size, default='retro')
         return gravatar_url
 
     def mini_gravatar(self):
@@ -55,7 +55,6 @@ class Team(models.Model):
         """Model options."""
 
         ordering = ['-created_at']
-
 
 class Invitation(models.Model):
     INVITED = 'invited'
@@ -84,11 +83,15 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     actionable = models.BooleanField()
     invitation = models.ForeignKey(Invitation, on_delete=models.SET_NULL, null=True, blank=True)
+    seen = models.BooleanField(default=False)
 
     class Meta:
         """Model options."""
 
         ordering = ['-created_at']
+
+    def mark_as_seen(self):
+        self.seen = True
 
 """Task Created by a Team"""
 class Task(models.Model):
@@ -132,17 +135,7 @@ class Task(models.Model):
     def _unarchive_task(self):
         self.is_archived = False
 
-    
-
-    
-
-
     class Meta:
         """Model Options"""
 
         ordering = ['due_date']
-
-
-""" One User can have many Teams and One Team can have many Users: Many to Many
-    One Team can have Many Tasks but One Task can only have one Team: One to Many
-    One User can have Many Tasks and One Tasks can have many Users: Many to Many"""

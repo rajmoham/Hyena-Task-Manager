@@ -40,17 +40,6 @@ class ShowTeamViewTestCase(TestCase):
         self.otherTeamTask1 = Task.objects.get(pk=5)
         self.otherTeamTask2 = Task.objects.get(pk=6)
 
-        '''
-        - TO BE IMPLEMENTED AFTER USER INVITE FEATURE IS DONE: -
-        # mock team created by team mate
-        self.team_other = Team.objects.create(
-            author=self.teammate_1,
-            title="TeamB",
-            description="This is my team",
-        )
-        self.team_other.members.add(self.user, self.teammate_1)
-        '''
-
     def test_show_team_url(self):
         expectedURL = '/team/' + str(self.team.id)
         self.assertEqual(self.url, expectedURL)
@@ -100,24 +89,33 @@ class ShowTeamViewTestCase(TestCase):
         for task in createdTeamTasks:
             self.assertContains(response, task.title)
 
-    def test_show_team_page_does_not_display_tasks_details__not_created_for_current_team(self):
+    def test_show_team_page_does_not_display_tasks_details_not_created_for_current_team(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_team.html')
         otherTeamTasks = [self.otherTeamTask1, self.otherTeamTask2]
         for task in otherTeamTasks:
-            self.assertNotContains(response, task.title) # given task titles are different
-            # self.assertNotContains(response, task.description) if not unique could cause a fail
-            # self.assertNotContains(response, task.due_date) if not unique could cause a fail 
+            # given task titles are different in the test fixtues
+            self.assertNotContains(response, task.title) 
 
-    # To Do: tests for live tasks and archived tasks
+    def test_other_user_not_team_cannot_view_team(self):
+        other_user = User.objects.get(username='@ericjoker')
+        self.client.login(username=other_user.username, password="Password123")
+        url = reverse('show_team', kwargs={'team_id': self.team.id})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('dashboard')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
 
-    def test_show_team_page_displays_unarchived_tasks(self):
-        pass
 
-    def test_show_team_page_displays_archived_tasks(self):
-        pass
+
+
+
+    
+
+
+
 
         
         

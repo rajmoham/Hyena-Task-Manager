@@ -1,25 +1,58 @@
 {% extends 'base_content.html' %}
+{% block title %} | Notifications {% endblock%}
 {% block content %}
-<div class="container">
-    <div class="row">
-        <h3>Your Notifications</h3>
-        {% if user_notifications %}
+<div class="container pb-4">
+    <h2 class="title-color my-4">Notifications</h2>
+    <div class="shadow-sm" style="border-radius: 16px; overflow: hidden;">
+        <div class="card-header">
+            <h3 class="mb-0 py-1" style="font-size: 24px;">Your Notifications ({{ user_notifications.count}})</h3>
+        </div>
+        <div class="card-body">
+            {% if user_notifications %}
+            <div class="list-group">
                 {% for notification in user_notifications %}
-                <div style="display: flex; justify-content: space-between;">
-                  <p><strong>{{ notification.title }}</strong></p>
-                  <p>{{ notification.description }}</p>
-                  {% if notification.actionable %}
-                    {% if notification.invitation %}
-                        <a href="{% url 'accept_invitation' notification.invitation.id %}" class="btn btn-success btn-sm">Accept</a>
-                        <a href="{% url 'decline_invitation' notification.invitation.id %}" class="btn btn-danger btn-sm">Decline</a>
+                {% if notification.seen %}
+                <div class="list-group-item d-flex justify-content-between align-items-start border-bottom">
                     {% else %}
-                    {% endif %}
-                {% endif %}
+                    <div class="list-group-item unseen d-flex justify-content-between align-items-start border-bottom">
+                        {% endif %}
+                        <div class="d-flex align-items-center">
+                            <div class="mt-3">
+                                <h5 class="mx-1">{{ notification.title }}</h5>
+                                <p class="mx-">{{ notification.description }}</p>
+                            </div>
+                        </div>
+                        <div>
+                            {% if notification.invitation %}
+                            <div class="h-100 d-flex align-items-center py-3">
+                                <a href="{% url 'accept_invitation' notification.invitation.id %}"
+                                    class="btn btn-success btn-sm me-2"><i class="bi bi-check"></i> Accept</a>
+                                <a href="{% url 'decline_invitation' notification.invitation.id %}"
+                                    class="btn btn-danger btn-sm"><i class="bi bi-x"></i> Decline</a>
+                            </div>
+                            {% else %}
+                            <div class="d-flex flex-column align-items-end">
+                                <small class="my-2">{{ notification.created_at|date:"N j, Y" }}</small>
+                                {% if not notification.seen %}
+                                <a href="{% url 'seen_notification' notification.id %}" class="btn btn-purple"> <i
+                                        class="bi bi-check"></i> Mark as Read</a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+
+
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-        {% else %}
-          <p>You don't have any new notifications.</p>
-        {% endif %}
+            </div>
+            {% else %}
+            <div class="py-4 d-flex align-items-center justify-content-center">
+                <span>You don't have any new notifications.</span>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

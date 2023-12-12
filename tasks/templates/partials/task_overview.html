@@ -1,0 +1,22 @@
+{% if late_tasks %}
+<div class="info-card bg-overdue shadow-lg w-100">
+  {% else %}
+<div class="info-card bg-no-overdue shadow-lg w-100">
+{% endif %}
+
+  <div class="p-3">
+    <div class="mb-3">
+      <h4 class="card-title">Welcome {{ user.first_name }},</h4>
+    </div>
+    <p class="card-text">
+      {% if late_tasks %}
+      Your Overdue Tasks:
+      <div>
+        <span class="card-title" style="color: rgb(255, 225, 225);"><strong>{{ late_task_text }}</strong></span>
+      </div>
+    {% else %}
+    You have no overdue Tasks!
+    {% endif %}
+    </p>
+  </div>
+</div>
