@@ -1,31 +1,53 @@
 <style>
-    .team-card {
-        border: 2px solid #1a0d7a;
-        border-radius: 8px;
-        color: white;
-        transition: all ease 0.3s;
-        width: 15rem;
-        height: 10rem;
-    }
-    .team-card:hover {
-        box-shadow: 0 0 10px rgb(141, 141, 141);
-    }
-    .team {
-        background-color: #5f5bb6b3;
-    }
-    .add-team {
-        background-color: #bab8ddb3;
-    }
-    .team:hover {
-        background-color: #5f5bb6;
-    }
-    .add-team:hover {
-        background-color: #a4a1de;
-    }
 
-    body{
-  font-family: Roboto, "sans-serif";
-}
+.parent {
+    position: relative;
+    width: auto;
+    height: 80%;
+    background-color: none;
+    border: none;
+  }
+  
+  .child {
+    position: absolute;
+    left: 2px;
+    bottom: 5px;
+    width: 97%;
+    max-height: 10px;
+    height: 100%;
+    background-color: none;
+    border: none;
+  }
+  
+  .dots {
+      position: relative;
+      left: 5px;
+      bottom: 18px;
+  }
+  
+  .deleteBTN {
+    font-size: 12px;
+    background: none;
+    color: #2c1f7d;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+    padding: 0em 0px;
+    cursor: pointer;
+    width: 100%; 
+    max-width: 230px; 
+    text-align: left; 
+  }
+  
+  .deleteBTN:hover {
+    background: #847bc0;
+    border: none;
+  }
+
+  .first {
+    text-decoration: none;
+    border: none;
+  }
 
 .kebab {
   cursor: pointer;
@@ -164,19 +186,6 @@ a, li {
   }
 }
 
-.deleteBTN {
-  background-color: white;
-  color: #6b6b6b;
-  text-decoration: none;
-  border: none;
-  display: inline-block;
-  padding: 1em 18px;
-  cursor: pointer;
-}
-.deleteBTN:hover {
-  background: #ebebeb;
-}
-
 </style>
 
 
@@ -190,32 +199,51 @@ a, li {
 <div class="card-container">
     {% if user_teams %}
     {% for team in user_teams %}
-    <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
-        <div class="d-flex flex-column team team-card overflow-hidden">
-            <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
-                <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
-            </div>
+    <div class="parent team team-card">
+        <div class="first">
+            <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
+                <div class="d-flex flex-column team team-card overflow-hidden">
+                    <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
+                        <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
+                    </div>
+                </div>
+            </a>
         </div>
-    </a>
-    <ul class="nav">
-        
-        
-        <div class="kebab">
-          <figure></figure>
-          <figure class="middle"></figure>
-          <p class="cross">x</p>
-          <figure></figure>
-          <ul class="dropdown">
-            <li><a href="{% url 'edit_team' team.id %}">Edit Team</a></li>
-            <li>
+        <div class="child ">
+            
+            {%if request.user == team.author%}
+            <div class="" style="max-width: 530px; max-height: 10px;">
+                <div class="py-1 px-2 position-relative user-container" style="background-color: none; border: none; background-color: transparent">
+                  
+                    <div>
+                        <span class="purple-text dots">
+                            <p>...</p>
+                        </span>
+                    </div>
 
-            <form id="myForm" action="{% url 'team_delete' team.id %}"  method="post">
-                {% csrf_token %}
-                <input type="submit" value="Delete Team" class="deleteBTN">
-            </form></li>
-          </ul>
-        </div>
-      </ul>
+                  <div class="user-options">
+                    <a style="width: 100%; max-width: 230px; text-decoration: none;" href="{% url 'edit_team' team.id %}">
+                      <div class="d-flex align-items-center nav-item">
+                        <span class="" style="font-size: 12px;">Edit Team</span>
+                      </div>
+                    </a>
+                    <div>
+                        <form action="{% url 'team_delete' team_id=team.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" value="Delete Team" class="deleteBTN nav-item" onclick="return confirm('Are you sure you want to delete?')">
+                        </form>
+                    </div>
+                      <div class="d-flex align-items-center nav-item">
+                                           
+                      </div>
+                    </a>
+                  </div>
+                </div>
+            </div>
+            {%else%}
+            {%endif%}
+        </div>        
+    </div>
     {% endfor %}
     {% endif %}
     <a class="me-3 mb-3" style="text-decoration: none;" href="{% url 'create_team' %}">
@@ -249,9 +277,6 @@ kebabs.forEach(function(kebab) {
     }
   });
 });
-
-
-
 
 </script>
 
