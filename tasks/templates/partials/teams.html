@@ -255,30 +255,6 @@ a, li {
 </div>
 </div>
 
-<script>
-var kebabs = document.querySelectorAll('.kebab');
-
-kebabs.forEach(function(kebab) {
-  var middle = kebab.querySelector('.middle'),
-      cross = kebab.querySelector('.cross'),
-      dropdown = kebab.querySelector('.dropdown');
-
-  kebab.addEventListener('click', function() {
-    middle.classList.toggle('active');
-    cross.classList.toggle('active');
-    dropdown.classList.toggle('active');
-  });
-
-  document.addEventListener('click', function(event) {
-    if (!kebab.contains(event.target) && !dropdown.contains(event.target)) {
-      middle.classList.remove('active');
-      cross.classList.remove('active');
-      dropdown.classList.remove('active');
-    }
-  });
-});
-
-</script>
 
 
  
