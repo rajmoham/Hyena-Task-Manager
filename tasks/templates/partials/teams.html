@@ -2,13 +2,51 @@
 <div class="card-container">
     {% if user_teams %}
     {% for team in user_teams %}
-    <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
-        <div class="d-flex flex-column team team-card overflow-hidden">
-            <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
-                <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
-            </div>
+    <div class="parent team team-card">
+        <div class="first">
+            <a class="me-3 mb-3" style="text-decoration: none" href="{% url 'show_team' team.id %}">
+                <div class="d-flex flex-column team team-card overflow-hidden">
+                    <div class="p-3" style="overflow: hidden; text-overflow: ellipsis;">
+                        <h5 class="card-title"><strong>{{ team.title }}</strong></h5>
+                    </div>
+                </div>
+            </a>
         </div>
-    </a>
+        <div class="child ">
+            
+            {%if request.user == team.author%}
+            <div class="" style="max-width: 530px; max-height: 10px;">
+                <div class="py-1 px-2 position-relative user-container" style="background-color: none; border: none; background-color: transparent">
+                  
+                    <div>
+                        <span class="purple-text dots">
+                            <p>...</p>
+                        </span>
+                    </div>
+
+                  <div class="user-options">
+                    <a style="width: 100%; max-width: 230px; text-decoration: none;" href="{% url 'edit_team' team.id %}">
+                      <div class="d-flex align-items-center nav-item">
+                        <span class="" style="font-size: 12px;">Edit Team</span>
+                      </div>
+                    </a>
+                    <div>
+                        <form action="{% url 'team_delete' team_id=team.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" value="Delete Team" class="deleteBTN nav-item" onclick="return confirm('Are you sure you want to delete?')">
+                        </form>
+                    </div>
+                      <div class="d-flex align-items-center nav-item">
+                                           
+                      </div>
+                    </a>
+                  </div>
+                </div>
+            </div>
+            {%else%}
+            {%endif%}
+        </div>        
+    </div>
     {% endfor %}
     {% endif %}
     <a class="me-3 mb-3" style="text-decoration: none;" href="{% url 'create_team' %}">
@@ -19,6 +57,7 @@
     </a>
 </div>
 </div>
+
 
 
  

@@ -1,6 +1,7 @@
 {% extends 'base_content.html' %}
 {% block title %} | {{team.title}} {% endblock%}
 {% block content %}
+
 <div class="container">
     <div class="row content">
         <div class="mb-5">
@@ -8,13 +9,12 @@
         </div>
         <div class="mb-5">
             {% include 'partials/leaderboard.html' with members=members %}
-
-            <div class="mb-4 mx-4">
-                {% include 'partials/tasks_as_table.html' with tasks=tasks %}
-            </div>
-            <div class="mb-4 mx-4">
-                {% include 'partials/archived_tasks.html' with tasks=tasks %}
-            </div>
+        </div>
+        <div class="mb-4">
+            {% include 'partials/tasks_as_table.html' with tasks=tasks %}
+        </div>
+        <div class="mb-4">
+            {% include 'partials/archived_tasks.html' with tasks=tasks %}
         </div>
     </div>
 </div>
